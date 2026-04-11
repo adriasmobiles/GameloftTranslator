@@ -718,34 +718,36 @@
     <div class="app-container w-full mx-auto rounded-2xl shadow-2xl p-6 flex flex-col h-[90vh]">
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg rounded-b-3xl rounded-t-2xl border-x border-b border-white/50 transition-all duration-300 mx-1 mt-1 mb-4">
     
-    <header id="appHeader" class="flex justify-between items-center mb-0 pb-2 px-6 pt-4 relative z-50">
+    <header id="appHeader" class="flex flex-col-reverse sm:flex-row justify-between items-end sm:items-center gap-5 mb-2 pb-3 px-6 pt-5 relative z-50 w-full transition-all duration-300">
 
-        <div id="projectStatsContainer" class="bg-white/70 backdrop-blur-sm p-3 rounded-lg shadow-md w-25 m:w-auto">
-            <div class="flex justify-around items-center gap-4"> 
-                <div class="stat-item text-center">
-                    <div id="statTotalText" class="stat-value !text-base">0</div>
-                    <div class="stat-label">Total</div>
+        <div id="projectStatsContainer" class="bg-white/85 backdrop-blur-xl p-3.5 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-white/60 w-full sm:w-auto transition-all duration-300">
+            <div class="flex justify-around sm:justify-center items-center gap-3 sm:gap-6"> 
+                <div class="stat-item text-center px-1">
+                    <div id="statTotalText" class="stat-value !text-base text-gray-700">0</div>
+                    <div class="stat-label uppercase tracking-wider !text-[9px] font-bold text-gray-400">Total</div>
                 </div>
-                <div class="stat-item text-center">
-                    <div id="statTranslated" class="stat-value !text-base">0</div>
-                    <div class="stat-label">Done</div>
+                
+                <div class="w-px h-8 bg-gray-200/80 rounded-full"></div> <div class="stat-item text-center px-1">
+                    <div id="statTranslated" class="stat-value !text-base text-blue-600">0</div>
+                    <div class="stat-label uppercase tracking-wider !text-[9px] font-bold text-gray-400">Selesai</div>
                 </div>
-                <div class="stat-item text-center">
-                    <div id="statProgress" class="stat-value !text-base">0%</div>
-                    <div class="stat-label">Progress</div>
+                
+                <div class="w-px h-8 bg-gray-200/80 rounded-full"></div> <div class="stat-item text-center px-1">
+                    <div id="statProgress" class="stat-value !text-base text-green-500">0%</div>
+                    <div class="stat-label uppercase tracking-wider !text-[9px] font-bold text-gray-400">Progres</div>
                 </div>
             </div>
-            <div class="w-full h-px bg-gray-300 my-2"></div>
-            <div id="minimizedProgressContainer" class="hidden w-full mt-3">
+            
+            <div id="minimizedProgressContainer" class="hidden w-full mt-3 pt-3 border-t border-gray-100/80">
                 <div class="flex items-center gap-2">
-                    <div class="w-full bg-gray-200 rounded-full h-3.5" title="Klik untuk menghentikan proses">
-                        <div id="minimizedProgressBar" style="width: 0%;">
-                            <span id="minimizedProgressPercentText">0%</span>
-                            <i class="fa-solid fa-xmark text-xs opacity-80 hidden"></i>
+                    <div class="w-full bg-gray-100 rounded-full h-3.5 shadow-inner overflow-hidden border border-gray-200/50" title="Klik untuk menghentikan proses">
+                        <div id="minimizedProgressBar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full rounded-full transition-all duration-300 flex items-center justify-end pr-2 relative overflow-hidden" style="width: 0%;">
+                            <div class="absolute inset-0 bg-white/20 animate-pulse"></div> <span id="minimizedProgressPercentText" class="text-[9px] font-bold text-white z-10 drop-shadow-sm">0%</span>
+                            <i class="fa-solid fa-xmark text-[9px] text-white/90 ml-1.5 z-10 hidden hover:text-red-200 transition-colors cursor-pointer"></i>
                         </div>
                     </div>
                 </div>
-                <p id="minimizedProgressInfoText" class="text-xs text-center text-secondary font-semibold mt-1">Preparing...</p>
+                <p id="minimizedProgressInfoText" class="text-[10px] text-center text-gray-500 font-semibold mt-1.5 animate-pulse">Menyiapkan...</p>
             </div>
         </div>
 
@@ -754,13 +756,13 @@
             <h2 class="text-2xl font-bold text-main -mt-2">Translator</h2>
             <p class="text-sm text-secondary -mt-1 mb-2">by AdriasMobiles</p>
             
-            <div class="header-buttons-below-title flex items-center gap-1.5 mt-1">			
-    <div class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
-    <div class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-    <div class="w-3 h-3 rounded-full bg-yellow-400 shadow-sm"></div>
-    <div class="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
-    <button id="langToggleButton" class="ml-1 w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-[10px] font-bold text-blue-600 hover:bg-blue-50 transition-all active:scale-90">ID</button>
-</div>
+            <div class="header-buttons-below-title flex items-center gap-1.5 mt-0.5">			
+                <div class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-400 shadow-sm"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm"></div>
+                <button id="langToggleButton" class="ml-1 w-7 h-7 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-[9px] font-black text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all active:scale-90 uppercase">ID</button>
+            </div>
         </div>
     </header>
 
@@ -1344,10 +1346,7 @@
     </button>
 </div>
 
-<div id="fullscreenBtn"
-         title="Masuk ke Layar Penuh"
-         class="fixed bottom-3 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-400/60 rounded-full cursor-pointer transition-all duration-300 ease-out z-50">
-    </div>
+<div id="fullscreenBtn" class="hidden"></div>
 
     <script type="module">
 	
@@ -1623,18 +1622,7 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
         let originalFileBuffer = null;
         let translatedFileBuffer = null;
 
-        function isFullscreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
-}
-
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    }
-}
-
+        
         let currentEditingDictionaryOriginalText = null;        
         let contextModeBtn, contextInputContainer, contextInputArea;
 
@@ -3221,18 +3209,9 @@ function applyCaseToMatch(originalMatch, newText) {
                 const accordionButton = document.getElementById('originalTextAccordionButton');
                 const accordionContent = document.getElementById('originalTextAccordionContent');
 
+                // BARU
                 const isAccordionExpanded = accordionButton.getAttribute('aria-expanded') === 'true';
-                const shouldAutoClose = isFullscreen() && lineCount >= 10 && isAccordionExpanded;
-
-                if (shouldAutoClose) {
-
-                    accordionButton.setAttribute('aria-expanded', 'false');
-                    accordionContent.style.maxHeight = '0px';
-                    wasAccordionAutoClosed = true;
-                    showAppNotification("Teks Asli disembunyikan untuk fokus.", "info", 2500);
-                } else if (isAccordionExpanded) {
-
-
+                if (isAccordionExpanded) {
                     accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
                 }
 
@@ -5642,7 +5621,7 @@ async function saveLivePrompt() {
             }
 
             // Load bahasa tersimpan saat aplikasi dibuka
-            const savedLang = await getSetting('preferredLanguage') || 'ID';
+            const savedLang = await getSetting('preferredLanguage') || 'EN';
             setTimeout(() => {
                 applyLanguage(savedLang);
                 if (typeof updateProjectStats === 'function') updateProjectStats();
@@ -5680,52 +5659,7 @@ if (toggleReplaceModeBtn && replaceSectionContainer) {
         }
     });
 }
-            function toggleFullScreen() {
-                const docEl = document.documentElement;
-                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-
-                    if (docEl.requestFullscreen) {
-                        docEl.requestFullscreen();
-                    } else if (docEl.msRequestFullscreen) {
-                        docEl.msRequestFullscreen();
-                    } else if (docEl.mozRequestFullScreen) {
-                        docEl.mozRequestFullScreen();
-                    } else if (docEl.webkitRequestFullscreen) {
-                        docEl.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                    }
-                    } else {
-
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    }
-                }
-            }
-
-            function updateFullscreenBarState() {
-
-                if (document.fullscreenElement || document.webkitFullscreenElement) {
-
-                    fullscreenBtn.classList.add('h-1.5', 'bg-white/90');
-                    fullscreenBtn.classList.remove('h-1', 'bg-gray-400/60');
-                    fullscreenBtn.title = "Keluar dari Layar Penuh";
-                } else {
-
-                    fullscreenBtn.classList.remove('h-1.5', 'bg-white/90');
-                    fullscreenBtn.classList.add('h-1', 'bg-gray-400/60');
-                    fullscreenBtn.title = "Masuk ke Layar Penuh";
-                }
-            }
-
-            fullscreenBtn.addEventListener('click', toggleFullScreen);
-            document.addEventListener('fullscreenchange', updateFullscreenBarState);
-            document.addEventListener('webkitfullscreenchange', updateFullscreenBarState);
-
+            
             await openDatabase();
             const savedApiKey = await getSetting('geminiApiKey');
             const isMovedToSettings = await getSetting('apiKeyMovedToSettings');
@@ -6326,7 +6260,6 @@ async function closeTutorial() {
             }
 
             closeTutorialBtn.addEventListener('click', closeTutorial);
-            document.querySelector('.tutorial-overlay').addEventListener('click', closeTutorial);
 
             if (openTutorialFromSettings) {
                 openTutorialFromSettings.addEventListener('click', () => {
@@ -6536,19 +6469,7 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
                const lineCount = getVisualLineCount(translatedTextArea);
                 const accordionButton = document.getElementById('originalTextAccordionButton');
                 const accordionContent = document.getElementById('originalTextAccordionContent');
-
-
-                if (isFullscreen() && lineCount >= 10 && accordionButton.getAttribute('aria-expanded') === 'true') {
-
-                    accordionButton.setAttribute('aria-expanded', 'false');
-                    accordionContent.style.maxHeight = '0px';
-
-
-                    wasAccordionAutoClosed = true;
-
-
-                    showAppNotification("Teks Asli disembunyikan untuk memberi ruang.", "info", 2000);
-                }
+                
             });
             translatedTextArea.addEventListener('focus', () => {
                 // Hanya geser modal ke atas jika ini adalah perangkat sentuh dan lebar layar kecil (mirip ponsel)
@@ -6758,20 +6679,7 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
 
 
 
-            if (userWantsToOpen && wasAccordionAutoClosed && isFullscreen()) {
-                exitFullscreen();
-                showAppNotification("Layar penuh dinonaktifkan.", "info", 2500);
-
-
-                wasAccordionAutoClosed = false;
-
-               setTimeout(() => {
-                    const modal = document.getElementById('editModal');
-                    modal.style.top = '50%';
-                    modal.style.transform = 'translate(-50%, -50%)';
-                }, 100);
-            }
-
+            
 
 
             if (isCurrentlyExpanded) {
@@ -7325,6 +7233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Logika Regex 2 Arah (ID <-> EN)
     const dynamicPatterns = [
+		{ regexID: /Panjang: (\d+)\/(\d+)/g, replaceEN: "Length: $1/$2", regexEN: /Length: (\d+)\/(\d+)/g, replaceID: "Panjang: $1/$2" },
 		{ regexID: /Teks: (\d+)/g, replaceEN: "Text: $1", regexEN: /Text: (\d+)/g, replaceID: "Teks: $1" },
         { regexID: /Paragraf (\d+)/g, replaceEN: "Paragraph $1", regexEN: /Paragraph (\d+)/g, replaceID: "Paragraf $1" },
         { regexID: /Teks (\d+) dari (\d+)/g, replaceEN: "Text $1 of $2", regexEN: /Text (\d+) of (\d+)/g, replaceID: "Teks $1 dari $2" },
