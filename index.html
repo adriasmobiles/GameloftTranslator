@@ -216,8 +216,9 @@
 
 
         .parsing-option {
-    display: flex; /* Pastikan flex container */
-    align-items: center; /* Vertikal center */
+            display: flex;
+            align-items: flex-start; /* UBAH: Agar isi selalu rata atas */
+            height: 100%; /* TAMBAH: Agar kotak selalu sejajar & simetris di dalam grid */
             background-color: rgba(255, 255, 255, 0.7);
             border: 2px solid transparent;
             border-radius: 0.75rem;
@@ -1163,6 +1164,10 @@
                 </label>
             </div>
         </div>
+		
+		<button id="openTutorialFromSettings" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors mb-2">
+            <i class="fas fa-book-open"></i> Buka Panduan Penggunaan
+        </button>
         
         <p class="text-[10px] text-center text-gray-400 pt-2 pb-4">Created by AdriasMobiles</p>
     </div>
@@ -1244,6 +1249,81 @@
             </button>
         </div>
     </div>
+	
+	<div id="tutorialModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm tutorial-overlay"></div>
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-main">Panduan Penggunaan</h3>
+            <button id="closeTutorialBtn" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-grow relative" id="tutorialCarousel">
+    
+    <div class="tutorial-page block text-center">
+        <div class="text-5xl text-blue-500 mb-4"><i class="fas fa-gamepad"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">1. Selamat Datang!</h4>
+        <p class="text-sm text-secondary">Aplikasi ini dirancang khusus untuk mengekstrak, mendekripsi, dan menerjemahkan file teks dari game retro J2ME (Gameloft) secara mudah.</p>
+    </div>
+
+    <div class="tutorial-page hidden text-center">
+        <div class="text-5xl text-yellow-500 mb-4"><i class="fas fa-wifi"></i> <span class="text-3xl">/</span> <i class="fas fa-plane-slash"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">2. Metode Online & Offline</h4>
+        <p class="text-sm text-secondary mb-3">Gunakan API Key Gemini (gratis) di Pengaturan untuk terjemahan otomatis AI.</p>
+        <p class="text-sm text-secondary">Tanpa API Key (Offline)? Anda tetap bisa menggunakan alat ini sepenuhnya untuk mengedit teks secara manual dan memanfaatkan fitur Kamus Lokal.</p>
+    </div>
+
+    <div class="tutorial-page hidden text-center">
+        <div class="text-5xl text-emerald-500 mb-4"><i class="fas fa-file-upload"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">3. Pilih & Muat File</h4>
+        <p class="text-sm text-secondary">Pilih file game yang ingin diproses. Jika file Anda berformat Decryptor 01/Decryptor 02 ganda, buka Pengaturan dan aktifkan Impor Teks Asli (EN) agar dapat membandingkan struktur file terjemahan.</p>
+    </div>
+
+    <div class="tutorial-page hidden text-center">
+        <div class="text-5xl text-purple-500 mb-4"><i class="fas fa-edit"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">4. Cara Mengedit Teks</h4>
+        <p class="text-sm text-secondary">Ketuk teks mana saja untuk membuka jendela Edit. Anda bisa mengetik manual terjemahan Anda, atau klik tombol Terjemahkan (AI). Aktifkan ikon Gembok jika Anda butuh memastikan panjang karakter teks sama persis dengan aslinya.</p>
+    </div>
+
+    <div class="tutorial-page hidden text-center">
+        <div class="text-5xl text-indigo-500 mb-4"><i class="fas fa-check-double"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">5. Mode Pilih Banyak</h4>
+        <p class="text-sm text-secondary">Tekan & Tahan (Long Press) pada sebuah teks untuk masuk ke mode multi-select. Pilih beberapa teks sekaligus, lalu gunakan tombol melayang di pojok kanan bawah untuk menerjemahkan secara massal.</p>
+    </div>
+
+    <div class="tutorial-page hidden text-center">
+        <div class="text-5xl text-red-400 mb-4"><i class="fas fa-book"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">6. Fitur Kamus (Dictionary)</h4>
+        <p class="text-sm text-secondary">Untuk terjemahan konsisten tanpa AI, simpan istilah yang sering muncul ke Kamus. Aplikasi akan otomatis mengganti kata-kata tersebut di seluruh paragraf saat Anda melakukan Replace All atau saat AI memprosesnya.</p>
+    </div>
+
+    <div class="tutorial-page hidden text-center">
+        <div class="text-5xl text-amber-500 mb-4"><i class="fas fa-download"></i></div>
+        <h4 class="font-semibold text-xl mb-2 text-main">7. Simpan & Unduh</h4>
+        <p class="text-sm text-secondary">Jangan lupa menyimpan progres Anda di menu Berkas (Files) agar tidak hilang saat ditutup. Jika sudah selesai semua, klik ikon Download melayang berwarna hijau untuk mengunduh file hasil (ZIP/Biner) yang siap di-inject ke game.</p>
+    </div>
+
+</div>
+        <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col gap-4">
+            <div class="flex items-center gap-2 px-1">
+                <input type="checkbox" id="dontShowTutorial" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <label for="dontShowTutorial" class="text-xs text-tertiary cursor-pointer hover:text-main">Jangan tampilkan lagi</label>
+            </div>
+            <div class="flex justify-between items-center w-full">
+                <button id="prevTutorialBtn" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-main disabled:opacity-30" disabled>Sebelumnya</button>
+                <div class="flex gap-1.5" id="tutorialIndicators">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 transition-all duration-300"></span>
+                    <span class="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"></span>
+                    <span class="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"></span>
+                    <span class="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"></span>
+                    <span class="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"></span>
+                    <span class="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"></span>
+                    <span class="w-2 h-2 rounded-full bg-gray-300 transition-all duration-300"></span>
+                </div>
+                <button id="nextTutorialBtn" class="px-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-800">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div id="appNotification" class="fixed z-[100] bg-white rounded-xl shadow-lg p-4 flex items-center gap-4 transition-all duration-300 ease-in-out"></div>
     <div id="floating-action-buttons" class="fixed bottom-24 right-5 z-30 flex flex-col items-center gap-3 hidden transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)">
@@ -5076,7 +5156,7 @@ document.getElementById('closeSaveFileModalBtn').onclick = () => {
                     originalEncryptedTemplateBuffer = parsedData.encryptionTemplate.buffer;
                 } else if (parsedData.isEncryptedProject) {
                     originalEncryptedTemplateBuffer = null; 
-                    showAppNotification("File V5/V10 lama ini tidak punya template. Mengunduh akan gagal. Harap proses ulang file asli.", "error", 5000);
+                    showAppNotification("File Decryptor 01/Decryptor 02 lama ini tidak punya template. Mengunduh akan gagal. Harap proses ulang file asli.", "error", 5000);
                 } else {
                     originalEncryptedTemplateBuffer = null;
                 }
@@ -5668,11 +5748,9 @@ if (toggleReplaceModeBtn && replaceSectionContainer) {
             parsingOptionsContainer.innerHTML = parsingPatterns.map(p => `
                 <label class="parsing-option" data-value="${p.value}">
                     <input type="radio" name="parsingMode" value="${p.value}">
-                    <div class="flex items-center">
-                        <span class="radio-custom mr-3"></span>
-                        <div class="flex-grow">
-                            <p class="font-semibold text-main">${p.name}</p>
-                            <p class="text-xs text-tertiary">${p.desc}</p>
+                    <div class="flex items-start w-full"> <span class="radio-custom mr-3 mt-0.5"></span> <div class="flex-grow">
+                            <p class="font-semibold text-main leading-tight">${p.name}</p>
+                            <p class="text-xs text-tertiary mt-1 leading-snug">${p.desc}</p>
                         </div>
                     </div>
                 </label>
@@ -5785,7 +5863,7 @@ if (toggleReplaceModeBtn && replaceSectionContainer) {
                                     if (findSubarray(originalContent, MAGIC_KEY_LZMA) !== -1) {
                                         await processBothEncryptedFiles(translatedFileBuffer, originalFileBuffer, file.name, selectedPattern);
                                     } else {
-                                        showAppNotification("File asli (EN) yang diimpor tidak terenkripsi. Pola V5/V10 mewajibkan kedua file terenkripsi.", "error");
+                                        showAppNotification("File asli (EN) yang diimpor tidak terenkripsi. Pola Decryptor 01/Decryptor 02 mewajibkan kedua file terenkripsi.", "error");
                                         mainLoader.classList.add('hidden');
                                         applyParsingLoader.parentElement.disabled = false;
                                         applyParsingLoader.classList.add('hidden');
@@ -6185,6 +6263,89 @@ if (toggleReplaceModeBtn && replaceSectionContainer) {
                     }
                 });
             }
+			
+			// --- LOGIKA PANDUAN PENGGUNAAN (TUTORIAL) ---
+            const tutorialModal = document.getElementById('tutorialModal');
+            const closeTutorialBtn = document.getElementById('closeTutorialBtn');
+            const nextTutorialBtn = document.getElementById('nextTutorialBtn');
+            const prevTutorialBtn = document.getElementById('prevTutorialBtn');
+            const dontShowTutorial = document.getElementById('dontShowTutorial');
+            const tutorialPages = document.querySelectorAll('.tutorial-page');
+            const tutorialIndicators = document.querySelectorAll('#tutorialIndicators span');
+            const openTutorialFromSettings = document.getElementById('openTutorialFromSettings');
+            
+            let currentTutorialPage = 0;
+
+            function updateTutorialView() {
+                tutorialPages.forEach((page, index) => {
+                    page.classList.toggle('hidden', index !== currentTutorialPage);
+                    page.classList.toggle('block', index === currentTutorialPage);
+                });
+                tutorialIndicators.forEach((ind, index) => {
+                    ind.classList.toggle('bg-blue-600', index === currentTutorialPage);
+                    ind.classList.toggle('bg-gray-300', index !== currentTutorialPage);
+                    ind.classList.toggle('w-4', index === currentTutorialPage); 
+                });
+
+                prevTutorialBtn.disabled = currentTutorialPage === 0;
+                
+                if (currentTutorialPage === tutorialPages.length - 1) {
+                    nextTutorialBtn.textContent = 'Tutup';
+                    nextTutorialBtn.dataset.isClose = 'true';
+                } else {
+                    nextTutorialBtn.textContent = 'Selanjutnya';
+                    nextTutorialBtn.dataset.isClose = 'false';
+                }
+                
+                if (typeof window.translatePage === 'function') window.translatePage();
+            }
+
+            nextTutorialBtn.addEventListener('click', async () => {
+                if (nextTutorialBtn.dataset.isClose === 'true') {
+                    closeTutorial();
+                } else {
+                    currentTutorialPage++;
+                    updateTutorialView();
+                }
+            });
+
+            prevTutorialBtn.addEventListener('click', () => {
+                if (currentTutorialPage > 0) {
+                    currentTutorialPage--;
+                    updateTutorialView();
+                }
+            });
+
+async function closeTutorial() {
+                tutorialModal.classList.add('hidden');
+                if (typeof updateOverlayVisibility === 'function') updateOverlayVisibility(); // <--- PERBAIKAN: Hapus sisa blur saat ditutup
+                if (dontShowTutorial.checked) {
+                    await setSetting('hideTutorial', true);
+                    showAppNotification("Panduan disembunyikan. Bisa dibuka kembali di Pengaturan.", "success");
+                }
+            }
+
+            closeTutorialBtn.addEventListener('click', closeTutorial);
+            document.querySelector('.tutorial-overlay').addEventListener('click', closeTutorial);
+
+            if (openTutorialFromSettings) {
+                openTutorialFromSettings.addEventListener('click', () => {
+                    document.getElementById('settingsModal').classList.add('hidden'); 
+                    if (typeof updateOverlayVisibility === 'function') updateOverlayVisibility(); // <--- PERBAIKAN: Hapus blur bawaan menu pengaturan saat panduan dibuka
+                    currentTutorialPage = 0;
+                    dontShowTutorial.checked = false; 
+                    updateTutorialView();
+                    tutorialModal.classList.remove('hidden');
+                });
+            }
+
+            setTimeout(async () => {
+                const isTutorialHidden = await getSetting('hideTutorial');
+                if (!isTutorialHidden) {
+                    updateTutorialView();
+                    tutorialModal.classList.remove('hidden');
+                }
+            }, 800);
             
             searchInput.addEventListener('input', () => { filterTextItems(); updateReplaceButtonsState(); });
             clearSearchBtn.addEventListener('click', () => {
@@ -7033,7 +7194,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Hapus": "Delete",
             "Edit": "Edit",
             "Aktif": "Active",
-            "(Aktif)": "(Active)", // PERBAIKAN TEKS AKTIF PADA LIVE PROMPT
+            "(Aktif)": "(Active)",
             "Tutup": "Close",
             "Minimalkan": "Minimize",
             "Hentikan": "Stop",
@@ -7068,6 +7229,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "Asal:": "Source:",
             "Disimpan:": "Saved:",
             "Batal": "Cancel",
+			"Buka Panduan Penggunaan": "Open Usage Guide",			
+            "Jangan tampilkan lagi": "Don't show again",
+			"Sebelumnya": "Previous",
+			"Selanjutnya": "Next",
             
             "Harap simpan file terlebih dahulu untuk membuat progres.": "Please save the file first to track progress.",
             "Tidak ada file untuk diproses.": "No file to process.",
@@ -7117,7 +7282,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Mode Akurat dinonaktifkan.": "Accurate Mode disabled.",
             "Mode Impor Teks Asli diaktifkan.": "Import Original Text Mode enabled.",
             "Mode Impor Teks Asli dinonaktifkan.": "Import Original Text Mode disabled.",
-            "File asli (EN) yang diimpor tidak terenkripsi. Pola V5/V10 mewajibkan kedua file terenkripsi.": "Imported original file (EN) is not encrypted. V5/V10 pattern requires both to be encrypted.",
+            "File asli (EN) yang diimpor tidak terenkripsi. Pola Decryptor 01/Decryptor 02 mewajibkan kedua file terenkripsi.": "Imported original file (EN) is not encrypted. Decryptor 01/Decryptor 02 pattern requires both to be encrypted.",
             "Memulai dekripsi ganda (ID & EN)...": "Starting dual decryption (ID & EN)...",
             "File terenkripsi terdeteksi. Memulai proses dekripsi...": "Encrypted file detected. Starting decryption...",
             "Hanya untuk file terenkripsi. File ini tidak terdeteksi sebagai terenkripsi.": "For encrypted files only. This file is not detected as encrypted.",
@@ -7127,7 +7292,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Semua file telah dihapus.": "All files have been deleted.",
             "Masukkan nama untuk menyimpan progres.": "Enter a name to save progress.",
             "Tidak ada data untuk disimpan.": "No data to save.",
-            "File V5/V10 lama ini tidak punya template. Mengunduh akan gagal. Harap proses ulang file asli.": "Old V5/V10 file has no template. Download will fail. Re-process original file.",
+            "File Decryptor 01/Decryptor 02 lama ini tidak punya template. Mengunduh akan gagal. Harap proses ulang file asli.": "Old Decryptor 01/Decryptor 02 file has no template. Download will fail. Re-process original file.",
             "Struktur file mentah tidak ditemukan, unduh mungkin gagal. Proses ulang file asli untuk memperbaiki.": "Raw file structure not found, download may fail. Re-process original file to fix.",
             "Apakah Anda yakin ingin menghapus semua entri kamus?": "Are you sure you want to delete all dictionary entries?",
             "Semua entri kamus dihapus.": "All dictionary entries deleted.",
@@ -7137,13 +7302,30 @@ document.addEventListener("DOMContentLoaded", () => {
             "Nama prompt dan konten tidak boleh kosong.": "Prompt name and content cannot be empty.",
 			"Sembunyikan": "Hide",
 			"Kolom API Key dipindahkan ke Pengaturan.": "API Key section moved to Settings.",
-            "Kunci API tidak ditemukan.": "API Key not found."
-			
+			"Kunci API tidak ditemukan.": "API Key not found.",
+            "Panduan Penggunaan": "Usage Guide",
+            // PANDUAN PENGGUNAAN
+            "1. Selamat Datang!": "1. Welcome!",
+            "Aplikasi ini dirancang khusus untuk mengekstrak, mendekripsi, dan menerjemahkan file teks dari game retro J2ME (Gameloft) secara mudah.": "This app is specifically designed to easily extract, decrypt, and translate text files from retro J2ME games (Gameloft).",
+            "2. Metode Online & Offline": "2. Online & Offline Method",
+            "Gunakan API Key Gemini (gratis) di Pengaturan untuk terjemahan otomatis AI.": "Use a free Gemini API Key in Settings for automatic AI translation.",
+            "Tanpa API Key (Offline)? Anda tetap bisa menggunakan alat ini sepenuhnya untuk mengedit teks secara manual dan memanfaatkan fitur Kamus Lokal.": "No API Key (Offline)? You can still fully use this tool to manually edit text and utilize the Local Dictionary feature.",
+            "3. Pilih & Muat File": "3. Select & Load File",
+            "Pilih file game yang ingin diproses. Jika file Anda berformat Decryptor 01/Decryptor 02 ganda, buka Pengaturan dan aktifkan Impor Teks Asli (EN) agar dapat membandingkan struktur file terjemahan.": "Select the game file you want to process. If your file is dual Decryptor 01/Decryptor 02 format, open Settings and enable Import Original Text (EN) to compare translation structures.",
+            "4. Cara Mengedit Teks": "4. How to Edit Text",
+            "Ketuk teks mana saja untuk membuka jendela Edit. Anda bisa mengetik manual terjemahan Anda, atau klik tombol Terjemahkan (AI). Aktifkan ikon Gembok jika Anda butuh memastikan panjang karakter teks sama persis dengan aslinya.": "Tap any text to open the Edit window. You can manually type your translation, or click the Translate (AI) button. Activate the Lock icon if you need to ensure the text length matches the original exactly.",
+            "5. Mode Pilih Banyak": "5. Multi-Select Mode",
+            "Tekan & Tahan (Long Press) pada sebuah teks untuk masuk ke mode multi-select. Pilih beberapa teks sekaligus, lalu gunakan tombol melayang di pojok kanan bawah untuk menerjemahkan secara massal.": "Press & Hold (Long Press) on a text to enter multi-select mode. Select multiple texts at once, then use the floating button in the bottom right corner to batch translate.",
+            "6. Fitur Kamus (Dictionary)": "6. Dictionary Feature",
+            "Untuk terjemahan konsisten tanpa AI, simpan istilah yang sering muncul ke Kamus. Aplikasi akan otomatis mengganti kata-kata tersebut di seluruh paragraf saat Anda melakukan Replace All atau saat AI memprosesnya.": "For consistent translations without AI, save frequently appearing terms to the Dictionary. The app will automatically replace these words across the paragraph when you perform a Replace All or when the AI processes it.",
+            "7. Simpan & Unduh": "7. Save & Download",
+            "Jangan lupa menyimpan progres Anda di menu Berkas (Files) agar tidak hilang saat ditutup. Jika sudah selesai semua, klik ikon Download melayang berwarna hijau untuk mengunduh file hasil (ZIP/Biner) yang siap di-inject ke game.": "Don't forget to save your progress in the Files menu so it isn't lost when closed. Once completely finished, click the floating green Download icon to download the resulting file (ZIP/Binary) ready to be injected into the game."
         }
     };
 
     // Logika Regex 2 Arah (ID <-> EN)
     const dynamicPatterns = [
+		{ regexID: /Teks: (\d+)/g, replaceEN: "Text: $1", regexEN: /Text: (\d+)/g, replaceID: "Teks: $1" },
         { regexID: /Paragraf (\d+)/g, replaceEN: "Paragraph $1", regexEN: /Paragraph (\d+)/g, replaceID: "Paragraf $1" },
         { regexID: /Teks (\d+) dari (\d+)/g, replaceEN: "Text $1 of $2", regexEN: /Text (\d+) of (\d+)/g, replaceID: "Teks $1 dari $2" },
         { regexID: /(\d+) terpilih/g, replaceEN: "$1 selected", regexEN: /(\d+) selected/g, replaceID: "$1 terpilih" },
