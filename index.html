@@ -26,19 +26,18 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            /* REVISI: Gradasi warna dinamis ala Windows 11 (Soft & Elegant) */
-            /* Perpaduan: Periwinkle, Lilac, Soft Rose, Soft Cyan */
-            background: linear-gradient(300deg, #cdd6f7, #f0d8f1, #f5d3d6, #d6f3f7, #e2eafc);
+            /* TEMA iOS 'INTELLIGENCE GLOW': 
+               Kontras yang sangat jelas dengan kontainer putih, sangat elegan, sejuk & hidup di mata */
+            background: linear-gradient(300deg, #a1b4e4, #c5bced, #9cd3f0, #e2c2e8, #aed9e0);
             background-size: 400% 400%;
-            /* Animasi diperlambat ke 25s agar lebih tenang (calming) */
-            animation: gradientBackground 25s ease-in-out infinite;
+            animation: gradientBackground 30s ease-in-out infinite;
             
             display: flex;
             justify-content: center;
             min-height: 100vh;
             padding: 1rem;
             box-sizing: border-box;
-            color: #1f1f1f;
+            color: #1c1c1e;
         }
 
         @keyframes gradientBackground {
@@ -720,18 +719,18 @@
     <div class="app-container w-full mx-auto rounded-2xl shadow-2xl p-6 flex flex-col h-[90vh]">
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg rounded-b-3xl rounded-t-2xl border-x border-b border-white/50 transition-all duration-300 mx-1 mt-1 mb-4">
     
-    <header id="appHeader" class="flex flex-col gap-4 mb-4 pb-2 px-4 sm:px-6 pt-6 relative z-50 w-full transition-all duration-300">
+    <header id="appHeader" class="flex flex-col gap-5 mb-4 pb-2 px-4 sm:px-6 pt-6 relative z-50 w-full transition-all duration-300">
 
-    <div class="flex flex-col gap-3 w-full">
+    <div class="flex flex-col items-center gap-4 w-full">
         
-        <div class="flex flex-col">
-            <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tighter leading-none flex items-center gap-2 flex-wrap">
+        <div class="flex flex-col items-center text-center">
+            <h1 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tighter leading-none flex items-center justify-center gap-2 flex-wrap">
                 Gameloft 
                 <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500 drop-shadow-sm">Translator</span>
             </h1>
         </div>
 
-        <div class="flex items-center justify-between bg-white/90 backdrop-blur-xl border border-gray-200 shadow-md rounded-2xl pl-4 pr-1.5 py-1.5 w-full max-w-sm">
+        <div class="flex items-center justify-between bg-white/90 backdrop-blur-xl border border-gray-200 shadow-md rounded-2xl pl-4 pr-1.5 py-1.5 w-full max-w-[340px] mx-auto">
             
             <div class="flex items-center gap-3">
                 <span class="text-[11px] sm:text-xs font-bold text-gray-600 tracking-wide">by AdriasMobiles</span>
@@ -751,7 +750,7 @@
 
     </div>
 
-    <div id="projectStatsContainer" class="w-full bg-white border border-gray-100 p-3.5 rounded-2xl shadow-xl shadow-gray-200/50 transition-all duration-300">
+    <div id="projectStatsContainer" class="w-full max-w-[340px] mx-auto bg-white border border-gray-100 p-3.5 rounded-2xl shadow-xl shadow-gray-200/50 transition-all duration-300">
         <div class="flex justify-around items-center gap-3"> 
             <div class="stat-item flex flex-col items-center">
                 <div id="statTotalText" class="text-lg font-black text-gray-800">0</div>
