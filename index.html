@@ -6501,16 +6501,22 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
                     modal.style.transform = 'translateX(-50%)';
                 }
 
-                // BARU: Beri jeda 300ms agar keyboard Android selesai naik, lalu gulir mulus ke bawah
-                setTimeout(() => {
+                // BARU: Lacak dan kunci guliran terus ke bawah selama keyboard bergerak naik
+                let scrollAttempts = 0;
+                const scrollInterval = setInterval(() => {
                     const modalBody = document.getElementById('editModalBody');
                     if (modalBody) {
-                        modalBody.scrollTo({
-                            top: modalBody.scrollHeight,
-                            behavior: 'smooth'
-                        });
+                        // Paksa kotak teks terjemahan untuk terus berada di batas bawah penglihatan
+                        translatedTextArea.scrollIntoView({ behavior: 'auto', block: 'end' });
+                        modalBody.scrollTop = modalBody.scrollHeight;
                     }
-                }, 300);
+                    
+                    scrollAttempts++;
+                    // Berhenti melacak setelah 600ms (ketika animasi keyboard sudah 100% selesai)
+                    if (scrollAttempts >= 12) { 
+                        clearInterval(scrollInterval);
+                    }
+                }, 50); // Eksekusi setiap 50ms
             });
             
             translatedTextArea.addEventListener('blur', () => {
