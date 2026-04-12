@@ -6474,7 +6474,7 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             translatedTextArea.addEventListener('focus', () => {
                 // Hanya geser modal ke atas jika ini adalah perangkat sentuh dan lebar layar kecil (mirip ponsel)
                 if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
-                    modal.style.top = '1%';
+                    modal.style.top = '10%';
                     modal.style.transform = 'translateX(-50%)';
                 }
             });
