@@ -5638,10 +5638,12 @@ async function saveLivePrompt() {
             }
 
             // Load bahasa tersimpan saat aplikasi dibuka
+            // Load bahasa tersimpan saat aplikasi dibuka
             const savedLang = await getSetting('preferredLanguage') || 'EN';
-            setTimeout(() => {
-                applyLanguage(savedLang);
-                if (typeof updateProjectStats === 'function') updateProjectStats();            
+            
+            // Langsung eksekusi tanpa jeda (setTimeout dihapus) agar tidak terjadi flicker!
+            applyLanguage(savedLang);
+            if (typeof updateProjectStats === 'function') updateProjectStats();
 
             // Event listener saat tombol ditekan (Ini yang tadinya hilang!)
             if (langToggleBtn) {
