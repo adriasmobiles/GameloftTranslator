@@ -6907,6 +6907,50 @@ document.getElementById('navBtnSettings').addEventListener('click', () => {
 });
 
 // =====================================================================
+        // LOGIKA TOMBOL KEMBALI (DOUBLE TAP TO EXIT & TUTUP MODAL)
+        // =====================================================================
+        let backPressedOnce = false;
+
+        // Dorong 'state' palsu ke dalam riwayat peramban saat aplikasi dimuat
+        window.history.pushState({ page: 'main' }, null, '');
+
+        window.addEventListener('popstate', function(event) {
+            // 1. Cek apakah ada overlay/modal yang sedang terbuka
+            const modalOverlay = document.getElementById('modalOverlay');
+            if (modalOverlay && !modalOverlay.classList.contains('hidden')) {
+                // Dorong state palsu lagi agar tombol back selanjutnya masih tertangkap
+                window.history.pushState({ page: 'main' }, null, '');
+                
+                // Tutup semua modal menggunakan fungsi yang sudah Anda buat
+                if (typeof closeAllMainModals === 'function') {
+                    closeAllMainModals();
+                    modalOverlay.classList.add('hidden');
+                }
+                return; // Hentikan fungsi di sini, jangan tampilkan notifikasi keluar
+            }
+
+            // 2. Logika "Tekan dua kali untuk keluar"
+            if (!backPressedOnce) {
+                // Dorong state palsu lagi untuk mencegah browser/webview keluar
+                window.history.pushState({ page: 'main' }, null, '');
+                
+                backPressedOnce = true;
+                
+                // Panggil notifikasi elegan milik Anda
+                showAppNotification("Tekan sekali lagi untuk keluar.", "info", 2000);
+                
+                // Kembalikan status menjadi false setelah 2 detik
+                setTimeout(() => {
+                    backPressedOnce = false;
+                }, 2000);
+            } else {
+                // Jika tombol ditekan dua kali dalam 2 detik, aplikasi dibiarkan keluar.
+                // WebView Android atau browser akan menutup tab/aplikasi secara natural.
+                window.history.back();
+            }
+        });
+
+// =====================================================================
         // LOGIKA UNGGAH FILE KE TMPFILES (KHUSUS GAMELOFT TRANSLATOR)
         // =====================================================================
         let glExternalDownloadLink = "";
@@ -7253,6 +7297,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			"Kolom API Key dipindahkan ke Pengaturan.": "API Key section moved to Settings.",
 			"Kunci API tidak ditemukan.": "API Key not found.",
             "Panduan Penggunaan": "Usage Guide",
+			"Panduan disembunyikan. Bisa dibuka kembali di Pengaturan.": "The guide is hidden. You can reopen it in Settings.",
             // PANDUAN PENGGUNAAN
             "1. Selamat Datang!": "1. Welcome!",
             "Aplikasi ini dirancang khusus untuk mengekstrak, mendekripsi, dan menerjemahkan file teks dari game retro J2ME (Gameloft) secara mudah.": "This app is specifically designed to easily extract, decrypt, and translate text files from retro J2ME games (Gameloft).",
