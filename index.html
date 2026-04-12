@@ -157,12 +157,7 @@
             background-color: rgba(0, 120, 212, 0.2) !important;
             border-left-color: #0078d4 !important;
         }
-
-        /* --- TAMBAHAN EFEK HOVER BIRU --- */
-        .text-item:hover {
-            border-left-color: #3b82f6 !important; /* Berubah jadi Biru saat disorot */
-            background-color: #f8fafc !important; /* Latar menjadi sedikit abu-abu biru */
-        }
+		
         .highlight { background-color: #fde047; color: #1f1f1f; border-radius: 3px; padding: 1px 2px; }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -943,7 +938,7 @@
 
     <div id="modalOverlay" class="fixed inset-0 modal-overlay z-40 hidden"></div>
 
-    <div id="editModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm mx-auto hidden rounded-xl flex flex-col max-h-[85vh]">
+    <div id="editModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm mx-auto hidden rounded-xl flex flex-col max-h-[75vh]">
         <div class="modal-window-controls">
             <button id="closeEditModalXBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -1012,7 +1007,7 @@
 
     <div id="contextSummaryModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm hidden rounded-xl"></div>
     <div id="aiSuggestionModal" class="modal-content fixed z-[60] p-6 w-[85%] max-w-sm rounded-xl hidden max-h-[65vh] flex flex-col"></div>
-    <div id="saveFileModal" class="modal-content fixed z-50 w-[85%] max-w-sm hidden rounded-2xl flex flex-col max-h-[85vh] bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 transform">
+    <div id="saveFileModal" class="modal-content fixed z-50 w-[85%] max-w-sm hidden rounded-2xl flex flex-col max-h-[75vh] bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 transform">
         <div class="modal-window-controls"><button id="closeSaveFileModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
         <h3 class="text-xl font-semibold text-main mb-4 p-4 border-b">Saved Files (Local)</h3>
         <div class="p-4">
@@ -1043,7 +1038,7 @@
         </div>
     </div>
 
-    <div id="dictionaryCacheModal" class="modal-content fixed z-[51] p-6 w-[85%] max-w-sm hidden rounded-xl flex flex-col max-h-[85vh]">
+    <div id="dictionaryCacheModal" class="modal-content fixed z-[51] p-6 w-[85%] max-w-sm hidden rounded-xl flex flex-col max-h-[75vh]">
     <div class="modal-window-controls">
         <button id="closeDictionaryCacheModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1074,7 +1069,7 @@
     </div>
 </div>
 
-    <div id="addDictionaryEntryModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm rounded-xl hidden flex flex-col max-h-[85vh]">
+    <div id="addDictionaryEntryModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm rounded-xl hidden flex flex-col max-h-[75vh]">
         <div class="modal-window-controls">
             <button class="control-button close-btn" id="closeAddDictEntryModalBtn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -1094,7 +1089,7 @@
         </div>
     </div>
 
-    <div id="settingsModal" class="modal-content fixed z-50 w-[85%] max-w-sm hidden rounded-2xl flex flex-col max-h-[85vh] bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 transform">
+    <div id="settingsModal" class="modal-content fixed z-50 w-[85%] max-w-sm hidden rounded-2xl flex flex-col max-h-[75vh] bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 transform">
     <div class="relative px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm">
         <h3 class="text-lg font-bold text-gray-800">Pengaturan</h3>
         <button id="closeSettingsModalBtn" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
@@ -5646,8 +5641,7 @@ async function saveLivePrompt() {
             const savedLang = await getSetting('preferredLanguage') || 'EN';
             setTimeout(() => {
                 applyLanguage(savedLang);
-                if (typeof updateProjectStats === 'function') updateProjectStats();
-            }, 150);
+                if (typeof updateProjectStats === 'function') updateProjectStats();            
 
             // Event listener saat tombol ditekan (Ini yang tadinya hilang!)
             if (langToggleBtn) {
@@ -7154,7 +7148,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "Memuat prompt tersimpan...": "Loading saved prompts...",
             "Memuat prompt...": "Loading prompts...",
             "File Tersimpan": "Saved Files",
-            "Pilih File": "Choose Files",
             "Tidak ada file terpilih": "No file chosen",
             "terpilih": "selected",
             "Muat": "Load",
