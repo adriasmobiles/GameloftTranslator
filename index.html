@@ -6483,17 +6483,34 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
                 updateLengthDisplay();
                 hasUserTypedInModal = true;
 
-               const lineCount = getVisualLineCount(translatedTextArea);
+                const lineCount = getVisualLineCount(translatedTextArea);
                 const accordionButton = document.getElementById('originalTextAccordionButton');
                 const accordionContent = document.getElementById('originalTextAccordionContent');
                 
+                // BARU: Gulir otomatis ke bagian bawah kolom saat tinggi kotak teks bertambah
+                const modalBody = document.getElementById('editModalBody');
+                if (modalBody) {
+                    modalBody.scrollTop = modalBody.scrollHeight;
+                }
             });
+            
             translatedTextArea.addEventListener('focus', () => {
                 // Hanya geser modal ke atas jika ini adalah perangkat sentuh dan lebar layar kecil (mirip ponsel)
                 if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
                     modal.style.top = '10%';
                     modal.style.transform = 'translateX(-50%)';
                 }
+
+                // BARU: Beri jeda 300ms agar keyboard Android selesai naik, lalu gulir mulus ke bawah
+                setTimeout(() => {
+                    const modalBody = document.getElementById('editModalBody');
+                    if (modalBody) {
+                        modalBody.scrollTo({
+                            top: modalBody.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 300);
             });
             
             translatedTextArea.addEventListener('blur', () => {
