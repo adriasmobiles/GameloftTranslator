@@ -12,22 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-#generateButtonFloating {
-    background-color: white !important;
-    border: 1px solid #10b981 !important;
-    color: #10b981 !important;
-		}
-	#generateButtonFloating:hover {
-    background-color: #f0fdf4 !important;
-		}
+
 
         html, body {
             height: 100%;
         }
         body {
             font-family: 'Inter', sans-serif;
-            /* TEMA iOS 'INTELLIGENCE GLOW': 
-               Kontras yang sangat jelas dengan kontainer putih, sangat elegan, sejuk & hidup di mata */
+            /* TEMA iOS 'INTELLIGENCE GLOW' */
             background: linear-gradient(300deg, #a1b4e4, #c5bced, #9cd3f0, #e2c2e8, #aed9e0);
             background-size: 400% 400%;
             animation: gradientBackground 30s ease-in-out infinite;
@@ -35,9 +27,36 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            padding: 1rem;
+            padding: 0; /* UBAH: Padding kita jadikan 0 agar bisa full-screen di HP */
             box-sizing: border-box;
             color: #1c1c1e;
+        }
+
+        /* --- TAMBAHAN BARU: Kontrol Responsif Cerdas --- */
+        
+        /* 1. Kembalikan bentuk KARTU jika dibuka di Layar PC/Tablet */
+        @media (min-width: 640px) {
+            body {
+                padding: 1.5rem; 
+            }
+        }
+
+        /* 2. Paksa LAYAR PENUH (Fullscreen) dan hilangkan jarak jika di HP */
+        @media (max-width: 639px) {
+            .app-container {
+                height: 100dvh !important; /* Paksa tinggi menyesuaikan layar HP modern */
+                border-radius: 0 !important; /* Hilangkan sudut melengkung di luar */
+                border: none !important; /* Hilangkan garis tepi */
+            }
+            
+            /* Rapatkan header atas agar menempel sempurna ke pinggir HP */
+            .sticky.top-0 {
+                margin-top: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                border-top-left-radius: 0 !important;
+                border-top-right-radius: 0 !important;
+            }
         }
 
         @keyframes gradientBackground {
@@ -103,25 +122,70 @@
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(8px) saturate(120%);
         }
-        .modal-content {
-            background: rgba(245, 245, 245, 0.95);
-            backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid rgba(209, 213, 219, 0.9);
-            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-            border-radius: 1rem;
-            position: relative; 
-        }
+        /* --- iOS 26 PURE WHITE GLASS MODAL --- */
+.modal-content {
+    /* Menggunakan gradasi agar tidak flat dan lebih putih */
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.85), 
+        rgba(255, 255, 255, 0.65)
+    ) !important;
+    
+    /* Menambahkan brightness(1.1) untuk menetralkan abu-abu dari belakang */
+    backdrop-filter: blur(40px) saturate(180%) brightness(1.15) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.15) !important;
+    
+    /* Border putih yang lebih tegas untuk bingkai premium */
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    border-radius: 2.5rem !important;
+    
+    /* Shadow yang lebih lembut dan menyebar */
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.05),
+        0 20px 80px rgba(0, 0, 0, 0.08) !important;
+    
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
 
-        .modal-window-controls {
-            position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 20;
-        }
-        .control-button {
-            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; cursor: pointer; transition: background-color 0.2s; font-size: 14px; color: #333;
-        }
-        .control-button:hover { background-color: rgba(0, 0, 0, 0.1); }
-        .control-button.close-btn:hover { background-color: #e81123; color: white; }
-        .control-button.close-btn:active { background-color: #e81123; color: white; transition: background-color 0.1s ease-out; }
+/* --- PERBAIKAN KONTRAS KOTAK TEKS --- */
+#translatedText, #contextInputArea, #originalText {
+    /* Latar belakang lebih solid agar teks di atasnya tidak bertabrakan dengan bayangan di belakang modal */
+    background: rgba(255, 255, 255, 0.95) !important; 
+    
+    /* Garis tepi diubah dari putih menjadi abu-abu transparan agar batas kotak terlihat jelas */
+    border: 1.5px solid rgba(0, 0, 0, 0.06) !important; 
+    
+    /* Efek cekung (inset shadow) ke dalam untuk membedakannya dari permukaan modal */
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04) !important; 
+    
+    /* Memastikan warna teks tajam dan gelap */
+    color: #1c1c1e !important; 
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+/* Interaksi saat pengguna mengetik (Fokus) */
+#translatedText:focus, #contextInputArea:focus {
+    background: #ffffff !important;
+    border-color: rgba(0, 122, 255, 0.5) !important; /* Biru khas Apple */
+    /* Menggabungkan bayangan dalam dan pendaran luar (Glow) */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02), 0 0 0 4px rgba(0, 122, 255, 0.15) !important;
+    outline: none;
+}
+.control-button {
+    width: 32px; 
+    height: 32px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    border-radius: 50%; 
+    cursor: pointer; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #4b5563;
+    font-size: 14px;
+}
+.control-button:hover { background-color: rgba(0, 0, 0, 0.1); }
+.control-button.close-btn:hover { background-color: #ef4444; color: white; }
+.control-button.close-btn:active { transform: scale(0.9); }
 
         .accordion-content {
             max-height: 0;
@@ -713,6 +777,139 @@
     border-color: #0078d4;
 }
 
+/* ==========================================================
+           SOLUSI FINAL: MENGHANCURKAN BUG RUANG KOSONG (CLIPPING Z-INDEX)
+           ========================================================== */
+        @media (max-width: 768px) {
+            /* 1. BINGKAI INDUK (Container) */
+            html body #saveFileModal, 
+            html body #viewDictionaryModal, 
+            html body #livePromptModal, 
+            html body #settingsModal {
+                /* Jarak aman 50px dari kamera agar tidak menabrak poni */
+                top: 50px !important; 
+                height: calc(100% - 50px) !important;
+                max-height: calc(100% - 50px) !important;
+                
+                /* Lengkungan Induk */
+                border-top-left-radius: 28px !important;
+                border-top-right-radius: 28px !important;
+                border-bottom-left-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                
+                /* --- OBAT PENGHANCUR BUG RUANG KOSONG --- */
+                isolation: isolate !important; /* Mencegah Header z-10 menembus keluar batas */
+                transform: translateZ(0) !important; 
+                -webkit-transform: translateZ(0) !important;
+                overflow: hidden !important; 
+                
+                /* Hilangkan garis batas transparan di atas yang sering terlihat seperti garis potong lurus */
+                border-top: none !important; 
+            }
+
+            /* 2. HEADER ANAK (Yang berwarna putih) */
+            html body #saveFileModal > div:first-child, 
+            html body #viewDictionaryModal > div:first-child, 
+            html body #livePromptModal > div:first-child, 
+            html body #settingsModal > div:first-child {
+                /* Lengkungan anak dibuat SAMA PERSIS dengan induknya */
+                border-top-left-radius: 28px !important;
+                border-top-right-radius: 28px !important;
+                
+                /* Pastikan ia benar-benar menempel ke langit-langit induk tanpa celah 1 milimeter pun! */
+                margin-top: 0 !important; 
+                top: 0 !important;
+                transform: translateY(0) !important;
+            }
+        }
+		
+		/* --- iOS 26 GLOBAL GLOW EFFECT --- */
+#applyParsingPatternButton {
+    position: relative;
+    overflow: hidden;
+}
+
+#applyParsingPatternButton::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#applyParsingPatternButton:hover::after {
+    opacity: 1;
+}
+
+.accordion-content {
+    transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Memastikan teks deskripsi di dalam kartu parsing tetap terbaca */
+.ios-parsing-card p {
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+
+/* =======================================================
+   iOS 26 DYNAMIC INTELLIGENCE GLOW
+   ======================================================= */
+.ios-glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    /* Efek blur yang sangat tinggi agar warnanya menyebar halus */
+    filter: blur(60px);
+    opacity: 0.65;
+    /* Animasi mengambang dan bernapas yang terus berulang */
+    animation: orbFloat 12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+/* Biru Cerah (Kanan Atas) */
+.orb-1 {
+    width: 16rem; height: 16rem;
+    background: radial-gradient(circle, rgba(59,130,246,0.9) 0%, rgba(59,130,246,0) 70%);
+    top: -10%; right: -10%;
+    animation-delay: 0s;
+    animation-duration: 14s;
+}
+
+/* Ungu Elegan (Kiri Bawah) */
+.orb-2 {
+    width: 20rem; height: 20rem;
+    background: radial-gradient(circle, rgba(168,85,247,0.85) 0%, rgba(168,85,247,0) 70%);
+    bottom: -15%; left: -15%;
+    animation-delay: -4s;
+    animation-duration: 18s;
+}
+
+/* Cyan/Tosca Terang (Menjelajah di tengah) */
+.orb-3 {
+    width: 14rem; height: 14rem;
+    background: radial-gradient(circle, rgba(6,182,212,0.8) 0%, rgba(6,182,212,0) 70%);
+    top: 30%; left: 20%;
+    animation-delay: -8s;
+    animation-duration: 20s;
+}
+
+/* Keyframes untuk pergerakan organik (tidak kaku) */
+@keyframes orbFloat {
+    0% { 
+        transform: translate(0, 0) scale(1) rotate(0deg); 
+    }
+    33% { 
+        transform: translate(-40px, 50px) scale(1.15) rotate(15deg); 
+    }
+    66% { 
+        transform: translate(30px, -30px) scale(0.9) rotate(-10deg); 
+    }
+    100% { 
+        transform: translate(-20px, -40px) scale(1.05) rotate(5deg); 
+    }
+}
+
 </style>
 </head>
 <body>
@@ -888,47 +1085,59 @@
                 </div>
             </div>
             
-            <div class="card p-4 mb-4 rounded-xl">
-    <div class="flex items-end gap-3 mb-4 relative">
-        <div class="flex-grow">
-                            <label id="fileInputLabel" for="fileInput" class="block text-sm font-medium text-secondary mb-1">1. Select File to Process:</label>
-                <div class="flex items-center space-x-2">
-                    <label for="fileInput" id="customFileInputBtn" class="inline-flex items-center justify-center px-4 py-2 rounded-full border-0 text-sm font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer">
-                        Pilih File
-                    </label>
-                    <span id="selectedFileNameDisplay" class="text-sm text-tertiary flex-grow">Tidak ada file terpilih</span>
-                    <input type="file" id="fileInput" class="sr-only" multiple/>
-                </div>
-        </div>
-        
-        <div id="originalFileInputContainer" class="absolute bottom-1 right-2">
-            <label for="originalFileInput" class="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer transition-colors" title="Import Original Text">
-                <i class="fas fa-upload text-gray-600 text-sm"></i>
-            </label>
-            <input type="file" id="originalFileInput" class="sr-only">
-        </div>
+            <div class="relative overflow-hidden bg-white/45 backdrop-blur-[30px] border border-white/70 rounded-[2rem] p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] mb-6 mx-1 transition-all duration-500 group">
     
-    </div> <div class="card mb-4 rounded-xl -mx-4 -my-4 p-4">
-        <button id="parsingPatternAccordionButton" class="accordion-button w-full flex justify-between items-center text-left rounded-xl" aria-expanded="false">
-            <div class="flex items-center flex-grow"> <span class="font-semibold text-main">2. Select Parsing Pattern</span>
-            </div>
-            <div class="flex items-center gap-2"> <i class="fas fa-chevron-down text-tertiary"></i>
-            </div>
-        </button>
-        <div id="parsingPatternAccordionContent" class="accordion-content">
-             <div class="pt-4">
-                <p class="text-xs text-tertiary mb-3">Select.</p>
-                <div id="parsingOptionsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                </div>
-            </div>
-        </div>
+    <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-[2rem]">
+        <div class="ios-glow-orb orb-1"></div>
+        <div class="ios-glow-orb orb-2"></div>
+        <div class="ios-glow-orb orb-3"></div>
     </div>
 
-    <h2 class="text-lg font-semibold text-main mb-3 mt-8">3. Start Process</h2>
-    <button id="applyParsingPatternButton" class="btn-primary w-full font-bold py-3 px-6 rounded-full text-base flex items-center justify-center gap-2">
-        <i id="applyParsingLoader" class="fas fa-spinner fa-spin hidden"></i><span>Process File</span>
-    </button>
-</div>            
+    <div class="space-y-4 relative z-10">
+        
+        <div>
+            <div class="mb-3 ml-1">
+                <h2 id="fileInputLabel" class="text-base font-black text-gray-900 tracking-tight leading-none">1. Muat Berkas</h2>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Siapkan Data Game</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-3 bg-white/40 p-2 rounded-3xl border border-white/50 backdrop-blur-md">
+                <label for="fileInput" class="w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500/80 via-blue-500/80 to-indigo-500/80 backdrop-blur-xl border border-white/60 text-white text-sm font-bold tracking-wide hover:from-cyan-400/90 hover:via-blue-400/90 hover:to-indigo-400/90 hover:shadow-[0_8px_20px_rgba(59,130,246,0.3)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer text-center active:scale-95 shadow-sm">
+                    Pilih File
+                </label>
+                
+                <input type="file" id="fileInput" class="hidden">
+                <span id="selectedFileNameDisplay" class="text-xs font-semibold text-gray-600 truncate max-w-[200px] ml-1">Belum ada berkas</span>
+                
+                <div id="originalFileInputContainer" class="hidden ml-auto">
+                    <label for="originalFileInput" class="w-9 h-9 flex items-center justify-center bg-white/80 hover:bg-white rounded-xl cursor-pointer transition-all border border-gray-200 shadow-sm" title="Impor Teks Asli">
+                        <i class="fas fa-language text-blue-600"></i>
+                    </label>
+                    <input type="file" id="originalFileInput" class="sr-only">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-50/30 rounded-3xl p-3 border border-gray-100/50">
+            <button id="parsingPatternAccordionButton" class="w-full flex justify-between items-center group/btn" aria-expanded="false">
+                <div class="flex items-center gap-1 ml-1">
+                    <span class="font-bold text-gray-800 text-sm">2. Pola Dekripsi</span>
+                </div>
+                <i class="fas fa-chevron-down text-gray-400 transition-transform group-aria-expanded/btn:rotate-180"></i>
+            </button>
+            <div id="parsingPatternAccordionContent" class="accordion-content overflow-hidden">
+                <div class="pt-3 grid grid-cols-1 gap-2.5" id="parsingOptionsContainer">
+                    </div>
+            </div>
+        </div>
+
+        <button id="applyParsingPatternButton" class="w-full py-4 rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-sm shadow-[0_10px_25px_rgba(37,99,235,0.25)] hover:shadow-[0_15px_30px_rgba(37,99,235,0.35)] hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
+            <i id="applyParsingLoader" class="fas fa-spinner fa-spin hidden"></i>
+            <span>Proses File</span>
+            <i class="fas fa-arrow-right text-xs opacity-50"></i>
+        </button>
+    </div>
+</div>
         <div id="editor" class="hidden">
         <p class="text-tertiary mb-4 text-xs text-center mt-4">Tap paragraph title to open. Long press text for multi-select mode.</p>
         <div id="loader-main" class="flex justify-center my-6 hidden"><i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i></div>
@@ -939,55 +1148,68 @@
 
     <div id="modalOverlay" class="fixed inset-0 modal-overlay z-40 hidden"></div>
 
-    <div id="editModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm mx-auto hidden rounded-xl flex flex-col max-h-[85vh]">
-        <div class="modal-window-controls">
-            <button id="closeEditModalXBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex items-center justify-center mb-2 flex-shrink-0"><h3 class="text-xl font-semibold text-main text-center flex-grow">Edit Text</h3></div>
-        <div id="paragraphTitleDisplay" class="text-center font-bold text-secondary text-base -mt-1 mb-3"></div>
-        <div class="flex items-center justify-between mb-4">
-    <button id="prevTextButton" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 active:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-        <i class="fas fa-arrow-left text-gray-600"></i>
-    </button>
-    <span id="textProgressDisplay" class="text-sm font-normal text-tertiary"></span>
-    <button id="nextTextButton" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 active:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-        <i class="fas fa-arrow-right text-gray-600"></i>
-    </button>
-</div>
-        <div id="editModalBody" class="flex-grow flex flex-col space-y-4 overflow-y-auto min-h-0 pr-2 -mr-2">
-    <div class="flex-shrink-0">
-    <button id="originalTextAccordionButton" class="w-full flex items-center justify-between text-left mb-1" aria-expanded="true">
-    <span class="block text-sm font-medium text-secondary">Original Text (click to copy)</span>
-    <i class="fas fa-chevron-down text-tertiary ml-2 modal-icon-btn"></i>
-</button>
-    <div id="originalTextAccordionContent">
-         <div id="originalText" class="p-3 bg-gray-200 rounded-lg whitespace-pre-wrap break-words text-secondary text-sm cursor-pointer"></div>
-    </div>
-</div>
-   <div class="length-lock-container">
-    <i id="lengthLockToggle" class="fas fa-lock-open modal-icon-btn" title="Lock text length"></i>
-    <i id="openDictionaryCacheBtn" class="fa-solid fa-book modal-icon-btn" title="Save to Cache Dictionary"></i>
-    <i id="livePromptShortcutBtn" class="fa-solid fa-bolt modal-icon-btn" title="Live Prompt Shortcut"></i>
-    <i id="contextModeBtn" class="fa-solid fa-circle-info modal-icon-btn" title="Context Mode (Add info for AI)"></i>
-    <i id="saveProgressFromModalBtn" class="fa-solid fa-save modal-icon-btn" title="Save Progress"></i>
-
-    <span id="lengthDisplay" class="length-display ml-auto">Length: 0/0</span>
-</div>
-    <div id="contextInputContainer" class="hidden space-y-1 mt-3">
-        <label for="contextInputArea" class="block text-xs font-medium text-secondary">Context (Optional):</label>
-        <textarea id="contextInputArea" class="w-full text-sm rounded-lg p-2" rows="2" placeholder="Ex: 'This is the final boss dialog...'"></textarea>
-    </div>
-
-    <label for="translatedText" class="block text-sm font-medium text-secondary mt-3">Translation</label>
-
-    <textarea id="translatedText" class="w-full text-sm rounded-lg p-2 min-h-[150px] shrink-0"></textarea>
-</div>
-        <div class="flex items-center justify-end gap-3 pt-4 mt-2 border-t border-gray-300 flex-shrink-0">
-            <button id="aiSuggestionButtonModal" class="btn-primary py-2 px-4 rounded-lg text-sm flex items-center gap-2">
-                <i class="fa-solid fa-robot"></i><span>AI Suggestion</span>
+    <div id="editModal" class="modal-content fixed z-50 p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[85vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+        
+        <div class="absolute top-5 right-5 z-[60]">
+            <button id="closeEditModalXBtn" class="control-button close-btn" title="Tutup">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-            <button id="translateButton" class="btn-primary py-2 px-4 rounded-lg text-sm flex items-center gap-2 relative overflow-hidden">
-                <i id="translateLoader" class="fas fa-spinner fa-spin hidden"></i><i class="fa-solid fa-wand-magic-sparkles"></i><span>Translate</span>
+        </div>
+
+        <div class="text-center mb-4 mt-2">
+            <h3 class="text-lg font-black text-gray-900 tracking-tight">Penyunting Teks</h3>
+            <div id="paragraphTitleDisplay" class="text-[10px] text-blue-600 font-bold uppercase tracking-widest mt-1"></div>
+            <div class="h-1 w-8 bg-blue-500/20 mx-auto mt-3 rounded-full"></div>
+        </div>
+
+        <div class="flex items-center justify-between mb-4 bg-white/50 border border-white/60 shadow-inner rounded-2xl p-1 shrink-0">
+            <button id="prevTextButton" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/80 transition-all disabled:opacity-30">
+                <i class="fas fa-chevron-left text-gray-700"></i>
+            </button>
+            <span id="textProgressDisplay" class="text-[10px] font-bold text-gray-500 uppercase tracking-widest"></span>
+            <button id="nextTextButton" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/80 transition-all disabled:opacity-30">
+                <i class="fas fa-chevron-right text-gray-700"></i>
+            </button>
+        </div>
+
+        <div id="editModalBody" class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
+            
+            <div class="flex-shrink-0 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-inner">
+                <button id="originalTextAccordionButton" class="w-full flex items-center justify-between text-left p-3 rounded-xl hover:bg-white/80 transition-colors" aria-expanded="true">
+                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teks Asli</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform"></i>
+                </button>
+                <div id="originalTextAccordionContent" class="px-3 pb-3">
+                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm cursor-pointer border border-white/60 shadow-sm"></div>
+                </div>
+            </div>
+
+            <div class="length-lock-container flex items-center gap-2 px-1">
+                <i id="lengthLockToggle" class="fas fa-lock-open w-8 h-8 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-xs border border-white/80" title="Kunci Panjang"></i>
+                <i id="openDictionaryCacheBtn" class="fa-solid fa-book w-8 h-8 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-xs border border-white/80" title="Simpan ke Kamus"></i>
+                <i id="livePromptShortcutBtn" class="fa-solid fa-bolt w-8 h-8 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-xs border border-white/80" title="Live Prompt"></i>
+                <i id="contextModeBtn" class="fa-solid fa-circle-info w-8 h-8 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-xs border border-white/80" title="Mode Konteks"></i>
+                <i id="saveProgressFromModalBtn" class="fa-solid fa-save w-8 h-8 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-xs border border-white/80" title="Simpan Progres"></i>
+                <span id="lengthDisplay" class="length-display ml-auto text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pnjg: 0/0</span>
+            </div>
+
+            <div id="contextInputContainer" class="hidden space-y-1.5">
+                <label for="contextInputArea" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Konteks (Opsional)</label>
+                <textarea id="contextInputArea" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner" rows="2"></textarea>
+            </div>
+
+            <div class="space-y-1.5 flex-grow flex flex-col">
+                <label for="translatedText" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
+                <textarea id="translatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner min-h-[120px] flex-grow resize-none"></textarea>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-5 mt-2 flex-shrink-0">
+            <button id="aiSuggestionButtonModal" class="flex-[0.85] py-4 rounded-2xl bg-white/40 hover:bg-white text-blue-600 font-bold text-[10px] uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-1.5 border border-white/80">
+                <i class="fa-solid fa-robot"></i> Saran AI
+            </button>
+            <button id="translateButton" class="flex-[1.15] py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-xs uppercase tracking-widest shadow-md shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i id="translateLoader" class="fas fa-spinner fa-spin hidden"></i><i class="fa-solid fa-wand-magic-sparkles"></i> Terjemahkan
             </button>
         </div>
     </div>
@@ -1007,8 +1229,8 @@
     </div>
 
     <div id="contextSummaryModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm hidden rounded-xl"></div>
-    <div id="aiSuggestionModal" class="modal-content fixed z-[60] p-6 w-[85%] max-w-sm rounded-xl hidden max-h-[65vh] flex flex-col"></div>
-    <div id="saveFileModal" class="modal-content fixed z-50 w-[85%] max-w-sm hidden rounded-2xl flex flex-col max-h-[75vh] bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 transform">
+    <div id="aiSuggestionModal" class="modal-content fixed z-[60] p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[85vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80"></div>
+    <div id="saveFileModal" class="modal-content fixed z-50 hidden flex-col overflow-hidden shadow-2xl transition-all duration-300 !w-full !max-w-none !h-[100dvh] !max-h-[100dvh] !top-0 !left-0 !transform-none !rounded-none sm:!w-[90%] sm:!max-w-sm sm:!h-auto sm:!max-h-[85vh] sm:!top-1/2 sm:!left-1/2 sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:!rounded-[2.5rem] pb-24 sm:pb-0">
         <div class="modal-window-controls"><button id="closeSaveFileModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
         <h3 class="text-xl font-semibold text-main mb-4 p-4 border-b">Saved Files (Local)</h3>
         <div class="p-4">
@@ -1024,220 +1246,278 @@
     </div>
     <div id="confirmationModal" class="modal-content fixed z-[61] p-6 w-[85%] max-w-sm hidden rounded-xl"></div>
 
-    <div id="viewDictionaryModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm hidden rounded-xl flex flex-col max-h-[65vh]">
-        <div class="modal-window-controls">
-            <button id="closeDictionaryModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <h3 class="text-xl font-semibold text-main mb-4 p-4 border-b">Translation Dictionary List</h3>
-        <div class="p-4 flex-grow overflow-y-auto pr-2 -mr-2" id="dictionaryScrollContainer">
-            <input type="text" id="dictionarySearchInput" placeholder="Search dictionary..." class="w-full text-sm rounded-lg p-2.5 placeholder-color mb-4">
-            <div id="dictionaryListContainer" class="space-y-3"></div>
-        </div>
-        <div class="flex justify-end gap-3 pt-4 mt-2 border-t border-gray-300 flex-shrink-0">
-            <button id="addDictionaryEntryBtn" class="btn-primary w-full font-semibold py-2 px-4 rounded-lg text-sm">Add New Entry</button>
-            <button id="clearDictionaryBtn" class="bg-red-500 hover:bg-red-600 text-white w-full font-semibold py-2 px-4 rounded-lg text-sm">Delete All</button>
-        </div>
-    </div>
-
-    <div id="dictionaryCacheModal" class="modal-content fixed z-[51] p-6 w-[85%] max-w-sm hidden rounded-xl flex flex-col max-h-[75vh]">
-    <div class="modal-window-controls">
-        <button id="closeDictionaryCacheModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <h3 class="text-xl font-semibold text-main mb-4 text-center">Simpan ke Kamus Cache</h3>
-    <div class="flex-grow overflow-y-auto pr-2 -mr-2 space-y-4">
-        <div class="card p-4">
-            <h4 class="font-semibold text-main mb-2">Tambah Entri dari Teks Saat Ini</h4>
-            <div class="space-y-2">
-                <div>
-                    <label class="block text-xs font-medium text-secondary mb-1">Teks Asli:</label>
-                    <textarea id="dictCacheOriginal" rows="2" class="w-full text-sm rounded-lg p-2"></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-secondary mb-1">Terjemahan:</label>
-                    <textarea id="dictCacheTranslated" rows="2" class="w-full text-sm rounded-lg p-2"></textarea>
-                </div>
-                <button id="saveDictCacheEntryBtn" class="btn-primary w-full font-semibold py-2 px-4 rounded-lg text-sm">Simpan Entri</button>
-
-                <div id="dictCacheNotification" class="mt-3 text-sm font-medium text-center p-2 rounded-md"></div>
-
-                <div class="w-full h-px bg-gray-300 my-3"></div>
-                <button id="openFullDictionaryFromCacheBtn" class="btn-secondary w-full font-semibold py-2 px-4 rounded-lg text-sm flex items-center justify-center gap-2">
-                    <i class="fas fa-list-ul"></i>
-                    <span>Buka Daftar Kamus Lengkap</span>
-                </button>
-                </div>
-        </div>
-    </div>
-</div>
-
-    <div id="addDictionaryEntryModal" class="modal-content fixed z-50 p-6 w-[85%] max-w-sm rounded-xl hidden flex flex-col max-h-[75vh]">
-        <div class="modal-window-controls">
-            <button class="control-button close-btn" id="closeAddDictEntryModalBtn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <h3 class="text-xl font-semibold text-main text-center mb-4 p-4 border-b" id="addDictModalTitle">Tambah Entri Kamus Baru</h3>
-        <div class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-2 -mr-2">
-            <div>
-                <label class="block text-sm font-medium text-secondary mb-1" for="newOriginalText">Teks Asli:</label>
-                <textarea id="newOriginalText" class="w-full text-sm rounded-lg p-2" placeholder="Masukkan teks asli..."></textarea>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-secondary mb-1" for="newTranslatedText">Terjemahan:</label>
-                <textarea id="newTranslatedText" class="w-full text-sm rounded-lg p-2" placeholder="Masukkan terjemahan..."></textarea>
-            </div>
-        </div>
-        <div class="flex justify-end gap-3 pt-4 mt-2 border-t flex-shrink-0">
-            <button id="saveNewDictionaryEntryBtn" class="btn-primary w-full font-semibold py-2 px-4 rounded-lg text-sm">Simpan Entri</button>
-        </div>
-    </div>
-
-    <div id="settingsModal" class="modal-content fixed z-50 w-[85%] max-w-sm hidden rounded-2xl flex flex-col max-h-[75vh] bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 transform">
-    <div class="relative px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm">
-        <h3 class="text-lg font-bold text-gray-800">Pengaturan</h3>
-        <button id="closeSettingsModalBtn" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    </div>
-    
-    <div class="flex-grow overflow-hidden p-4 space-y-6">
+    <div id="viewDictionaryModal" class="modal-content fixed z-50 hidden flex-col overflow-hidden shadow-2xl transition-all duration-300 !w-full !max-w-none !h-[100dvh] !max-h-[100dvh] !top-0 !left-0 !transform-none !rounded-none sm:!w-[90%] sm:!max-w-sm sm:!h-auto sm:!max-h-[85vh] sm:!top-1/2 sm:!left-1/2 sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:!rounded-[2.5rem] pb-24 sm:pb-0">
         
-        <div class="space-y-2">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-2">Koneksi AI</h4>
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-4 border-b border-gray-50">
+        <div class="relative px-6 py-5 bg-white/40 backdrop-blur-xl border-b border-white/60 flex justify-between items-center z-10 shrink-0">
+            <h3 class="text-xl font-black text-gray-900 tracking-tight">Kamus Lokal</h3>
+            <button id="closeDictionaryModalBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="p-4 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-4" id="dictionaryScrollContainer">
+            <div class="relative shrink-0">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
+                <input type="text" id="dictionarySearchInput" placeholder="Cari entri kamus..." class="w-full text-sm rounded-2xl py-3.5 pl-11 pr-4 bg-white/50 backdrop-blur-md border border-white/80 focus:bg-white/90 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/50 transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)] text-gray-800 placeholder-gray-400 font-medium">
+            </div>
+            
+            <div id="dictionaryListContainer" class="space-y-3 flex-grow"></div>
+        </div>
+        
+        <div class="p-4 bg-transparent flex gap-3 shrink-0 z-10 justify-center">
+            <button id="addDictionaryEntryBtn" class="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs shadow-[0_8px_20px_rgba(37,99,235,0.2)] hover:shadow-[0_12px_25px_rgba(37,99,235,0.3)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus"></i> Tambah Entri
+            </button>
+            <button id="clearDictionaryBtn" class="flex-1 py-3.5 rounded-2xl bg-red-50/60 hover:bg-red-100 border border-red-100 text-red-600 font-bold text-xs shadow-sm hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-trash-can"></i> Hapus Semua
+            </button>
+        </div>
+    </div>
+
+    <div id="dictionaryCacheModal" class="modal-content fixed z-[55] p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[340px] h-auto max-h-[85vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+        
+        <div class="absolute top-5 right-5 z-[60]">
+            <button id="closeDictionaryCacheModalBtn" class="control-button close-btn" title="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="text-center mb-5 mt-2">
+            <h3 class="text-lg font-black text-gray-900 tracking-tight">Kamus Cache</h3>
+            <div class="h-1 w-8 bg-blue-500/20 mx-auto mt-2 rounded-full"></div>
+        </div>
+
+        <div class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Asli</label>
+                <textarea id="dictCacheOriginal" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[70px]"></textarea>
+            </div>
+            
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
+                <textarea id="dictCacheTranslated" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[70px]"></textarea>
+            </div>
+            
+            <div id="dictCacheNotification" class="text-[10px] font-bold text-center p-2 rounded-xl transition-all"></div>
+        </div>
+
+        <div class="flex flex-col gap-3 pt-4 mt-2 border-t border-white/30 flex-shrink-0">
+            <button id="saveDictCacheEntryBtn" class="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-xs shadow-md active:scale-95 transition-all uppercase tracking-widest">
+                Simpan
+            </button>
+            <button id="openFullDictionaryFromCacheBtn" class="w-full py-3 rounded-2xl bg-white/40 text-blue-600 font-bold text-[10px] transition-all border border-white/80 active:scale-95 uppercase tracking-widest">
+                Daftar Lengkap
+            </button>
+        </div>
+    </div>
+
+    <div id="addDictionaryEntryModal" class="modal-content fixed z-[55] p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[340px] h-auto max-h-[80vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+        
+        <div class="absolute top-5 right-5 z-[60]">
+            <button class="control-button close-btn" id="closeAddDictEntryModalBtn" title="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="text-center mb-5 mt-2">
+            <h3 class="text-lg font-black text-gray-900 tracking-tight" id="addDictModalTitle">Entri Kamus</h3>
+            <div class="h-1 w-8 bg-blue-500/20 mx-auto mt-2 rounded-full"></div>
+        </div>
+
+        <div class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Teks Asli</label>
+                <textarea id="newOriginalText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[80px]" placeholder="Kata asli..."></textarea>
+            </div>
+            
+            <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
+                <textarea id="newTranslatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[80px]" placeholder="Terjemahan..."></textarea>
+            </div>
+        </div>
+
+        <div class="pt-5 mt-2">
+            <button id="saveNewDictionaryEntryBtn" class="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-xs shadow-lg shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-2 tracking-widest">
+                SIMPAN ENTRI
+            </button>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-content fixed z-50 hidden flex-col overflow-hidden shadow-2xl transition-all duration-300 !w-full !max-w-none !h-[100dvh] !max-h-[100dvh] !top-0 !left-0 !transform-none !rounded-none sm:!w-[90%] sm:!max-w-sm sm:!h-auto sm:!max-h-[85vh] sm:!top-1/2 sm:!left-1/2 sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:!rounded-[2.5rem] pb-24 sm:pb-0">
+        
+        <div class="relative px-6 py-5 bg-white/40 backdrop-blur-xl border-b border-white/60 flex justify-between items-center z-10 shrink-0">
+            <h3 class="text-xl font-black text-gray-900 tracking-tight">Pengaturan</h3>
+            <button id="closeSettingsModalBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="p-4 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-6 bg-transparent">
+            
+            <div class="space-y-2">
+                <h4 class="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] ml-2 mb-2">Koneksi AI</h4>
+                <div class="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/70 shadow-sm overflow-hidden p-4">
                     <div id="apiKeySectionSettings">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
                                 <i class="fas fa-key text-xs"></i>
                             </div>
                             <div class="flex-grow">
-                                <h5 class="text-sm font-semibold text-gray-800">Kunci API Gemini</h5>
-                                <p class="text-[10px] text-gray-500">Kunci disimpan lokal di browser.</p>
+                                <h5 class="text-sm font-bold text-gray-800 leading-tight">Kunci API Gemini</h5>
+                                <p class="text-[10px] text-gray-500 font-medium">Tersimpan secara lokal di peramban.</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                        <input type="password" id="api_key_input_settings" placeholder="Paste API Key here..." class="flex-grow text-sm bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none">
-                        <button id="validateApiKeyButtonSettings" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shrink-0 shadow-sm">
-                            <i id="validateLoaderSettings" class="fas fa-spinner fa-spin hidden"></i>
-                            <span>Check</span>
-                        </button>
+                            <input type="password" id="api_key_input_settings" placeholder="Tempel kunci API di sini..." class="flex-grow text-sm bg-white/60 border border-white/80 rounded-2xl px-4 py-2.5 focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100/50 transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]">
+                            <button id="validateApiKeyButtonSettings" class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[11px] font-black px-5 rounded-2xl transition-all shadow-md hover:shadow-blue-200 active:scale-95 flex items-center justify-center gap-2 shrink-0">
+                                <i id="validateLoaderSettings" class="fas fa-spinner fa-spin hidden"></i>
+                                <span>CEK</span>
+                            </button>
+                        </div>
                     </div>
+                    <div id="apiKeyWarningSettings" class="hidden text-center p-3 bg-red-50/50 rounded-xl text-[10px] text-red-500 font-bold uppercase tracking-tight mt-2 border border-red-100/50">
+                        Harap masukkan API Key di layar awal terlebih dahulu.
                     </div>
-                    <div id="apiKeyWarningSettings" class="hidden text-center text-xs text-red-500 mt-2">
-    Silakan masukkan API Key di layar awal terlebih dahulu.
-</div>
                 </div>                
             </div>
-        </div>
-		<button id="openLivePromptModalBtn" class="hidden"></button>
 
-        <div class="space-y-2">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-2">Preferensi Editor</h4>
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
-                
-                <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-save text-xs"></i>
+            <div class="space-y-2">
+                <h4 class="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] ml-2 mb-2">Preferensi Editor</h4>
+                <div class="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/70 shadow-sm overflow-hidden divide-y divide-white/40">
+                    
+                    <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/40 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-2xl bg-green-50 flex items-center justify-center text-green-600 shrink-0 shadow-sm transition-transform group-active:scale-90">
+                                <i class="fas fa-save text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-800">Simpan Otomatis</div>
+                                <div class="text-[10px] text-gray-500 font-medium leading-tight">Simpan saat menutup jendela.</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-sm font-semibold text-gray-800">Simpan Otomatis</div>
-                            <div class="text-[10px] text-gray-500">Simpan saat menutup modal/pindah.</div>
+                        <div class="relative">
+                            <input type="checkbox" id="autoSaveToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
                         </div>
-                    </div>
-                    <div class="relative">
-                        <input type="checkbox" id="autoSaveToggle" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                    </div>
-                </label>
+                    </label>
 
-                <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                    <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/40 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0 shadow-sm transition-transform group-active:scale-90">
+                                <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-800">Mode Akurat</div>
+                                <div class="text-[10px] text-gray-500 font-medium leading-tight">Model AI lebih cerdas (lebih lambat).</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-sm font-semibold text-gray-800">Mode Akurat</div>
-                            <div class="text-[10px] text-gray-500">Model AI lebih pintar (lebih lambat).</div>
+                        <div class="relative">
+                            <input type="checkbox" id="accurateModeToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 shadow-inner"></div>
                         </div>
-                    </div>
-                    <div class="relative">
-                        <input type="checkbox" id="accurateModeToggle" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </div>
-                </label>
+                    </label>
 
-                <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors group">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-file-import text-xs"></i>
+                    <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/40 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 shrink-0 shadow-sm transition-transform group-active:scale-90">
+                                <i class="fas fa-file-import text-xs"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-800">Impor Teks Asli (EN)</div>
+                                <div class="text-[10px] text-gray-500 font-medium leading-tight">Muat file rujukan untuk revisi.</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-sm font-semibold text-gray-800">Impor Teks Asli (EN)</div>
-                            <div class="text-[10px] text-gray-500">Muat file EN untuk referensi revisi.</div>
+                        <div class="relative">
+                            <input type="checkbox" id="importOriginalToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500 shadow-inner"></div>
                         </div>
-                    </div>
-                    <div class="relative">
-                        <input type="checkbox" id="importOriginalToggle" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-                    </div>
-                </label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="pt-2 pb-6 space-y-3">
+                <button id="openTutorialFromSettings" class="w-full bg-white/60 hover:bg-white text-blue-600 font-bold py-4 px-4 rounded-[1.5rem] text-xs flex items-center justify-center gap-3 transition-all shadow-sm border border-white/80 active:scale-95">
+                    <i class="fas fa-book-open text-xs"></i> Buka Panduan Penggunaan
+                </button>
+                <div class="flex flex-col items-center gap-1 opacity-40">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-gray-500">Gameloft Translator v4.0</p>
+                    <p class="text-[8px] font-bold text-gray-400">Created by AdriasMobiles</p>
+                </div>
             </div>
         </div>
-		
-		<button id="openTutorialFromSettings" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors mb-2">
-            <i class="fas fa-book-open"></i> Buka Panduan Penggunaan
-        </button>
-        
-        <p class="text-[10px] text-center text-gray-400 pt-2 pb-4">Created by AdriasMobiles</p>
     </div>
-</div>
-    <div id="livePromptModal" class="modal-content fixed z-50 p-5 w-[85%] max-w-sm hidden rounded-xl flex flex-col max-h-[65vh]">
-    <div class="modal-window-controls">
-        <button id="closeLivePromptModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <h3 class="text-xl font-semibold text-main mb-4 p-4 border-b">Daftar Live Prompt</h3>
-    <div class="p-4 flex-grow overflow-y-auto pr-2 -mr-2">
-        <div id="savedLivePromptsList" class="space-y-3">
-            <p class="text-center text-secondary">Memuat prompt tersimpan...</p>
+    <div id="livePromptModal" class="modal-content fixed z-50 hidden flex-col bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 !w-full !max-w-none !h-[100dvh] !max-h-[100dvh] !top-0 !left-0 !transform-none !rounded-none sm:!w-[85%] sm:!max-w-sm sm:!h-auto sm:!max-h-[65vh] sm:!top-1/2 sm:!left-1/2 sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:!rounded-2xl pb-24 sm:pb-0">
+        <div class="relative px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm shrink-0">
+            <h3 class="text-lg font-bold text-gray-800">Daftar Live Prompt</h3>
+            <button id="closeLivePromptModalBtn" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-    </div>
-    <div class="flex justify-end gap-3 pt-4 mt-2 border-t border-gray-300 flex-shrink-0">
-        <button id="addNewLivePromptBtn" class="btn-primary w-full font-semibold py-2 px-4 rounded-lg text-sm">Tambah Prompt Baru</button>
-    </div>
+        <div class="p-4 flex-grow overflow-y-auto">
+            <div id="savedLivePromptsList" class="space-y-3">
+                <p class="text-center text-secondary">Memuat prompt tersimpan...</p>
+            </div>
+        </div>
+        <div class="pt-2 pb-5 flex justify-center shrink-0 z-10 bg-transparent">
+    <button id="addNewLivePromptBtn" class="px-8 py-3 rounded-[1.25rem] bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-sm shadow-[0_8px_20px_rgba(37,99,235,0.2)] hover:shadow-[0_12px_25px_rgba(37,99,235,0.3)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-plus text-xs"></i>
+        <span>Tambah Prompt Baru</span>
+    </button>
 </div>
-
-<div id="addLivePromptEntryModal" class="modal-content fixed z-[51] p-6 w-[85%] max-w-sm rounded-xl hidden flex flex-col max-h-[60vh]">
-    <div class="modal-window-controls">
-        <button class="control-button close-btn" id="closeAddLivePromptEntryModalBtn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <h3 class="text-xl font-semibold text-main text-center mb-4 p-4 border-b" id="addLivePromptModalTitle">Tambah Prompt Baru</h3>
+
+<div id="addLivePromptEntryModal" class="modal-content fixed z-[51] p-5 sm:p-6 w-[90%] max-w-sm hidden flex flex-col max-h-[85vh] border-none shadow-2xl">
+    
+    <div class="absolute top-4 right-4 z-[60]">
+        <button class="control-button close-btn" id="closeAddLivePromptEntryModalBtn" title="Tutup">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="text-center mb-4 mt-2">
+        <h3 class="text-xl font-black text-gray-900 tracking-tight" id="addLivePromptModalTitle">Tambah Prompt Baru</h3>
+        <div class="h-px w-full bg-gray-200/50 mt-4"></div>
+    </div>
+
     <div class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-2 -mr-2">
         <div>
-            <label class="block text-sm font-medium text-secondary mb-1" for="newLivePromptNameInput">Nama Prompt:</label>
-            <input type="text" id="newLivePromptNameInput" class="w-full text-sm rounded-lg p-2.5 placeholder-color" placeholder="Contoh: 'Gunakan Bahasa Gaul'">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 mb-1.5" for="newLivePromptNameInput">Nama Prompt</label>
+            <input type="text" id="newLivePromptNameInput" class="w-full text-sm rounded-2xl p-3 bg-white/50 border border-white/60 focus:bg-white/90 focus:border-blue-400 transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]" placeholder="Contoh: 'Gunakan Bahasa Gaul'">
         </div>
-        <div>
-            <label class="block text-sm font-medium text-secondary mb-1" for="newLivePromptInput">Isi Prompt:</label>
-            <textarea id="newLivePromptInput" rows="6" class="w-full text-sm rounded-lg p-2 placeholder-color resize-none" placeholder="Contoh: 'Gunakan bahasa gaul lokal daerah.'"></textarea>
+        
+        <div class="flex-grow flex flex-col">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 mb-1.5" for="newLivePromptInput">Isi Prompt</label>
+            <textarea id="newLivePromptInput" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white/90 focus:border-blue-400 transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)] flex-grow resize-none min-h-[150px]" placeholder="Contoh: 'Gunakan bahasa gaul lokal daerah.'"></textarea>
         </div>
     </div>
-    <div class="flex justify-end gap-3 pt-4 mt-2 border-t flex-shrink-0">
-        <button id="saveNewLivePromptEntryBtn" class="btn-primary w-full font-semibold py-2 px-4 rounded-lg text-sm">Simpan Prompt</button>
+
+    <div class="flex items-center gap-3 pt-4 mt-2 border-t border-white/30 flex-shrink-0">
+        <button id="saveNewLivePromptEntryBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-sm shadow-lg shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-2">
+            Simpan Prompt
+        </button>
     </div>
 </div>
 
-<div id="livePromptShortcutModal" class="modal-content fixed z-[52] p-6 w-[85%] max-w-sm hidden rounded-xl flex flex-col max-h-[55vh]">
-    <div class="modal-window-controls">
-        <button id="closeLivePromptShortcutModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <h3 class="text-xl font-semibold text-main mb-4 text-center">Aktifkan Live Prompt</h3>
-
-    <div class="flex-grow overflow-y-auto pr-2 -mr-2 space-y-3" id="livePromptShortcutList">
-        <p class="text-center text-secondary">Memuat...</p>
+<div id="livePromptShortcutModal" class="modal-content fixed z-[55] p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[340px] h-auto max-h-[70vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+    
+    <div class="absolute top-5 right-5 z-[60]">
+        <button id="closeLivePromptShortcutModalBtn" class="control-button close-btn" title="Tutup">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 
-    <div class="flex justify-end pt-4 mt-2 border-t border-gray-300 flex-shrink-0">
-        <button id="openFullLivePromptSettingsBtn" class="btn-secondary w-full font-semibold py-2 px-4 rounded-lg text-sm flex items-center justify-center gap-2">
+    <div class="text-center mb-5 mt-2">
+        <h3 class="text-lg font-black text-gray-900 tracking-tight">Aktifkan Prompt</h3>
+        <p class="text-[9px] text-blue-600 font-bold uppercase tracking-widest mt-1">Live Prompt Shortcut</p>
+        <div class="h-1 w-8 bg-blue-500/20 mx-auto mt-3 rounded-full"></div>
+    </div>
+
+    <div class="flex-grow overflow-y-auto pr-1 -mr-1 custom-scrollbar space-y-2.5" id="livePromptShortcutList">
+        <p class="text-center text-gray-400 text-[10px] font-bold py-4">Memuat...</p>
+    </div>
+
+    <div class="flex flex-col gap-3 pt-5 mt-2 border-t border-white/30 flex-shrink-0">
+        <button id="openFullLivePromptSettingsBtn" class="w-full py-3.5 rounded-2xl bg-white/40 text-blue-600 font-bold text-[10px] transition-all border border-white/80 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
             <i class="fas fa-cog"></i>
             <span>Buka Pengaturan Live Prompt</span>
         </button>
@@ -1345,21 +1625,30 @@
 </div>
 
     <div id="appNotification" class="fixed z-[100] bg-white rounded-xl shadow-lg p-4 flex items-center gap-4 transition-all duration-300 ease-in-out"></div>
-    <div id="floating-action-buttons" class="fixed bottom-[20%] right-5 z-30 flex flex-col items-center gap-3 hidden transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)">
-    <div id="selectionCountDisplay" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg hidden">0 terpilih</div>
-    <div class="flex flex-col gap-2">
-        <button id="scrollTopBtn" class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-secondary hover:bg-gray-200 transition-colors" title="Gulir ke Atas"><i class="fas fa-arrow-up text-xs"></i></button>
-        <button id="scrollBottomBtn" class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-secondary hover:bg-gray-200 transition-colors" title="Gulir ke Bawah"><i class="fas fa-arrow-down text-xs"></i></button>
-    </div>
-    <button id="translateAllBtn" title="Terjemahkan Semua/Terpilih" class="w-12 h-12 bg-white border border-blue-600 text-blue-600 hover:bg-blue-100 rounded-full shadow-xl flex items-center justify-center text-xl transform hover:scale-110 transition-transform relative overflow-hidden">
-        <i id="translateAllIcon" class="fas fa-language"></i><div class="long-press-indicator"></div>
+    <div id="floating-action-buttons" class="fixed right-6 bottom-24 sm:bottom-28 z-[85] flex flex-col items-center gap-4 p-2 bg-white/5 backdrop-blur-md rounded-full hidden transition-all duration-500 ease-out">
+    
+    <div id="selectionCountDisplay" class="absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-600/90 text-white text-[9px] font-black px-2 py-1 rounded-full shadow-sm hidden whitespace-nowrap uppercase tracking-tighter">0 terpilih</div>
+
+    <button id="scrollTopBtn" class="text-gray-500/80 hover:text-blue-600 transition-all active:scale-90" title="Gulir ke Atas">
+        <i class="fas fa-arrow-up text-lg"></i>
     </button>
-    <button id="generateButtonFloating" title="Buat & Unduh File" class="w-12 h-12 bg-white border border-green-600 text-green-600 rounded-full shadow-xl flex items-center justify-center text-xl transform hover:scale-110 transition-transform mt-2 relative overflow-hidden">
-        <i class="fas fa-download"></i>
-        <div class="long-press-indicator"></div>
+
+    <button id="translateAllBtn" title="Terjemahkan" class="text-blue-600/90 hover:text-blue-500 transition-all relative active:scale-90 group">
+        <i id="translateAllIcon" class="fas fa-language text-2xl group-hover:scale-110 transition-transform"></i>
+        <div class="long-press-indicator absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-blue-600 w-0 transition-all"></div>
     </button>
-    <button id="saveToDictionaryBtn" title="Simpan Terpilih ke Kamus" class="hidden w-12 h-12 bg-white border border-green-600 text-green-600 rounded-full shadow-xl flex items-center justify-center text-xl transform hover:scale-110 transition-transform mt-2 relative overflow-hidden">
-        <i class="fas fa-book-medical"></i>
+    
+    <button id="generateButtonFloating" title="Unduh File" class="text-green-600/90 hover:text-green-500 transition-all relative active:scale-90 group">
+        <i class="fas fa-download text-xl group-hover:scale-110 transition-transform"></i>
+        <div class="long-press-indicator absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-green-600 w-0 transition-all"></div>
+    </button>
+    
+    <button id="saveToDictionaryBtn" title="Simpan ke Kamus" class="hidden text-purple-600/90 hover:text-purple-500 transition-all active:scale-90 group">
+        <i class="fas fa-book-medical text-xl group-hover:scale-110 transition-transform"></i>
+    </button>
+
+    <button id="scrollBottomBtn" class="text-gray-500/80 hover:text-blue-600 transition-all active:scale-90" title="Gulir ke Bawah">
+        <i class="fas fa-arrow-down text-lg"></i>
     </button>
 </div>
 
@@ -1417,13 +1706,18 @@ async function renderLivePromptShortcutList() {
         livePromptShortcutList.innerHTML = prompts.map(prompt => {
             const isChecked = activeIds.includes(prompt.id);
             return `
-                <label for="shortcut-prompt-${prompt.id}" class="flex items-center p-2 bg-white rounded-lg cursor-pointer hover:bg-gray-100">
-                    <input type="checkbox" id="shortcut-prompt-${prompt.id}" data-id="${prompt.id}"
-                           class="form-checkbox h-5 w-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 shortcut-prompt-checkbox"
-                           ${isChecked ? 'checked' : ''}>
-                    <span class="ml-3 text-main font-medium">${escapeHtml(prompt.name)}</span>
-                </label>
-            `;
+    <label for="shortcut-prompt-${prompt.id}" class="flex items-center p-3.5 bg-white/50 border border-white/60 rounded-2xl cursor-pointer hover:bg-white/90 transition-all group shadow-sm active:scale-[0.98]">
+        <div class="relative flex items-center justify-center w-5 h-5 mr-3 flex-shrink-0">
+            <input type="checkbox" id="shortcut-prompt-${prompt.id}" data-id="${prompt.id}"
+                   class="shortcut-prompt-checkbox sr-only peer"
+                   ${isChecked ? 'checked' : ''}>
+            <div class="w-5 h-5 border-2 border-gray-200 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all duration-300 flex items-center justify-center shadow-inner">
+                <i class="fas fa-check text-white text-[10px] scale-0 opacity-0 peer-checked:scale-100 peer-checked:opacity-100 transition-all duration-300"></i>
+            </div>
+        </div>
+        <span class="text-gray-800 font-bold text-xs tracking-tight group-hover:text-blue-600 transition-colors truncate">${escapeHtml(prompt.name)}</span>
+    </label>
+`;
                 }).join('');
 
             if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan konten setelah di-render
@@ -3988,43 +4282,36 @@ function closeAiSuggestionModal() {
     const editModal = document.getElementById('editModal');
     const aiSuggestionModal = document.getElementById('aiSuggestionModal');
 
-
-    const sourceHeight = editModal.offsetHeight;
-
-
-
-    if (sourceHeight > 0) {
-        aiSuggestionModal.style.height = `${sourceHeight}px`;
-    }
-
+    // MUNCULKAN MODAL
     editModal.classList.add('hidden');
     aiSuggestionModal.classList.remove('hidden');
     updateOverlayVisibility();
 
     const originalText = originalTextDiv.textContent;
-
     let isFirstFetch = true;
 
-
-
-
+    // STRUKTUR HTML MODAL BARU YANG ELEGAN & KONSISTEN
     aiSuggestionModal.innerHTML = `
-        <div class="modal-window-controls">
-            <button id="closeAiModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex items-start justify-between p-4 border-b">
-            <div class="flex items-center">
-                 <h3 class="text-xl font-semibold text-main">Saran AI</h3>
-                 <button id="regenerateAiSuggestionsBtn" class="regenerate-icon-btn control-button" title="Dapatkan saran baru">
-                    <i class="fas fa-sync-alt"></i>
-                 </button>
-            </div>
+        <div class="absolute top-5 right-5 z-[60]">
+            <button id="closeAiModalBtn" class="control-button close-btn" title="Tutup">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
 
-        <div id="aiOriginalTextContainer" class="px-4 pt-3 pb-3 border-b border-gray-300 flex-shrink-0"></div>
-        <div id="aiSuggestionsContainer" class="p-4 flex-grow overflow-y-auto" style="transition: min-height 0.2s ease;"></div>
+        <div class="absolute top-5 left-5 z-[60]">
+            <button id="regenerateAiSuggestionsBtn" class="control-button bg-white/60 hover:bg-white text-blue-500 hover:text-blue-600 transition-all shadow-sm border border-white/80" title="Dapatkan saran baru">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+
+        <div class="text-center mb-5 mt-2">
+            <h3 class="text-lg font-black text-gray-900 tracking-tight">Saran AI</h3>
+            <div class="h-1 w-8 bg-blue-500/20 mx-auto mt-2 rounded-full"></div>
+        </div>
+
+        <div id="aiOriginalTextContainer" class="flex-shrink-0 mb-3"></div>
+        <div id="aiSuggestionsContainer" class="flex-grow flex flex-col space-y-2 overflow-y-auto pr-1 -mr-1 custom-scrollbar pb-2"></div>
     `;
-
 
     document.getElementById('closeAiModalBtn').addEventListener('click', closeAiSuggestionModal);
 
@@ -4033,114 +4320,89 @@ function closeAiSuggestionModal() {
     const suggestionsContainer = document.getElementById('aiSuggestionsContainer');
 
     const loadSuggestions = async () => {
-        const currentHeight = suggestionsContainer.offsetHeight;
-        if (currentHeight > 0) {
-             suggestionsContainer.style.minHeight = `${currentHeight}px`;
-        }
+        // HAPUS KODE LAMA YANG MENGUNCI TINGGI MODAL DI SINI
 
         regenerateBtn.disabled = true;
         regenerateBtn.querySelector('i').classList.add('loading-spin');
 
         originalTextContainer.innerHTML = '';
-        suggestionsContainer.innerHTML = `<div class="suggestions-loading-container"><div class="text-center"><i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i><p class="text-sm text-secondary mt-2">Memuat saran baru...</p></div></div>`;
+        suggestionsContainer.innerHTML = `<div class="flex items-center justify-center py-10"><div class="text-center"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i><p class="text-[10px] font-bold text-gray-400 mt-3 uppercase tracking-widest">Memuat Saran...</p></div></div>`;
 
         try {
-
-
             const modelToUse = isFirstFetch ? 'gemini-3.1-flash-lite-preview' : 'gemini-3-flash-preview';
 
-
             if (isFirstFetch) {
-                showAppNotification("Saran AI menggunakan Mode Cepat. Gunakan tombol muat ulang untuk berganti ke Mode Akurat.", "info", 5000);
+                showAppNotification("Saran AI menggunakan Mode Cepat. Gunakan tombol muat ulang untuk Mode Akurat.", "info", 5000);
             } else {
-                showAppNotification("Beralih ke Mode Akurat. Proses akan sedikit lebih lama tapi dengan hasil yang lebih baik.", "success", 10000);
+                showAppNotification("Beralih ke Mode Akurat. Proses lebih lama tapi hasil lebih baik.", "success", 6000);
             }
 
             const allDictionaryEntries = await getAllDictionaryEntries();
             const dictionaryMatches = findDictionaryMatchesInText(originalText, allDictionaryEntries);
-           const suggestions = await fetchAiSuggestions(originalText, translatedTextArea.value, modelToUse, dictionaryMatches);
+            const suggestions = await fetchAiSuggestions(originalText, translatedTextArea.value, modelToUse, dictionaryMatches);
 
             let dictButtonHtml = '';
             const isDictionaryToggleNeeded = suggestions.some(s => s.ai.trim() !== s.dict.trim());
 
             if (dictionaryMatches.length > 0 && isDictionaryToggleNeeded) {
                 dictButtonHtml = `
-                    <button id="applyDictToAllBtn" class="original-text-dict-btn" title="Terapkan kamus ke semua saran">
-                        <i class="fas fa-book"></i>
+                    <button id="applyDictToAllBtn" class="w-7 h-7 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100/50 transition-colors shadow-sm" title="Terapkan kamus ke semua saran">
+                        <i class="fas fa-book text-[10px]"></i>
                     </button>`;
             }
 
-
-
             const originalLengthBadgeHtml = '';
 
+            // TAMPILAN TEKS ASLI
             originalTextContainer.innerHTML = `
-                <div class="p-3 bg-gray-200 rounded-lg text-secondary text-sm">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-xs block text-gray-500 tracking-wider">TEKS ASLI</span>
+                <div class="p-3.5 bg-white/50 rounded-2xl border border-white/60 shadow-inner">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Teks Asli</span>
                         <div class="flex items-center gap-2">
                            ${originalLengthBadgeHtml}
                            ${dictButtonHtml}
                         </div>
                     </div>
-                    <p class="whitespace-pre-wrap break-words">${escapeHtml(originalText)}</p>
+                    <p class="whitespace-pre-wrap break-words text-[13px] font-medium text-gray-700 px-1">${escapeHtml(originalText)}</p>
                 </div>`;
 
-
-
-
+            // TAMPILAN TOMBOL SARAN (DIPERBAIKI AGAR LEBIH KOMPAK)
             const suggestionsHtml = suggestions.map(sugObj => {
                 let lengthBadgeHtml = '';
-if (isLengthLockActive) {
-    const originalLen = originalText.length;
-    const suggestionLen = sugObj.ai.length;
-    const isMatch = originalLen === suggestionLen;
-
-    const colorClasses = isMatch
-        ? 'bg-blue-100 text-blue-700'
-        : 'bg-red-100 text-red-700';
-
-
-    lengthBadgeHtml = `<span class="absolute top-[-10px] right-2 text-xs font-semibold px-2 py-0.5 rounded-full ${colorClasses} border border-white/50">${suggestionLen}/${originalLen}</span>`;
-}
-
-
-return `
-<div class="relative mb-2">
-    <button data-ai-suggestion="${escapeHtml(sugObj.ai)}"
-            data-dict-suggestion="${escapeHtml(sugObj.dict)}"
-            class="ai-suggestion-btn w-full text-left p-3 bg-white hover:bg-blue-100 transition-colors border border-gray-300 rounded-lg">
-
-        <span class="suggestion-text" style="white-space: pre-wrap;">${escapeHtml(sugObj.ai)}</span>
-    </button>
-    ${lengthBadgeHtml}
-</div>`;
-
+                if (isLengthLockActive) {
+                    const originalLen = originalText.length;
+                    const suggestionLen = sugObj.ai.length;
+                    const isMatch = originalLen === suggestionLen;
+                    const colorClasses = isMatch ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-red-50 text-red-600 border-red-200';
+                    lengthBadgeHtml = `<span class="text-[10px] font-black px-2 py-0.5 rounded-full ${colorClasses} border shadow-sm">${suggestionLen}/${originalLen}</span>`;
+                }
 
                 return `
-                <button data-ai-suggestion="${escapeHtml(sugObj.ai)}"
-                        data-dict-suggestion="${escapeHtml(sugObj.dict)}"
-                        class="ai-suggestion-btn w-full text-left p-3 bg-white hover:bg-blue-100 transition-colors border border-gray-300 rounded-lg mb-2 flex justify-between items-center">
-
-                    <span class="suggestion-text mr-2" style="white-space: pre-wrap;">${escapeHtml(sugObj.ai)}</span>
-                    ${lengthBadgeHtml}
-                </button>`;
+                <div class="relative w-full">
+                    <button data-ai-suggestion="${escapeHtml(sugObj.ai)}"
+                            data-dict-suggestion="${escapeHtml(sugObj.dict)}"
+                            class="ai-suggestion-btn w-full text-left p-3.5 bg-white/70 hover:bg-white border border-white/80 transition-all rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 group flex justify-between items-center gap-3">
+                        <span class="suggestion-text text-[13px] text-gray-800 font-medium group-hover:text-blue-700 transition-colors leading-relaxed" style="white-space: pre-wrap;">${escapeHtml(sugObj.ai)}</span>
+                        ${lengthBadgeHtml}
+                    </button>
+                </div>`;
             }).join('');
 
-            suggestionsContainer.innerHTML = `<div class="pr-2 -mr-2">${suggestionsHtml}</div>`;
+            suggestionsContainer.innerHTML = suggestionsHtml;
 
+            // EVENT LISTENER PILIH SARAN
             suggestionsContainer.querySelectorAll('.ai-suggestion-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     insertSuggestion(e.currentTarget.querySelector('.suggestion-text').textContent);
                 });
             });
 
+            // EVENT LISTENER TERAPKAN KAMUS
             const applyDictBtn = document.getElementById('applyDictToAllBtn');
             if (applyDictBtn) {
                 applyDictBtn.dataset.currentView = 'ai';
-
                 applyDictBtn.addEventListener('click', () => {
-                showAppNotification("Kamus tidak selalu akurat dan hanya menerapkan teks yang sama persis dari Kamus.", "info");
+                    showAppNotification("Kamus tidak selalu akurat dan hanya menerapkan teks yang sama persis dari Kamus.", "info");
                     const isAiView = applyDictBtn.dataset.currentView === 'ai';
                     const allSuggestionBtns = suggestionsContainer.querySelectorAll('.ai-suggestion-btn');
                     const icon = applyDictBtn.querySelector('i');
@@ -4153,12 +4415,16 @@ return `
 
                     if (isAiView) {
                         applyDictBtn.dataset.currentView = 'dict';
-                        applyDictBtn.classList.add('active');
+                        applyDictBtn.classList.replace('bg-blue-50', 'bg-purple-50');
+                        applyDictBtn.classList.replace('text-blue-600', 'text-purple-600');
+                        applyDictBtn.classList.replace('border-blue-100/50', 'border-purple-200');
                         applyDictBtn.title = "Kembalikan semua ke saran AI";
                         icon.classList.replace('fa-book', 'fa-book-open');
                     } else {
                         applyDictBtn.dataset.currentView = 'ai';
-                        applyDictBtn.classList.remove('active');
+                        applyDictBtn.classList.replace('bg-purple-50', 'bg-blue-50');
+                        applyDictBtn.classList.replace('text-purple-600', 'text-blue-600');
+                        applyDictBtn.classList.replace('border-purple-200', 'border-blue-100/50');
                         applyDictBtn.title = "Terapkan kamus ke semua saran";
                         icon.classList.replace('fa-book-open', 'fa-book');
                     }
@@ -4166,17 +4432,10 @@ return `
             }
 
         } catch (error) {
-            suggestionsContainer.innerHTML = `<p class="text-red-500 text-center">Gagal memuat saran: ${error.message}</p>`;
+            suggestionsContainer.innerHTML = `<p class="text-red-500 text-center text-xs font-bold py-4">Gagal memuat saran: ${error.message}</p>`;
         } finally {
             regenerateBtn.disabled = false;
             regenerateBtn.querySelector('i').classList.remove('loading-spin');
-            suggestionsContainer.style.minHeight = '';
-
-
-
-
-            aiSuggestionModal.style.height = '';
-
             isFirstFetch = false;
         }
     };
@@ -4648,8 +4907,8 @@ function updateFloatingButtonStates() {
     if (!translateAllBtn || !generateButtonFloating || !saveToDictionaryBtn) return;
 
 
-    generateButtonFloating.className = 'w-12 h-12 bg-white border border-green-600 text-green-600 rounded-full shadow-xl flex items-center justify-center text-2xl transform hover:scale-110 transition-transform mt-2 relative overflow-hidden';
-    generateButtonFloating.innerHTML = `<i class="fas fa-download"></i><div class="long-press-indicator"></div>`;
+    generateButtonFloating.className = 'text-green-600/90 hover:text-green-500 transition-all relative active:scale-90 group';
+    generateButtonFloating.innerHTML = `<i class="fas fa-download text-2xl group-hover:scale-110 transition-transform"></i><div class="long-press-indicator absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-green-600 w-0 transition-all"></div>`;
     generateButtonFloating.title = "Buat & Unduh File";
 
 
@@ -4698,8 +4957,8 @@ function updateFloatingButtonStates() {
             if (shouldShowSelectLongText) {
 
                 generateButtonFloating.title = "Pilih Otomatis Teks Panjang (3+ baris)";
-                generateButtonFloating.innerHTML = `<i class="fas fa-pencil-alt"></i><div class="long-press-indicator"></div>`;
-                generateButtonFloating.className = 'w-12 h-12 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow-xl flex items-center justify-center text-2xl transform hover:scale-110 transition-transform mt-2 relative overflow-hidden';
+                generateButtonFloating.innerHTML = `<i class="fas fa-pencil-alt text-2xl group-hover:scale-110 transition-transform"></i><div class="long-press-indicator absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-yellow-500 w-0 transition-all"></div>`;
+                generateButtonFloating.className = 'text-yellow-600/90 hover:text-yellow-500 transition-all relative active:scale-90 group';
             }
         }
 
@@ -4899,56 +5158,55 @@ function handleTranslateAllShortPress() {
 
         async function loadSavedFiles() {
             saveFileModal.innerHTML = `
-    <div class="modal-window-controls">
-        <button id="closeSaveFileModalBtn" class="control-button close-btn" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
-    </div>
+    <div class="relative px-6 py-5 bg-white/40 backdrop-blur-xl border-b border-white/60 flex justify-between items-center z-10 shrink-0">
+        <h3 id="modalFileTitle" class="text-xl font-black text-gray-900 tracking-tight transition-all duration-300">Berkas Tersimpan</h3>
+        
+        <div class="flex items-center gap-2">
+            <button id="toggleSearchBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </button>
+            <button id="closeSaveFileModalBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Tutup">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
 
-    <div class="relative px-4 pt-10 pb-1.5 border-b border-gray-200 flex items-center min-h-[3.25rem] bg-white overflow-hidden">
-        <h3 id="modalFileTitle" class="flex-grow text-base font-bold text-main transition-all duration-300 ease-out origin-left-bottom mb-0.5 leading-none z-10">File Tersimpan</h3>
-        
-        <button id="toggleSearchBtn" class="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-300 text-tertiary ml-2 z-10" title="Cari">
-            <i class="fa-solid fa-magnifying-glass text-sm"></i>
-        </button>
-        
-        <div id="searchBarWrapper" class="absolute left-4 right-[44px] top-1/2 -translate-y-1/2 opacity-0 scale-x-0 transform origin-right transition-all duration-300 ease-in-out flex items-center z-20 pointer-events-none">
+        <div id="searchBarWrapper" class="absolute left-6 right-[100px] top-1/2 -translate-y-1/2 opacity-0 scale-x-0 transform origin-right transition-all duration-300 ease-in-out flex items-center z-20 pointer-events-none">
             <div class="relative flex-grow">
                 <input type="text" id="savedFileSearchInput" placeholder="Cari file..." 
-                       class="w-full text-sm bg-gray-50 border border-gray-300 rounded-full py-1 pl-3 pr-7 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors outline-none placeholder-gray-400 leading-tight">
-                
-                <button id="clearSearchInputBtn" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden p-1">
+                       class="w-full text-sm bg-white/50 border border-white/80 rounded-full py-2.5 pl-4 pr-10 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100/50 transition-all outline-none placeholder-gray-400 font-medium leading-tight">
+                <button id="clearSearchInputBtn" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden p-1">
                     <i class="fa-solid fa-xmark text-[10px]"></i>
                 </button>
             </div>
         </div>
     </div>
-
-    <div class="p-3 flex flex-col flex-grow overflow-hidden bg-gray-50/50">
-        <div class="mb-3 bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm">
-            <label for="fileNameInput" class="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1 ml-1">Nama File Baru:</label>
+    
+    <div class="p-4 flex flex-col flex-grow overflow-hidden bg-transparent">
+        <div class="mb-4 bg-white/30 backdrop-blur-md p-3 rounded-[1.5rem] border border-white/60 shadow-sm">
+            <label for="fileNameInput" class="block text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] mb-2 ml-2">Nama File Baru</label>
             <div class="flex gap-2">
-                 <input type="text" id="fileNameInput" class="flex-grow text-sm rounded-lg p-1.5 bg-gray-50 border border-gray-200 focus:ring-1 focus:ring-blue-400 focus:border-blue-400 transition-all outline-none" placeholder="Masukkan nama file...">
-                 <button id="saveCurrentFileModalBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-lg text-xs transition-all shadow-sm hover:shadow-md flex-shrink-0 flex items-center gap-1">
-                    <i class="fas fa-save"></i> Simpan
+                 <input type="text" id="fileNameInput" class="flex-grow text-sm rounded-2xl p-3 bg-white/60 border border-white/80 focus:bg-white/90 focus:border-blue-400 transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]" placeholder="Masukkan nama file...">
+                 <button id="saveCurrentFileModalBtn" class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black px-5 rounded-2xl text-[11px] transition-all shadow-md hover:shadow-blue-200 active:scale-95 flex items-center gap-2">
+                    <i class="fas fa-save"></i> SIMPAN
                  </button>
             </div>
         </div>
 
-        <div id="savedFilesList" class="space-y-2 flex-grow overflow-y-auto pr-1 -mr-2 scroll-smooth">
-            <p class="text-center text-secondary py-8 flex flex-col items-center gap-2">
-                <i class="fas fa-spinner fa-spin text-xl text-blue-300"></i>
-                <span class="text-xs text-gray-500">Memuat file...</span>
-            </p>
+        <div id="savedFilesList" class="space-y-3 flex-grow overflow-y-auto pr-1 -mr-2 custom-scrollbar">
+            <div class="py-12 text-center text-gray-400"><i class="fas fa-spinner fa-spin text-xl"></i></div>
         </div>
     </div>
 
-    <div class="px-3 py-2 border-t bg-white flex justify-between items-center text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
-        <span>Total: <span id="totalSavedFilesCount" class="text-gray-600">0</span></span>
-        <button id="deleteAllFilesBtn" class="text-red-500 hover:bg-red-50 py-1 px-2 rounded transition-colors flex items-center gap-1">
+    <div class="px-6 py-5 border-t border-white/30 bg-transparent flex justify-between items-center z-10 shrink-0">
+        <div class="flex flex-col">
+            <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Penyimpanan Lokal</span>
+            <span class="text-xs font-bold text-gray-700">Total: <span id="totalSavedFilesCount" class="text-blue-600">0</span> File</span>
+        </div>
+        <button id="deleteAllFilesBtn" class="text-red-500 bg-red-50/60 hover:bg-red-100 border border-red-100 px-4 py-2.5 rounded-2xl transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-wider shadow-sm active:scale-95">
             <i class="fas fa-trash-alt"></i> Hapus Semua
         </button>
     </div>`;
 
-            
             const listEl = document.getElementById('savedFilesList');
             const searchInputEl = document.getElementById('savedFileSearchInput');
             const toggleSearchBtn = document.getElementById('toggleSearchBtn');
@@ -4956,7 +5214,6 @@ function handleTranslateAllShortPress() {
             const modalFileTitle = document.getElementById('modalFileTitle');
             const clearSearchInputBtn = document.getElementById('clearSearchInputBtn');
 
-            
             toggleSearchBtn.onclick = () => {
                 const isSearchBarHidden = searchBarWrapper.classList.contains('opacity-0');
                 if (isSearchBarHidden) {
@@ -4965,14 +5222,6 @@ function handleTranslateAllShortPress() {
                     modalFileTitle.classList.add('opacity-0', 'pointer-events-none');
                     toggleSearchBtn.classList.add('opacity-0', 'pointer-events-none');
                     setTimeout(() => searchInputEl.focus(), 300);
-                } else {
-                    searchBarWrapper.classList.add('opacity-0', 'scale-x-0', 'pointer-events-none');
-                    searchBarWrapper.classList.remove('opacity-100', 'scale-x-100', 'pointer-events-auto');
-                    modalFileTitle.classList.remove('opacity-0', 'pointer-events-none');
-                    toggleSearchBtn.classList.remove('opacity-0', 'pointer-events-none');
-                    searchInputEl.value = '';
-                    searchInputEl.dispatchEvent(new Event('input'));
-                    clearSearchInputBtn.classList.add('hidden');
                 }
             };
 
@@ -4982,78 +5231,67 @@ function handleTranslateAllShortPress() {
                     searchBarWrapper.classList.remove('opacity-100', 'scale-x-100', 'pointer-events-auto');
                     modalFileTitle.classList.remove('opacity-0', 'pointer-events-none');
                     toggleSearchBtn.classList.remove('opacity-0', 'pointer-events-none');
-                    clearSearchInputBtn.classList.add('hidden');
                 }
             };
 
             searchInputEl.onblur = closeSearchBar;
-            searchInputEl.oninput = (e) => {
-                clearSearchInputBtn.classList.toggle('hidden', e.target.value.length === 0);
-            };
-            clearSearchInputBtn.onclick = () => {
-                searchInputEl.value = '';
-                searchInputEl.dispatchEvent(new Event('input'));
-                searchInputEl.focus();
-            };
-            
-           
-document.getElementById('closeSaveFileModalBtn').onclick = () => {
-    saveFileModal.classList.add('hidden');
-   
-    if (currentEditPIndex !== -1) {
-        modal.classList.remove('hidden');
-    }
+            searchInputEl.oninput = (e) => clearSearchInputBtn.classList.toggle('hidden', e.target.value.length === 0);
+            clearSearchInputBtn.onclick = () => { searchInputEl.value = ''; searchInputEl.dispatchEvent(new Event('input')); searchInputEl.focus(); };
 
-    updateOverlayVisibility();
-};
+            document.getElementById('closeSaveFileModalBtn').onclick = () => {
+                saveFileModal.classList.add('hidden');
+                if (currentEditPIndex !== -1) modal.classList.remove('hidden');
+                updateOverlayVisibility();
+            };
             document.getElementById('saveCurrentFileModalBtn').onclick = () => saveCurrentFile();
             document.getElementById('deleteAllFilesBtn').onclick = () => {
                 showConfirmationModal("Yakin ingin menghapus SEMUA file? Tindakan ini permanen.", async (confirmed) => {
-                    if (confirmed) {
-                        await clearSavedFilesStore();
-                        showAppNotification("Semua file telah dihapus.", "success");
-                        await loadSavedFiles();
-                    }
+                    if (confirmed) { await clearSavedFilesStore(); showAppNotification("Semua file dihapus.", "success"); await loadSavedFiles(); }
                 });
             };
 
-            document.getElementById('fileNameInput').value = currentSaveFileName || '';
-            if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan struktur dasar modal
-            
             const allSavedFiles = await getSavedFilesList();
+            document.getElementById('totalSavedFilesCount').textContent = allSavedFiles.length;
 
             const renderFilteredFiles = (query) => {
                 const filteredFiles = query ? allSavedFiles.filter(f => f.fileName.toLowerCase().includes(query.toLowerCase())) : allSavedFiles;
-                clearSearchInputBtn.classList.toggle('hidden', !query);
-
                 if (filteredFiles.length === 0) {
-                    listEl.innerHTML = `<p class="text-center text-secondary pt-4">${query ? 'Tidak ada hasil ditemukan.' : 'Tidak ada file tersimpan.'}</p>`;
-                    if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan pesan daftar kosong
+                    listEl.innerHTML = `<p class="text-center text-gray-500 font-medium py-12 bg-white/20 rounded-3xl border border-white/40 shadow-sm mx-2">${query ? 'Tidak ada hasil.' : 'Belum ada file tersimpan.'}</p>`;
                     return;
                 }
                 
                 listEl.innerHTML = filteredFiles.map(file => {
-    const safeFileName = escapeHtml(file.fileName);
-    const patternName = getPatternFriendlyName(file.fileFormat); 
-    return `
-    <div class="relative bg-white p-3 rounded-lg shadow-sm">
-        <button data-filename="${safeFileName}" class="rename-file-btn absolute top-3 right-3 text-gray-400 hover:text-blue-600" title="Ganti Nama"><i class="fas fa-pencil-alt text-sm"></i></button>
-        <div class="pr-8">
-            <div class="file-name-display font-semibold text-main">${safeFileName}</div>
-            <div class="file-name-edit-container hidden"><input type="text" value="${safeFileName}" class="file-name-input w-full text-sm rounded p-1 border border-blue-400"></div>
-            
-            <p class="text-xs text-tertiary">Asal: ${file.originalFileName || 'N/A'} <span class="font-semibold">(${patternName})</span></p>
-            
-            <p class="text-xs text-tertiary">Disimpan: ${new Date(file.timestamp).toLocaleString()}</p>
-        </div>
-        <div class="flex justify-end gap-2 mt-2">
-            <button data-filename="${safeFileName}" class="load-file-btn btn-secondary py-1 px-2 rounded-lg text-xs">Muat</button>
-            <button data-filename="${safeFileName}" class="delete-file-btn bg-red-100 text-red-700 hover:bg-red-200 py-1 px-2 rounded-lg text-xs">Hapus</button>
-        </div>
-    </div>`;
-            }).join('');
-            if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan item-item daftar file
-
+                    const safeFileName = escapeHtml(file.fileName);
+                    const patternName = getPatternFriendlyName(file.fileFormat); 
+                    return `
+                    <div class="relative bg-white/45 backdrop-blur-md p-4 rounded-[1.5rem] border border-white/70 shadow-sm hover:shadow-md transition-all duration-300 mx-1 isolate group">
+                        <button data-filename="${safeFileName}" class="rename-file-btn absolute top-4 right-4 w-7 h-7 rounded-full bg-white/60 flex items-center justify-center text-gray-400 hover:text-blue-500 transition-all shadow-sm active:scale-90" title="Ganti Nama">
+                            <i class="fas fa-pencil-alt text-[10px]"></i>
+                        </button>
+                        
+                        <div class="pr-8 mb-3">
+                            <div class="file-name-display font-black text-gray-800 text-sm tracking-tight">${safeFileName}</div>
+                            <div class="file-name-edit-container hidden">
+                                <input type="text" value="${safeFileName}" class="file-name-input w-full text-sm bg-white/80 border border-blue-400 rounded-xl px-3 py-1.5 outline-none font-bold">
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+                                <p class="text-[9px] font-black text-blue-500/80 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-microchip text-[8px]"></i> ${patternName}
+                                </p>
+                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-calendar-alt text-[8px]"></i> ${new Date(file.timestamp).toLocaleDateString()}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end gap-2.5 pt-1">
+                            <button data-filename="${safeFileName}" class="load-file-btn flex-grow sm:flex-grow-0 bg-blue-600/15 hover:bg-blue-600/25 text-blue-700 font-black py-2 px-6 rounded-2xl text-[10px] transition-all shadow-sm active:scale-95 uppercase tracking-[0.1em] border border-blue-200/50">Muat</button>
+                            <button data-filename="${safeFileName}" class="delete-file-btn bg-red-50/80 hover:bg-red-100 text-red-500 font-black py-2 px-4 rounded-2xl text-[10px] transition-all shadow-sm active:scale-95 uppercase tracking-[0.1em] border border-red-100/50">Hapus</button>
+                        </div>
+                    </div>`;
+                }).join('');
+                
                 listEl.querySelectorAll('.load-file-btn').forEach(b => b.onclick = (e) => loadSpecificFile(e.currentTarget.dataset.filename));
                 listEl.querySelectorAll('.delete-file-btn').forEach(b => b.onclick = (e) => deleteSpecificFileMetadata(e.currentTarget.dataset.filename));
                 listEl.querySelectorAll('.rename-file-btn').forEach(b => b.onclick = (e) => {
@@ -5061,27 +5299,22 @@ document.getElementById('closeSaveFileModalBtn').onclick = () => {
                     const nameDisplay = itemContainer.querySelector('.file-name-display');
                     const editContainer = itemContainer.querySelector('.file-name-edit-container');
                     const nameInput = itemContainer.querySelector('.file-name-input');
-                    nameDisplay.classList.add('hidden');
-                    editContainer.classList.remove('hidden');
-                    nameInput.focus(); nameInput.select();
-                    const originalName = nameInput.value;
+                    nameDisplay.classList.add('hidden'); editContainer.classList.remove('hidden'); nameInput.focus(); nameInput.select();
                     const saveRename = async () => {
                         const newName = nameInput.value.trim();
-                        if (newName && newName !== originalName) {
-                            if (await renameFileInDb(originalName, newName)) await loadSavedFiles();
+                        if (newName && newName !== nameInput.defaultValue) {
+                            if (await renameFileInDb(nameInput.defaultValue, newName)) await loadSavedFiles();
                             else { editContainer.classList.add('hidden'); nameDisplay.classList.remove('hidden'); }
                         } else { editContainer.classList.add('hidden'); nameDisplay.classList.remove('hidden'); }
                     };
                     nameInput.onblur = saveRename;
-                    nameInput.onkeydown = (event) => { if (event.key === 'Enter') { event.preventDefault(); saveRename(); } else if (event.key === 'Escape') { editContainer.classList.add('hidden'); nameDisplay.classList.remove('hidden'); }};
+                    nameInput.onkeydown = (ev) => { if(ev.key === 'Enter') saveRename(); };
                 });
+                if (typeof window.translatePage === 'function') window.translatePage();
             };
 
             searchInputEl.addEventListener('input', (e) => renderFilteredFiles(e.target.value));
             renderFilteredFiles('');
-            
-            // --- KODE TRANSLASI DINAMIS ---
-            if (typeof window.translatePage === 'function') window.translatePage();
         }
 
         async function saveCurrentFile() {
@@ -5341,27 +5574,35 @@ async function saveLivePrompt() {
             await setSetting('activeLivePromptIds', activeLivePromptIds);
         }
         async function renderLivePromptsList() {
-    const prompts = await getLivePrompts();
-    savedLivePromptsList.innerHTML = prompts.length === 0
-        ? '<p class="text-center text-secondary">Belum ada prompt tersimpan.</p>'
-        : prompts.map(prompt => {
-            const isActive = activeLivePromptIds.includes(prompt.id);
-            return `<div class="bg-white p-3 rounded-lg shadow-sm border ${isActive ? 'border-blue-500 ring-2 ring-blue-300' : ''}">
-                <div class="flex justify-between items-center mb-1">
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" data-id="${prompt.id}" class="toggle-live-prompt-activation-checkbox form-checkbox h-4 w-4 text-blue-600 rounded" ${isActive ? 'checked' : ''}>
-                        <span class="ml-2 font-semibold text-main">${escapeHtml(prompt.name)}</span>
-                    </label>
-                    ${isActive ? '<span class="text-xs font-normal text-blue-600 ml-2">(Aktif)</span>' : ''}
-                </div>
+            const prompts = await getLivePrompts();
+            savedLivePromptsList.innerHTML = prompts.length === 0
+                ? '<p class="text-center text-secondary py-4">Belum ada prompt tersimpan.</p>'
+                : prompts.map(prompt => {
+                    const isActive = activeLivePromptIds.includes(prompt.id);
+                    return `
+                    <div class="p-4 rounded-[1.25rem] transition-all duration-400 border isolate ${isActive ? 'bg-white/80 border-blue-400 shadow-[0_10px_25px_rgba(59,130,246,0.15)]' : 'bg-white/40 border-white/60 shadow-sm hover:bg-white/70 hover:-translate-y-0.5'}">
+                        
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="inline-flex items-center cursor-pointer group">
+                                <div class="relative flex items-center justify-center w-5 h-5 mr-3 flex-shrink-0">
+                                    <input type="checkbox" data-id="${prompt.id}" class="toggle-live-prompt-activation-checkbox sr-only peer" ${isActive ? 'checked' : ''}>
+                                    <div class="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all duration-300 flex items-center justify-center shadow-sm">
+                                        <i class="fas fa-check text-white text-[10px] scale-0 opacity-0 peer-checked:scale-100 peer-checked:opacity-100 transition-all duration-300"></i>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-gray-800 text-sm tracking-tight group-hover:text-blue-600 transition-colors">${escapeHtml(prompt.name)}</span>
+                            </label>
+                            ${isActive ? '<span class="text-[9px] font-black tracking-widest uppercase bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-2.5 py-1 rounded-full shadow-md shadow-blue-200">Aktif</span>' : ''}
+                        </div>
 
-                <div class="bg-gray-100 p-2 rounded text-secondary text-xs whitespace-pre-wrap max-h-50 overflow-y-auto mb-3">${escapeHtml(prompt.content)}</div>
-                <div class="flex justify-end gap-2 mt-auto">
-                    <button data-id="${prompt.id}" class="edit-live-prompt-btn btn-secondary py-1 px-2 rounded-lg text-xs">Edit</button>
-                    <button data-id="${prompt.id}" class="delete-live-prompt-btn bg-red-100 text-red-700 hover:bg-red-200 py-1 px-2 rounded-lg text-xs">Hapus</button>
-                </div>
-            </div>`;
-        }).join('');
+                        <div class="bg-white/60 backdrop-blur-md border border-white/80 p-3 rounded-xl text-gray-600 text-xs font-medium leading-relaxed whitespace-pre-wrap max-h-50 overflow-y-auto mb-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)] custom-scrollbar">${escapeHtml(prompt.content)}</div>
+                        
+                        <div class="flex justify-end gap-2 mt-auto">
+                            <button data-id="${prompt.id}" class="edit-live-prompt-btn bg-white/70 hover:bg-white border border-gray-200/50 shadow-sm text-gray-700 py-1.5 px-4 rounded-xl text-xs font-bold transition-all hover:text-blue-600 hover:shadow-md active:scale-95">Edit</button>
+                            <button data-id="${prompt.id}" class="delete-live-prompt-btn bg-red-50/80 hover:bg-red-100 border border-red-100 text-red-600 py-1.5 px-4 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95">Hapus</button>
+                        </div>
+                    </div>`;
+                }).join('');
 
             if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan konten setelah di-render
 
@@ -5385,6 +5626,7 @@ async function saveLivePrompt() {
                 });
             });
         }
+		
         async function toggleLivePromptActivation(id, activate) {
             if (activate) {
                 if (activeLivePromptIds.length >= MAX_ACTIVE_PROMPTS) {
@@ -5442,43 +5684,58 @@ async function saveLivePrompt() {
             const query = document.getElementById(searchInputId).value.toLowerCase().trim();
             if (!listContainer) return;
 
-                        listContainer.innerHTML = '<p class="text-center text-secondary">Loading...</p>';
-            if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan pesan loading awal
+            listContainer.innerHTML = '<div class="py-8 text-center"><i class="fas fa-spinner fa-spin text-3xl text-blue-500 mb-3"></i><p class="text-gray-500 font-medium">Memuat kamus...</p></div>';
+            if (typeof window.translatePage === 'function') window.translatePage(); 
+            
             try {
                 let entries = await getAllDictionaryEntries();
                 if (query) entries = entries.filter(e => e.originalText.toLowerCase().includes(query) || e.translatedText.toLowerCase().includes(query));
 
                 if (entries.length === 0) {
-                    listContainer.innerHTML = `<p class="text-center text-secondary">${query ? 'Tidak ada hasil.' : 'Kamus Kosong.'}</p>`;
-                    if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan pesan daftar kosong
+                    listContainer.innerHTML = `<p class="text-center text-gray-500 font-medium py-8 bg-white/40 rounded-2xl border border-white/60 shadow-sm">${query ? 'Tidak ada hasil.' : 'Kamus masih kosong.'}</p>`;
+                    if (typeof window.translatePage === 'function') window.translatePage(); 
                     return;
                 }
 
+                // --- DESAIN KARTU KAMUS iOS 26 ---
                 listContainer.innerHTML = entries.map(entry => {
                     const displayOriginal = escapeHtml(entry.originalText.replace(/\n/g, '\\n'));
                     const displayTranslated = escapeHtml(entry.translatedText.replace(/\n/g, '\\n'));
                     return `
-                        <div class="bg-white p-3 rounded-lg shadow-sm border">
-                            <button class="dictionary-entry-accordion-button" aria-expanded="false">
-                                <span class="truncate pr-2">${displayOriginal.substring(0, 50)}${displayOriginal.length > 50 ? '...' : ''}</span>
-                                <i class="fas fa-chevron-down text-tertiary"></i>
-                            </button>
-                            <div class="dictionary-entry-accordion-content">
-                                <div>
-                                    <p class="font-semibold text-main text-sm mb-1">Asli:</p>
-                                    <div class="bg-gray-100 p-2 rounded text-secondary text-xs whitespace-pre-wrap">${displayOriginal}</div>
-                                    <p class="font-semibold text-main text-sm mt-2 mb-1">Terjemahan:</p>
-                                    <div class="bg-gray-100 p-2 rounded text-blue-700 font-medium text-xs whitespace-pre-wrap">${displayTranslated}</div>
-                                    <div class="flex justify-end gap-2 mt-3">
-                                        <button data-original="${escapeHtml(entry.originalText)}" data-translated="${escapeHtml(entry.translatedText)}" class="edit-dictionary-btn btn-secondary py-1 px-2 rounded-lg text-xs">Edit</button>
-                                        <button data-original="${escapeHtml(entry.originalText)}" class="delete-dictionary-btn bg-red-100 text-red-700 hover:bg-red-200 py-1 px-2 rounded-lg text-xs">Hapus</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
+    <div class="p-4 rounded-[1.5rem] transition-all duration-400 border border-white/70 bg-white/45 backdrop-blur-md shadow-sm hover:shadow-md hover:bg-white/60 hover:-translate-y-0.5 isolate">
+        <button class="dictionary-entry-accordion-button w-full flex justify-between items-center text-left group" aria-expanded="false">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-8 h-8 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                    <i class="fas fa-book-open text-xs"></i>
+                </div>
+                <span class="font-bold text-gray-800 text-sm truncate pr-2 group-hover:text-blue-600 transition-colors">${displayOriginal.substring(0, 50)}${displayOriginal.length > 50 ? '...' : ''}</span>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-400"></i>
+        </button>
+        
+        <div class="dictionary-entry-accordion-content overflow-hidden transition-all duration-500 max-h-0">
+            <div class="pt-4 pb-1 space-y-4">
+                <div>
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] ml-2 mb-2">Teks Asli</p>
+                    <div class="bg-white/80 border border-white p-4 rounded-[1.25rem] text-gray-600 text-xs font-medium whitespace-pre-wrap shadow-[inset_0_1px_4px_rgba(0,0,0,0.02)] leading-relaxed">${displayOriginal}</div>
+                </div>
+                <div>
+                    <p class="text-[9px] font-black text-blue-400 uppercase tracking-[0.15em] ml-2 mb-2">Terjemahan</p>
+                    <div class="bg-blue-600/5 border border-blue-100/50 p-4 rounded-[1.25rem] text-blue-700 font-bold text-xs whitespace-pre-wrap shadow-[inset_0_1px_4px_rgba(0,122,255,0.03)] leading-relaxed">${displayTranslated}</div>
+                </div>
+                
+                <div class="flex justify-end gap-2.5 pt-2">
+                    <button data-original="${escapeHtml(entry.originalText)}" data-translated="${escapeHtml(entry.translatedText)}" class="edit-dictionary-btn bg-white/80 hover:bg-white border border-gray-100/50 shadow-sm text-gray-700 py-2 px-5 rounded-2xl text-[11px] font-bold transition-all hover:text-blue-600 active:scale-95">Edit</button>
+                    <button data-original="${escapeHtml(entry.originalText)}" class="delete-dictionary-btn bg-red-50/90 hover:bg-red-100 border border-red-100/50 text-red-600 py-2 px-5 rounded-2xl text-[11px] font-bold transition-all active:scale-95">Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
                 }).join('');
-                if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan item-item daftar kamus
+                
+                if (typeof window.translatePage === 'function') window.translatePage(); 
 
+                // Event Listeners (Tetap Mempertahankan Fungsi Asli)
                 listContainer.querySelectorAll('.delete-dictionary-btn').forEach(btn => btn.onclick = async (e) => {
                     const original = e.currentTarget.dataset.original;
                     showConfirmationModal(`Apakah Anda yakin ingin menghapus entri ini?`, async (confirmed) => {
@@ -5506,16 +5763,15 @@ async function saveLivePrompt() {
                     });
                 });
 
-            } catch (error)
-                { listContainer.innerHTML = `<p class="text-red-500 text-center">Gagal memuat kamus: ${error.message}</p>`;
-                if (typeof window.translatePage === 'function') window.translatePage(); // Terjemahkan pesan error
+            } catch (error) { 
+                listContainer.innerHTML = `<p class="text-red-500 text-center">Gagal memuat kamus: ${error.message}</p>`;
+                if (typeof window.translatePage === 'function') window.translatePage(); 
             }
         }
+		
         function showAddDictionaryEntryModal(original = '', translated = '', isEdit = false) {
-
-            if (isEdit) {
-                document.getElementById('viewDictionaryModal').classList.add('hidden');
-            }
+            // FIX: Selalu sembunyikan daftar kamus agar tidak menumpuk transparan
+            document.getElementById('viewDictionaryModal').classList.add('hidden');
 
             const addDictionaryEntryModal = document.getElementById('addDictionaryEntryModal');
             addDictionaryEntryModal.classList.remove('hidden');
@@ -6337,22 +6593,21 @@ async function closeTutorial() {
                 e.preventDefault();
                 flashIconBackground(openDictionaryCacheBtn, 'flash-green');
 
+                const originalTextContent = originalTextDiv.textContent || "";
+                const translatedTextContent = translatedTextArea.value || "";
 
-                const originalLines = getVisualLineCount(originalTextDiv);
-                const translatedLines = getVisualLineCount(translatedTextArea);
+                // PERBAIKAN: Hitung baris murni berdasarkan enter (\n), bukan tinggi elemen
+                const originalLines = originalTextContent.split('\n').length;
+                const translatedLines = translatedTextContent.split('\n').length;
+                
+                // Tambahan: Cegah juga jika 1 baris tapi karakternya sangat panjang
+                const isTooLong = originalTextContent.length > 150 || translatedTextContent.length > 150;
 
-
-                if (originalLines > 3 || translatedLines > 3) {
-
-                    showAppNotification("Teks terlalu panjang (maks 3 baris). Buka Kamus dan tambahkan entri secara manual.", "info");
+                if (originalLines > 3 || translatedLines > 3 || isTooLong) {
+                    showAppNotification("Teks terlalu panjang (maks 3 baris / 150 huruf). Buka Kamus dan tambahkan secara manual.", "info");
                 } else {
-
                     setTimeout(() => {
                         document.getElementById('editModal').classList.add('hidden');
-
-
-                        const originalTextContent = originalTextDiv.textContent;
-                        const translatedTextContent = translatedTextArea.value;
 
                         document.getElementById('dictCacheOriginal').value = originalTextContent;
                         document.getElementById('dictCacheTranslated').value = translatedTextContent;
@@ -6461,9 +6716,6 @@ document.getElementById('saveDictCacheEntryBtn').onclick = async () => {
             document.getElementById('viewDictionaryModal').classList.add('hidden');
             showAddDictionaryEntryModal();
     });
-
-
-            openLivePromptModalBtn.addEventListener('click', showLivePromptModal);
 
 
 
@@ -6856,10 +7108,13 @@ document.getElementById('navBtnFolder').addEventListener('click', () => {
     updateOverlayVisibility();
     
     modal.innerHTML = `
-        <div class="modal-window-controls">
-            <button class="control-button close-btn" onclick="document.getElementById('saveFileModal').classList.add('hidden');updateOverlayVisibility();"><i class="fa-solid fa-xmark"></i></button>
+        <div class="relative px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm shrink-0">
+            <h3 class="text-lg font-bold text-gray-800">Berkas Tersimpan</h3>
+            <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors" onclick="document.getElementById('saveFileModal').classList.add('hidden');updateOverlayVisibility();">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <div class="flex items-center justify-center h-full">
+        <div class="flex items-center justify-center flex-grow bg-gray-50">
             <div class="text-center">
                 <i class="fas fa-spinner fa-spin text-3xl text-blue-600 mb-3"></i>
                 <p class="text-gray-500 font-medium">Memuat file...</p>
@@ -7047,34 +7302,37 @@ document.getElementById('navBtnSettings').addEventListener('click', () => {
 
 
 </script>
-<nav id="bottomNavbar" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[90%] max-w-[20rem] sm:max-w-[26rem] bg-white/90 backdrop-blur-xl border-2 border-blue-500 shadow-2xl shadow-blue-900/30 z-[90] transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) rounded-full overflow-hidden">
-    <div class="flex justify-between items-center h-14 px-2 sm:px-4">
+<nav id="bottomNavbar" class="fixed bottom-0 sm:bottom-8 left-1/2 transform -translate-x-1/2 w-full sm:w-[90%] sm:max-w-[26rem] bg-white/85 backdrop-blur-3xl border-t border-white/60 sm:border sm:border-gray-200/50 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] sm:shadow-2xl z-[90] transition-all duration-500 rounded-t-[1.5rem] sm:rounded-full overflow-hidden">
+    
+    <div class="flex justify-between items-center h-16 sm:h-14 px-4 sm:px-4 pb-3 sm:pb-0 pt-1 sm:pt-0">
         
         <button id="navBtnFolder" class="nav-item group flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-600 relative transition-colors duration-300" title="File">
-             <i class="fas fa-folder text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
-            <span class="text-[10px] font-medium z-10">Berkas</span>
+             <i class="fas fa-folder text-[1.1rem] sm:text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium z-10">Berkas</span>
         </button>
         
         <button id="navBtnDictionary" class="nav-item group flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-600 relative transition-colors duration-300" title="Dictionary">
-             <i class="fas fa-book text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
-            <span class="text-[10px] font-medium z-10">Kamus</span>
+             <i class="fas fa-book text-[1.1rem] sm:text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium z-10">Kamus</span>
         </button>
 
         <button id="navBtnHome" class="nav-item group flex flex-col items-center justify-center w-full h-full text-blue-600 relative transition-colors duration-300" title="Home">
-    <div class="w-10 h-10 bg-blue-50/80 backdrop-blur-sm rounded-full flex items-center justify-center mb-1 shadow-sm group-hover:bg-blue-100 transition-all z-10 ring-4 ring-white/60">
-        <i class="fas fa-home text-lg text-blue-600 transition-transform group-hover:scale-110"></i>
-    </div>
-    <span class="hidden">Beranda</span> </button>
+            <div class="w-11 h-11 sm:w-10 sm:h-10 bg-blue-50/80 backdrop-blur-sm rounded-full flex items-center justify-center mb-1 shadow-sm group-hover:bg-blue-100 transition-all z-10 ring-4 ring-white/60 mt-1">
+                <i class="fas fa-home text-lg text-blue-600 transition-transform group-hover:scale-110"></i>
+            </div>
+            <span class="hidden">Beranda</span> 
+        </button>
         
         <button id="navBtnLivePrompt" class="nav-item group flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-600 relative transition-colors duration-300" title="Prompts">
-            <i class="fas fa-bolt text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
-            <span class="text-[10px] font-medium z-10">Prompt</span>
+            <i class="fas fa-bolt text-[1.1rem] sm:text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium z-10">Prompt</span>
         </button>
         
         <button id="navBtnSettings" class="nav-item group flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-600 relative transition-colors duration-300" title="Settings">
-            <i class="fas fa-cog text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
-            <span class="text-[10px] font-medium z-10">Pengaturan</span>
+            <i class="fas fa-cog text-[1.1rem] sm:text-lg mb-0.5 z-10 transition-transform group-hover:-translate-y-1"></i>
+            <span class="text-[9px] sm:text-[10px] font-medium z-10">Pengaturan</span>
         </button>
+        
     </div>
 </nav>
 
@@ -7090,6 +7348,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // Kamus Lengkap (Mega-Dictionary)
     const UI_STRINGS = {
         'EN': {
+            // --- KOSAKATA BARU UNTUK UI iOS 26 ---
+			"Aktifkan Prompt": "Enable Prompts",
+			"Penyunting Teks": "Text Editor",
+			"Kunci Panjang": "Length Lock",
+			"Simpan ke Kamus": "Save to Dictionary",
+			"Mode Konteks": "Context Mode",
+			"Simpan Progres": "Save Progress",
+			"Nama Prompt": "Prompt Name",
+            "Isi Prompt": "Prompt Content",
+            "Simpan Prompt": "Save Prompt",
+            "Perbarui Prompt": "Update Prompt",
+            "Tambah Prompt Baru": "Add New Prompt",
+            "Edit Live Prompt": "Edit Live Prompt",
+            "Contoh: 'Gunakan Bahasa Gaul'": "Example: 'Use slang language'",
+            "Contoh: 'Gunakan bahasa gaul lokal daerah.'": "Example: 'Use local slang.'",
+            "Berkas Tersimpan": "Saved Files",
+            "Cari file...": "Search files...",
+            "Nama File Baru": "New File Name",
+            "SIMPAN": "SAVE",
+            "Memuat berkas...": "Loading files...",
+            "Penyimpanan Lokal": "Local Storage",
+            "Kamus Lokal": "Local Dictionary",
+            "Cari entri kamus...": "Search dictionary entries...",
+            "Tambah Entri": "Add Entry",
+            "Teks Asli": "Original Text",
+            "SIMPAN ENTRI": "SAVE ENTRY",
+            "CEK": "CHECK",
+            
+            // --- KOSAKATA LAMA (TETAP DIPERTAHANKAN) ---
             "Total": "Total",
             "Selesai": "Done",
             "Progres": "Progress",
@@ -7100,8 +7387,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "Tampilkan/Sembunyikan Kolom Ganti": "Show/Hide Replace Column",
             "Bersihkan Pencarian": "Clear Search",
             "Kunci API Gemini": "Gemini API Key",
-			"Contoh: 'Gunakan Bahasa Gaul'": "Example: 'Using slang'",
-			"Contoh: 'Gunakan bahasa gaul lokal daerah.'": "Example: 'Use local slang.'",
+            "Contoh: 'Gunakan Bahasa Gaul'": "Example: 'Using slang'",
+            "Contoh: 'Gunakan bahasa gaul lokal daerah.'": "Example: 'Use local slang.'",
             "Verifikasi Kunci": "Verify Key",
             "Cek": "Check",
             "Dapatkan dari": "Get from",
@@ -7110,8 +7397,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "Silakan masukkan API Key di layar awal terlebih dahulu.": "Please enter API Key on the home screen first.",
             "1. Pilih File untuk Diproses:": "1. Select File to Process:",
             "1. Pilih File Terjemahan (ID):": "1. Select Translation File (ID):",
+            "Siapkan Data Game": "Prepare Game Data",
             "Pilih File": "Choose File",
-            "Belum ada file terpilih": "No file chosen",
+            "Belum ada berkas": "No file chosen",
+            "2. Pola Dekripsi": "2. Decryption Pattern",
             "Impor Teks Asli (EN)": "Import Original Text (EN)",
             "2. Pilih Pola Parsing": "2. Select Parsing Pattern",
             "Pilih.": "Select.",
@@ -7223,10 +7512,12 @@ document.addEventListener("DOMContentLoaded", () => {
             "Asal:": "Source:",
             "Disimpan:": "Saved:",
             "Batal": "Cancel",
-			"Buka Panduan Penggunaan": "Open Usage Guide",			
+            "Buka Panduan Penggunaan": "Open Usage Guide",          
             "Jangan tampilkan lagi": "Don't show again",
-			"Sebelumnya": "Previous",
-			"Selanjutnya": "Next",
+            "Sebelumnya": "Previous",
+            "Selanjutnya": "Next",
+			"TEKS ASLI": "ORIGINAL TEXT",
+			"Dapatkan saran baru": "Get new suggestions",
             
             "Harap simpan file terlebih dahulu untuk membuat progres.": "Please save the file first to track progress.",
             "Tidak ada file untuk diproses.": "No file to process.",
@@ -7294,11 +7585,12 @@ document.addEventListener("DOMContentLoaded", () => {
             "Entri kamus diperbarui!": "Dictionary entry updated!",
             "Entri baru ditambahkan!": "New entry added!",
             "Nama prompt dan konten tidak boleh kosong.": "Prompt name and content cannot be empty.",
-			"Sembunyikan": "Hide",
-			"Kolom API Key dipindahkan ke Pengaturan.": "API Key section moved to Settings.",
-			"Kunci API tidak ditemukan.": "API Key not found.",
+            "Sembunyikan": "Hide",
+            "Kolom API Key dipindahkan ke Pengaturan.": "API Key section moved to Settings.",
+            "Kunci API tidak ditemukan.": "API Key not found.",
             "Panduan Penggunaan": "Usage Guide",
-			"Panduan disembunyikan. Bisa dibuka kembali di Pengaturan.": "The guide is hidden. You can reopen it in Settings.",
+            "Panduan disembunyikan. Bisa dibuka kembali di Pengaturan.": "The guide is hidden. You can reopen it in Settings.",
+			"Memuat saran baru...": "Load new suggestions...",
             // PANDUAN PENGGUNAAN
             "1. Selamat Datang!": "1. Welcome!",
             "Aplikasi ini dirancang khusus untuk mengekstrak, mendekripsi, dan menerjemahkan file teks dari game retro J2ME (Gameloft) secara mudah.": "This app is specifically designed to easily extract, decrypt, and translate text files from retro J2ME games (Gameloft).",
