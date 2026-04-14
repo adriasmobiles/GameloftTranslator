@@ -1599,16 +1599,32 @@
             <p id="gl-upload-status-msg" class="text-sm font-semibold text-secondary">Menyiapkan file unggahan...</p>
         </div>
 
-        <div id="gl-upload-state-success" class="hidden space-y-4">
-            <p class="text-sm text-green-600 font-bold text-center"><i class="fas fa-check-circle"></i> Unggahan Berhasil!</p>
-            <div class="flex gap-2">
-                <input type="text" id="gl-external-link-val" readonly class="flex-grow p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-xs font-mono text-blue-600 outline-none focus:border-blue-500 transition-colors">
-                <button onclick="copyGlExternalLink()" class="btn-primary px-3 rounded-lg hover:shadow-md transition-shadow" title="Salin Tautan"><i class="fas fa-copy"></i></button>
-            </div>
-            <button onclick="openGlExternalInBrowser()" class="btn-primary w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow-md">
-                <i class="fas fa-external-link-alt"></i> BUKA DI TAB BARU
-            </button>
+        <div id="gl-upload-state-success" class="hidden space-y-5">
+    <div class="flex flex-col items-center gap-1">
+        <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500 shadow-sm border border-green-100">
+            <i class="fas fa-check-circle text-2xl"></i>
         </div>
+        <p class="text-xs font-black text-green-600 uppercase tracking-widest mt-2">Unggahan Berhasil!</p>
+    </div>
+
+    <div class="flex gap-2">
+        <input type="text" id="gl-external-link-val" readonly 
+               class="flex-grow text-[11px] bg-white/60 border border-white/80 rounded-2xl px-4 py-3 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)] font-mono text-blue-600" 
+               placeholder="Tautan akan muncul di sini...">
+        
+        <button onclick="copyGlExternalLink()" 
+                class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-5 rounded-2xl transition-all shadow-md hover:shadow-blue-200 active:scale-95 flex items-center justify-center border border-white/20" 
+                title="Salin Tautan">
+            <i class="fas fa-copy text-sm"></i>
+        </button>
+    </div>
+
+    <button onclick="openGlExternalInBrowser()" 
+            class="w-full py-4 rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-[0_10px_25px_rgba(37,99,235,0.25)] hover:shadow-[0_15px_300px_rgba(37,99,235,0.35)] hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 mt-2 border border-white/20">
+        <i class="fas fa-external-link-alt text-xs"></i>
+        <span>BUKA DI TAB BARU</span>
+    </button>
+</div>
     </div>
 	
 	<div id="tutorialModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
@@ -2559,20 +2575,29 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
             
             // --- EFEK AURA WARNA DINAMIS PADA JUDUL ---
             const titleHighlight = document.getElementById('appTitleHighlight');
+            
+            // Definisikan warna asli (Biru Cyan)
+            const defaultGradient = ['from-blue-600', 'to-cyan-500'];
+            
+            // Koleksi palet gradasi neon premium (Tanpa biru, agar pasti berubah)
+            const gradientPairs = [
+                ['from-green-500', 'to-emerald-400'],// Hijau Zamrud
+                ['from-purple-600', 'to-pink-500'],  // Ungu ke Pink
+                ['from-red-500', 'to-orange-500'],   // Merah ke Oranye
+                ['from-amber-400', 'to-orange-500'], // Kuning Emas
+                ['from-indigo-500', 'to-purple-500'],// Biru Indigo
+                ['from-teal-400', 'to-emerald-500'], // Tosca
+                ['from-fuchsia-500', 'to-rose-500']  // Fuchsia Terang
+            ];
+
+            // Gabungkan semua kelas untuk proses pembersihan
+            const allPossibleGradients = [...defaultGradient, ...gradientPairs.flat()];
+            
             if (titleHighlight) {
-                // Koleksi palet gradasi eksklusif (Sesuai dengan 4 Titik Tema Aplikasi)
-                const gradientPairs = [
-                    ['from-blue-600', 'to-cyan-500'],     // 1. Biru
-                    ['from-red-500', 'to-rose-400'],      // 2. Merah
-                    ['from-yellow-300', 'to-yellow-500'],  // 3. Kuning
-                    ['from-green-500', 'to-emerald-400']  // 4. Hijau
-                ];
+                // 1. Bersihkan semua warna
+                titleHighlight.classList.remove(...allPossibleGradients);
                 
-                // Bersihkan semua sisa warna gradasi sebelumnya
-                const allGradientClasses = gradientPairs.flat();
-                titleHighlight.classList.remove(...allGradientClasses);
-                
-                // Pilih satu warna baru secara acak seperti rolet
+                // 2. Terapkan warna acak saat notifikasi muncul
                 const randomPair = gradientPairs[Math.floor(Math.random() * gradientPairs.length)];
                 titleHighlight.classList.add(...randomPair);
             }
@@ -2606,7 +2631,15 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
             if (window.notificationTimer) clearTimeout(window.notificationTimer);
             
             window.notificationTimer = setTimeout(() => {
+                // Sembunyikan notifikasi
                 appNotification.classList.remove('show');
+                
+                // 3. KEMBALIKAN IDENTITAS ASLI (Biru) saat notifikasi hilang
+                if (titleHighlight) {
+                    titleHighlight.classList.remove(...allPossibleGradients);
+                    titleHighlight.classList.add(...defaultGradient);
+                }
+                
             }, duration);
         }
 
@@ -7724,7 +7757,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Teks tidak valid, otomatis melompat ke berikutnya...": "Invalid text, auto-skipping to next...",
             "Data tidak dimuat. Silakan proses file.": "Data not loaded. Please process a file.",
             "File berhasil diunggah!": "File uploaded successfully!",
-            "Mengunggah file...": "Uploading file...",
+            "Mengunggah File...": "Uploading File...",
             "Gagal: Periksa koneksi internet.": "Failed: Check internet connection.",
             "Simpan Otomatis diaktifkan.": "Auto Save enabled.",
             "Simpan Otomatis dinonaktifkan.": "Auto Save disabled.",
