@@ -1277,9 +1277,9 @@
         
         <div class="relative px-6 py-5 bg-white/40 backdrop-blur-xl border-b border-white/60 flex justify-between items-center z-10 shrink-0">
             <h3 class="text-xl font-black text-gray-900 tracking-tight">Kamus Lokal</h3>
-            <button id="closeDictionaryModalBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Tutup">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button id="closeDictionaryModalBtn" class="control-button close-btn shadow-sm" title="Tutup">
+    <i class="fa-solid fa-xmark"></i>
+</button>
         </div>
         
         <div class="p-4 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-4" id="dictionaryScrollContainer">
@@ -1374,9 +1374,9 @@
         
         <div class="relative px-6 py-5 bg-white/40 backdrop-blur-xl border-b border-white/60 flex justify-between items-center z-10 shrink-0">
             <h3 class="text-xl font-black text-gray-900 tracking-tight">Pengaturan</h3>
-            <button id="closeSettingsModalBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Tutup">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button id="closeSettingsModalBtn" class="control-button close-btn shadow-sm" title="Tutup">
+    <i class="fa-solid fa-xmark"></i>
+</button>
         </div>
         
         <div class="p-4 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-6 bg-transparent">
@@ -1476,9 +1476,9 @@
     <div id="livePromptModal" class="modal-content fixed z-50 hidden flex-col bg-gray-50/95 overflow-hidden shadow-2xl transition-all duration-300 !w-full !max-w-none !h-[100dvh] !max-h-[100dvh] !top-0 !left-0 !transform-none !rounded-none sm:!w-[85%] sm:!max-w-sm sm:!h-auto sm:!max-h-[65vh] sm:!top-1/2 sm:!left-1/2 sm:!-translate-x-1/2 sm:!-translate-y-1/2 sm:!rounded-2xl pb-24 sm:pb-0">
         <div class="relative px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm shrink-0">
             <h3 class="text-lg font-bold text-gray-800">Daftar Live Prompt</h3>
-            <button id="closeLivePromptModalBtn" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button id="closeLivePromptModalBtn" class="control-button close-btn shadow-sm" title="Tutup">
+    <i class="fa-solid fa-xmark"></i>
+</button>
         </div>
         <div class="p-4 flex-grow overflow-y-auto">
             <div id="savedLivePromptsList" class="space-y-3">
@@ -2611,12 +2611,12 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
 
             button.disabled = true;
             
-            // 1. Set ikon menjadi spinner loading saat mulai mengecek
+            // Set ke spinner saat proses
             loader.className = 'fas fa-spinner fa-spin';
             loader.classList.remove('hidden');
 
             try {
-                // 2. Ganti model ke gemini-2.5-flash-lite agar respon jauh lebih cepat
+                // Menggunakan gemini-2.5-flash-lite untuk respon super cepat
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2627,11 +2627,11 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
                     await setSetting('geminiApiKey', apiKey);
                     showAppNotification("Kunci API VALID!", "success");
                     
-                    // 3. Ubah ikon menjadi Ceklis Hijau
-                    loader.className = 'fas fa-check-circle text-green-300 text-lg scale-110 transition-transform duration-300';
+                    // PERBAIKAN: Menggunakan fas fa-check murni tanpa kelas font-light 
+                    // agar ikon versi gratis (Solid) dijamin muncul
+                    loader.className = 'fas fa-check text-green-400 text-base scale-110 transition-transform duration-300';
                     
                     if (!apiKeySectionInitial.classList.contains('hidden')) {
-                        // Beri jeda 1 detik agar pengguna bisa melihat ceklis hijau sebelum menu disembunyikan
                         setTimeout(() => {
                             apiKeySectionInitial.classList.add('hidden');
                             apiKeySectionSettings.classList.remove('hidden');
@@ -2645,17 +2645,15 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
             } catch (error) {
                 showAppNotification(`Kunci API tidak valid: ${error.message}`, "error");
                 
-                // 4. Ubah ikon menjadi Silang Merah
-                loader.className = 'fas fa-times-circle text-red-300 text-lg scale-110 transition-transform duration-300';
+                // PERBAIKAN: Ikon silang merah murni (Solid)
+                loader.className = 'fas fa-xmark text-red-500 text-base scale-110 transition-transform duration-300';
                 
-            } finally {
-                button.disabled = false;
-                
-                // 5. Hilangkan ikon setelah 2 detik dan kembalikan kelasnya ke status awal (spinner)
+                // Jika gagal, hilangkan setelah 2 detik agar pengguna bisa mencoba lagi
                 setTimeout(() => {
                     loader.classList.add('hidden');
-                    loader.className = 'fas fa-spinner fa-spin hidden';
                 }, 2000);
+            } finally {
+                button.disabled = false;
             }
         }
 		
@@ -5211,10 +5209,11 @@ function handleTranslateAllShortPress() {
         <h3 id="modalFileTitle" class="text-xl font-black text-gray-900 tracking-tight transition-all duration-300">Berkas Tersimpan</h3>
         
         <div class="flex items-center gap-2">
-            <button id="toggleSearchBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95">
+            <button id="toggleSearchBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Cari Berkas">
                 <i class="fa-solid fa-magnifying-glass text-sm"></i>
             </button>
-            <button id="closeSaveFileModalBtn" class="w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-gray-600 transition-all shadow-sm active:scale-95" title="Tutup">
+            
+            <button id="closeSaveFileModalBtn" class="control-button close-btn shadow-sm" title="Tutup">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
@@ -7193,9 +7192,9 @@ document.getElementById('navBtnFolder').addEventListener('click', () => {
     modal.innerHTML = `
         <div class="relative px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm shrink-0">
             <h3 class="text-lg font-bold text-gray-800">Berkas Tersimpan</h3>
-            <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors" onclick="document.getElementById('saveFileModal').classList.add('hidden');updateOverlayVisibility();">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button class="control-button close-btn shadow-sm" onclick="document.getElementById('saveFileModal').classList.add('hidden');updateOverlayVisibility();" title="Tutup">
+    <i class="fa-solid fa-xmark"></i>
+</button>
         </div>
         <div class="flex items-center justify-center flex-grow bg-gray-50">
             <div class="text-center">
