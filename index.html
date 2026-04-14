@@ -1391,7 +1391,7 @@
                             </div>
                             <div class="flex-grow">
                                 <h5 class="text-sm font-bold text-gray-800 leading-tight">Kunci API Gemini</h5>
-                                <p class="text-[10px] text-gray-500 font-medium">Tersimpan secara lokal di peramban.</p>
+                                <p class="text-[10px] text-gray-500 font-medium">Tersimpan secara lokal di aplikasi.</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
@@ -1419,7 +1419,7 @@
                             </div>
                             <div>
                                 <div class="text-sm font-bold text-gray-800">Simpan Otomatis</div>
-                                <div class="text-[10px] text-gray-500 font-medium leading-tight">Simpan saat menutup jendela.</div>
+                                <div class="text-[10px] text-gray-500 font-medium leading-tight">Simpan saat menutup editor.</div>
                             </div>
                         </div>
                         <div class="relative">
@@ -2594,6 +2594,7 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
             const keyFromInput = apiKeyInput.value.trim() || apiKeyInputSettings.value.trim();
             return keyFromInput;
         }
+		
         async function validateApiKey() {
             const apiKey = await getGeminiApiKey();
             if (!apiKey) {
@@ -2609,22 +2610,33 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
             }
 
             button.disabled = true;
+            
+            // 1. Set ikon menjadi spinner loading saat mulai mengecek
+            loader.className = 'fas fa-spinner fa-spin';
             loader.classList.remove('hidden');
 
             try {
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`, {
+                // 2. Ganti model ke gemini-2.5-flash-lite agar respon jauh lebih cepat
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "cek" }] }] })
                 });
+                
                 if (response.ok) {
                     await setSetting('geminiApiKey', apiKey);
                     showAppNotification("Kunci API VALID!", "success");
+                    
+                    // 3. Ubah ikon menjadi Ceklis Hijau
+                    loader.className = 'fas fa-check-circle text-green-300 text-lg scale-110 transition-transform duration-300';
+                    
                     if (!apiKeySectionInitial.classList.contains('hidden')) {
-                        apiKeySectionInitial.classList.add('hidden');
-                        apiKeySectionSettings.classList.remove('hidden');
-                        apiKeyInputSettings.value = apiKey;
+                        // Beri jeda 1 detik agar pengguna bisa melihat ceklis hijau sebelum menu disembunyikan
+                        setTimeout(() => {
+                            apiKeySectionInitial.classList.add('hidden');
+                            apiKeySectionSettings.classList.remove('hidden');
+                            apiKeyInputSettings.value = apiKey;
+                        }, 1000);
                     }
                 } else {
                     const errorData = await response.json();
@@ -2632,11 +2644,21 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
                 }
             } catch (error) {
                 showAppNotification(`Kunci API tidak valid: ${error.message}`, "error");
+                
+                // 4. Ubah ikon menjadi Silang Merah
+                loader.className = 'fas fa-times-circle text-red-300 text-lg scale-110 transition-transform duration-300';
+                
             } finally {
                 button.disabled = false;
-                loader.classList.add('hidden');
+                
+                // 5. Hilangkan ikon setelah 2 detik dan kembalikan kelasnya ke status awal (spinner)
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    loader.className = 'fas fa-spinner fa-spin hidden';
+                }, 2000);
             }
         }
+		
         function updateOverlayVisibility() {
     const modals = [modal, batchTranslateModal, aiSuggestionModal, saveFileModal, confirmationModal, viewDictionaryModal, addDictionaryEntryModal, settingsModal, livePromptModal, dictionaryCacheModal, addLivePromptEntryModal, livePromptShortcutModal];
     const anyModalOpen = modals.some(m => m && !m.classList.contains('hidden'));
@@ -5269,6 +5291,7 @@ function handleTranslateAllShortPress() {
                 saveFileModal.classList.add('hidden');
                 if (currentEditPIndex !== -1) modal.classList.remove('hidden');
                 updateOverlayVisibility();
+				restoreHomeState();
             };
             document.getElementById('saveCurrentFileModalBtn').onclick = () => saveCurrentFile();
             document.getElementById('deleteAllFilesBtn').onclick = () => {
@@ -5488,6 +5511,7 @@ function handleTranslateAllShortPress() {
         function closeSettingsModal() {
             settingsModal.classList.add('hidden');
             updateOverlayVisibility();
+			restoreHomeState();
         }
 
 
@@ -5540,6 +5564,7 @@ async function showAddLivePromptModal(promptIdToEdit = null) {
         function closeLivePromptModal() {
             livePromptModal.classList.add('hidden');
             updateOverlayVisibility();
+			restoreHomeState();
         }
         function generateUUID() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -6718,6 +6743,7 @@ document.getElementById('saveDictCacheEntryBtn').onclick = async () => {
             document.getElementById('closeDictionaryModalBtn').addEventListener('click', () => {
                 document.getElementById('viewDictionaryModal').classList.add('hidden');
                 updateOverlayVisibility();
+				restoreHomeState();
             });
             document.getElementById('closeAddDictEntryModalBtn').addEventListener('click', closeAddDictionaryEntryModal);
             closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
@@ -7100,6 +7126,30 @@ document.querySelectorAll('.nav-item').forEach(button => {
     });
 });
 
+// --- TAMBAHKAN FUNGSI INI ---
+function restoreHomeState() {
+    // 1. Munculkan kembali FAB jika ada data game yang dimuat
+    if (parsedData) {
+        updateFloatingButtonStates();
+    }
+    
+    // 2. Kembalikan status aktif (warna biru) navigasi ke tombol "Beranda"
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('text-blue-600', 'font-bold');
+        btn.classList.add('text-gray-500', 'font-medium');
+        const span = btn.querySelector('span');
+        if(span) span.classList.remove('font-bold');
+    });
+    
+    const homeBtn = document.getElementById('navBtnHome');
+    if (homeBtn) {
+        homeBtn.classList.remove('text-gray-500', 'font-medium');
+        homeBtn.classList.add('text-blue-600', 'font-bold');
+        const activeSpan = homeBtn.querySelector('span');
+        if(activeSpan) activeSpan.classList.add('font-bold');
+    }
+}
+
 function closeAllMainModals() {
     const mainModals = [
         'saveFileModal', 
@@ -7217,6 +7267,7 @@ document.getElementById('navBtnSettings').addEventListener('click', () => {
                 if (typeof closeAllMainModals === 'function') {
                     closeAllMainModals();
                     modalOverlay.classList.add('hidden');
+					restoreHomeState();
                 }
                 return; // Hentikan fungsi di sini, jangan tampilkan notifikasi keluar
             }
@@ -7412,6 +7463,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			"Terjemahan...": "Translation...",
             "SIMPAN ENTRI": "SAVE ENTRY",
             "CEK": "CHECK",
+			
             
             // --- KOSAKATA LAMA (TETAP DIPERTAHANKAN) ---
             "Total": "Total",
@@ -7538,7 +7590,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Tidak ada hasil ditemukan.": "No results found.",
             "Memuat kamus...": "Loading dictionary...",
             "Tidak ada hasil.": "No results.",
-            "Kamus Kosong.": "Dictionary Empty.",
+            "Kamus masih kosong.": "Dictionary empty.",
             "Tidak ada prompt.": "No prompts yet.",
             "Memuat prompt tersimpan...": "Loading saved prompts...",
             "Memuat prompt...": "Loading prompts...",
@@ -7555,6 +7607,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "Selanjutnya": "Next",
 			"TEKS ASLI": "ORIGINAL TEXT",
 			"Dapatkan saran baru": "Get new suggestions",
+			"Tersimpan secara lokal di aplikasi.": "Stored locally in the app.",
+			"Simpan saat menutup editor.": "Save when closing editor.",
+			"Model AI lebih cerdas (lebih lambat).": "Smarter AI models (slower).",
+			"Muat file rujukan untuk revisi.": "Upload reference files for revision.",
             
             "Harap simpan file terlebih dahulu untuk membuat progres.": "Please save the file first to track progress.",
             "Tidak ada file untuk diproses.": "No file to process.",
@@ -7672,6 +7728,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Logika Regex 2 Arah (ID <-> EN)
     const dynamicPatterns = [
 		{ regexID: /Gagal memuat saran: (.*)/g, replaceEN: "Failed to load suggestions: $1", regexEN: /Failed to load suggestions: (.*)/g, replaceID: "Gagal memuat saran: $1" },
+		{ regexID: /Kunci API tidak valid: (.*)/g, replaceEN: "Invalid API Key: $1", regexEN: /Invalid API Key: (.*)/g, replaceID: "Kunci API tidak valid: $1" },
         { regexID: /Kunci API Gemini tidak ditemukan\./g, replaceEN: "Gemini API Key not found.", regexEN: /Gemini API Key not found\./g, replaceID: "Kunci API Gemini tidak ditemukan." },
 		{ regexID: /Panjang: (\d+)\/(\d+)/g, replaceEN: "Length: $1/$2", regexEN: /Length: (\d+)\/(\d+)/g, replaceID: "Panjang: $1/$2" },
 		{ regexID: /Teks: (\d+)/g, replaceEN: "Text: $1", regexEN: /Text: (\d+)/g, replaceID: "Teks: $1" },
