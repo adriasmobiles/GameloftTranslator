@@ -19,15 +19,15 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            /* TEMA iOS 'INTELLIGENCE GLOW' */
-            background: linear-gradient(300deg, #a1b4e4, #c5bced, #9cd3f0, #e2c2e8, #aed9e0);
+            /* Latar belakang dasar abu-abu sangat muda/keperakan agar efek RGB menyala */
+            background: linear-gradient(300deg, #f8fafc, #e2e8f0, #f1f5f9, #eef2ff);
             background-size: 400% 400%;
             animation: gradientBackground 30s ease-in-out infinite;
             
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            padding: 0; /* UBAH: Padding kita jadikan 0 agar bisa full-screen di HP */
+            padding: 0; 
             box-sizing: border-box;
             color: #1c1c1e;
         }
@@ -66,14 +66,55 @@
         }
 
 
-        .app-container {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: #1f1f1f;
-            max-width: 42rem;
-            flex-shrink: 0;
-        }
+        /* =======================================================
+   1. KONTAINER UTAMA (GLASSMORPHISM YANG RAMAH HP)
+   ======================================================= */
+.app-container {
+    position: relative; 
+    z-index: 10; 
+    
+    /* Warna putih transparan yang aman untuk menembuskan cahaya */
+    background: rgba(255, 255, 255, 0.2) !important; 
+    
+    /* Efek Kaca */
+    -webkit-backdrop-filter: blur(30px) saturate(150%);
+    backdrop-filter: blur(30px) saturate(150%);
+    
+    /* TRIK ANTI-GLITCH HP: Memaksa layer ini dirender terpisah oleh GPU */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #1f1f1f;
+    max-width: 42rem;
+    flex-shrink: 0;
+    box-shadow: 0 0 40px rgba(0,0,0,0.05);
+}
+
+/* =======================================================
+   2. BOLA RGB DINAMIS (DIJAMIN MUNCUL DI BELAKANG)
+   ======================================================= */
+.ios-glow-orb {
+    position: fixed; 
+    border-radius: 50%;
+    
+    /* Z-index 0 untuk memastikannya di belakang kontainer (z-index 10) */
+    z-index: 0; 
+    pointer-events: none; 
+    
+    /* HAPUS mix-blend-mode karena HP sering gagal merendernya dengan blur. 
+       Ganti dengan opacity standar yang aman di semua perangkat */
+    opacity: 0.7;
+    
+    /* Blur diterapkan langsung pada bolanya */
+    filter: blur(80px);
+    -webkit-filter: blur(80px);
+
+    /* TRIK ANTI-GLITCH HP UNTUK ANIMASI */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, top, left;
+}
 
         .text-main { color: #1f1f1f; }
         .text-secondary { color: #4b5563; }
@@ -855,65 +896,55 @@
 }
 
 /* =======================================================
-   iOS 26 DYNAMIC INTELLIGENCE GLOW
+   VIBRANT DYNAMIC RGB GLOW (DIJAMIN MENYALA)
    ======================================================= */
-.ios-glow-orb {
-    position: absolute;
-    border-radius: 50%;
-    /* Efek blur yang sangat tinggi agar warnanya menyebar halus */
-    filter: blur(60px);
-    opacity: 0.65;
-    /* Animasi mengambang dan bernapas yang terus berulang */
-    animation: orbFloat 12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-}
 
-/* Biru Cerah (Kanan Atas) */
+/* Warna 1: Magenta / Pink Neon */
 .orb-1 {
-    width: 16rem; height: 16rem;
-    background: radial-gradient(circle, rgba(59,130,246,0.9) 0%, rgba(59,130,246,0) 70%);
-    top: -10%; right: -10%;
-    animation-delay: 0s;
-    animation-duration: 14s;
+    width: 600px; height: 600px; /* Ukuran pasti, bukan vw */
+    background: radial-gradient(circle, rgba(236,72,153, 0.8) 0%, rgba(236,72,153, 0) 70%);
+    top: -150px; right: -150px;
+    animation: orbFloat1 14s infinite alternate ease-in-out;
 }
 
-/* Ungu Elegan (Kiri Bawah) */
+/* Warna 2: Cyan / Tosca Cerah */
 .orb-2 {
-    width: 20rem; height: 20rem;
-    background: radial-gradient(circle, rgba(168,85,247,0.85) 0%, rgba(168,85,247,0) 70%);
-    bottom: -15%; left: -15%;
-    animation-delay: -4s;
-    animation-duration: 18s;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(6,182,212, 0.8) 0%, rgba(6,182,212, 0) 70%);
+    bottom: -200px; left: -200px;
+    animation: orbFloat2 18s infinite alternate ease-in-out;
 }
 
-/* Cyan/Tosca Terang (Menjelajah di tengah) */
+/* Warna 3: Indigo / Biru Elektrik */
 .orb-3 {
-    width: 14rem; height: 14rem;
-    background: radial-gradient(circle, rgba(6,182,212,0.8) 0%, rgba(6,182,212,0) 70%);
-    top: 30%; left: 20%;
-    animation-delay: -8s;
-    animation-duration: 20s;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(99,102,241, 0.8) 0%, rgba(99,102,241, 0) 70%);
+    top: 20%; left: 10%;
+    animation: orbFloat3 16s infinite alternate ease-in-out;
 }
 
-/* Keyframes untuk pergerakan organik (tidak kaku) */
-@keyframes orbFloat {
-    0% { 
-        transform: translate(0, 0) scale(1) rotate(0deg); 
-    }
-    33% { 
-        transform: translate(-40px, 50px) scale(1.15) rotate(15deg); 
-    }
-    66% { 
-        transform: translate(30px, -30px) scale(0.9) rotate(-10deg); 
-    }
-    100% { 
-        transform: translate(-20px, -40px) scale(1.05) rotate(5deg); 
-    }
+/* Keyframes dipecah agar gerakan lebih natural tanpa merusak layout */
+@keyframes orbFloat1 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-50px, 80px) scale(1.1); }
+}
+@keyframes orbFloat2 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, -60px) scale(1.15); }
+}
+@keyframes orbFloat3 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-40px, -70px) scale(1.2); }
 }
 
 </style>
 </head>
 <body>
     <div class="app-container w-full mx-auto rounded-2xl shadow-2xl p-6 flex flex-col h-[90vh]">
+        
+        <div class="ios-glow-orb orb-1"></div>
+        <div class="ios-glow-orb orb-2"></div>
+        <div class="ios-glow-orb orb-3"></div>
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg rounded-b-3xl rounded-t-2xl border-x border-b border-white/50 transition-all duration-300 mx-1 mt-1 mb-4">
     
     <header id="appHeader" class="flex flex-col gap-5 mb-4 pb-2 px-4 sm:px-6 pt-6 relative z-50 w-full transition-all duration-300">
@@ -1087,12 +1118,7 @@
             
             <div class="relative overflow-hidden bg-white/45 backdrop-blur-[30px] border border-white/70 rounded-[2rem] p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] mb-6 mx-1 transition-all duration-500 group">
     
-    <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-[2rem]">
-        <div class="ios-glow-orb orb-1"></div>
-        <div class="ios-glow-orb orb-2"></div>
-        <div class="ios-glow-orb orb-3"></div>
-    </div>
-
+    
     <div class="space-y-4 relative z-10">
         
         <div>
@@ -1101,15 +1127,16 @@
                 <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Siapkan Data Game</p>
             </div>
             
-            <div class="flex flex-col sm:flex-row items-center gap-3 bg-white/40 p-2 rounded-3xl border border-white/50 backdrop-blur-md">
-                <label for="fileInput" class="w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500/80 via-blue-500/80 to-indigo-500/80 backdrop-blur-xl border border-white/60 text-white text-sm font-bold tracking-wide hover:from-cyan-400/90 hover:via-blue-400/90 hover:to-indigo-400/90 hover:shadow-[0_8px_20px_rgba(59,130,246,0.3)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer text-center active:scale-95 shadow-sm">
-                    Pilih File
-                </label>
-                
-                <input type="file" id="fileInput" class="hidden">
-                <span id="selectedFileNameDisplay" class="text-xs font-semibold text-gray-600 truncate max-w-[200px] ml-1">Belum ada berkas</span>
-                
-                <div id="originalFileInputContainer" class="hidden ml-auto">
+            <div class="flex flex-row items-center gap-3 bg-white/40 p-2 rounded-3xl border border-white/50 backdrop-blur-md">
+    
+    <label for="fileInput" class="w-auto px-6 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500/80 via-blue-500/80 to-indigo-500/80 backdrop-blur-xl border border-white/60 text-white text-sm font-bold tracking-wide hover:from-cyan-400/90 hover:via-blue-400/90 hover:to-indigo-400/90 hover:shadow-[0_8px_20px_rgba(59,130,246,0.3)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer text-center active:scale-95 shadow-sm">
+        Pilih File
+    </label>
+    
+    <input type="file" id="fileInput" class="hidden">
+    <span id="selectedFileNameDisplay" class="text-xs font-semibold text-gray-600 truncate max-w-[200px] ml-1">Belum ada berkas</span>
+    
+    <div id="originalFileInputContainer" class="hidden ml-auto">
                     <label for="originalFileInput" class="w-9 h-9 flex items-center justify-center bg-white/80 hover:bg-white rounded-xl cursor-pointer transition-all border border-gray-200 shadow-sm" title="Impor Teks Asli">
                         <i class="fas fa-language text-blue-600"></i>
                     </label>
@@ -1327,12 +1354,12 @@
         <div class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
             <div class="space-y-1.5">
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Teks Asli</label>
-                <textarea id="newOriginalText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[80px]" placeholder="Kata asli..."></textarea>
+                <textarea id="newOriginalText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[80px]" placeholder="Teks Asli"></textarea>
             </div>
             
             <div class="space-y-1.5">
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
-                <textarea id="newTranslatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[80px]" placeholder="Terjemahan..."></textarea>
+                <textarea id="newTranslatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner resize-none min-h-[80px]" placeholder="Terjemahan"></textarea>
             </div>
         </div>
 
@@ -7096,12 +7123,18 @@ document.getElementById('navBtnHome').addEventListener('click', () => {
     document.getElementById('modalOverlay').classList.add('hidden');
     document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
     
+    // TAMBAHKAN LOGIKA INI:
+    if (parsedData) {
+        updateFloatingButtonStates(); // Akan otomatis memunculkan FAB karena editor tidak hidden
+    }
+    
     const bottomNavbar = document.getElementById('bottomNavbar');
     if (bottomNavbar) bottomNavbar.classList.remove('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
 });
 
 document.getElementById('navBtnFolder').addEventListener('click', () => {
     closeAllMainModals(); 
+	floatingButtonsContainer.classList.add('hidden');
     const modal = document.getElementById('saveFileModal');
    
     modal.classList.remove('hidden');
@@ -7128,6 +7161,7 @@ document.getElementById('navBtnFolder').addEventListener('click', () => {
 
 document.getElementById('navBtnDictionary').addEventListener('click', () => {
     closeAllMainModals(); 
+	floatingButtonsContainer.classList.add('hidden');
     const modal = document.getElementById('viewDictionaryModal');
     
     modal.classList.remove('hidden');
@@ -7143,6 +7177,7 @@ document.getElementById('navBtnDictionary').addEventListener('click', () => {
 
 document.getElementById('navBtnLivePrompt').addEventListener('click', async () => {
     closeAllMainModals(); 
+	floatingButtonsContainer.classList.add('hidden');
     
     document.getElementById('settingsModal').classList.add('hidden');
     const modal = document.getElementById('livePromptModal');
@@ -7159,6 +7194,7 @@ document.getElementById('navBtnLivePrompt').addEventListener('click', async () =
 
 document.getElementById('navBtnSettings').addEventListener('click', () => {
     closeAllMainModals(); 
+	floatingButtonsContainer.classList.add('hidden');
     showSettingsModal();
 });
 
@@ -7373,6 +7409,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Cari entri kamus...": "Search dictionary entries...",
             "Tambah Entri": "Add Entry",
             "Teks Asli": "Original Text",
+			"Terjemahan...": "Translation...",
             "SIMPAN ENTRI": "SAVE ENTRY",
             "CEK": "CHECK",
             
@@ -7590,6 +7627,28 @@ document.addEventListener("DOMContentLoaded", () => {
             "Kunci API tidak ditemukan.": "API Key not found.",
             "Panduan Penggunaan": "Usage Guide",
             "Panduan disembunyikan. Bisa dibuka kembali di Pengaturan.": "The guide is hidden. You can reopen it in Settings.",
+			
+			// --- PERBAIKAN TEKS YANG TERLEWAT ---
+            "Apakah Anda yakin ingin menghapus prompt ini?": "Are you sure you want to delete this prompt?",
+            "Apakah Anda yakin ingin menghapus entri ini?": "Are you sure you want to delete this entry?",
+            "Saran AI menggunakan Mode Cepat. Gunakan tombol muat ulang untuk Mode Akurat.": "AI Suggestion uses Fast Mode. Use reload button for Accurate Mode.",
+            "Beralih ke Mode Akurat. Proses lebih lama tapi hasil lebih baik.": "Switching to Accurate Mode. Slower process but better results.",
+            "Tidak ada teks terjemahan valid yang bisa ditambahkan.": "No valid translated text could be added.",
+            "Semua teks yang dipilih sudah diterjemahkan dan sakelar ON.": "All selected texts are already translated and toggle is ON.",
+            "Terjadi error. Mode seleksi dibatalkan, silakan coba lagi.": "Error occurred. Selection mode cancelled, please try again.",
+            "Semua teks di paragraf ini sudah diterjemahkan. Pilih teks spesifik dan matikan sakelar untuk menerjemahkan ulang.": "All texts in this paragraph are translated. Select specific text and turn off toggle to re-translate.",
+            "Tidak ada file yang diproses.": "No file processed.",
+            "Paragraf ini kosong atau rusak.": "This paragraph is empty or corrupted.",
+            "Teks terlalu panjang (maks 3 baris / 150 huruf). Buka Kamus dan tambahkan secara manual.": "Text too long (max 3 lines / 150 chars). Open Dictionary and add manually.",
+            "Teks asli dan terjemahan tidak boleh kosong.": "Original text and translation cannot be empty.",
+            "Panjang teks tidak cocok! Penanda merah ditambahkan.": "Text length mismatch! Red marker added.",
+            "Tekan sekali lagi untuk keluar.": "Press once again to exit.",
+            "Menyiapkan file unggahan...": "Preparing file for upload...",
+            "Unggahan Berhasil!": "Upload Successful!",
+            "Salin Tautan": "Copy Link",
+            "BUKA DI TAB BARU": "OPEN IN NEW TAB",
+            "Belum ada file tersimpan.": "No saved files yet.",
+			
 			"Memuat saran baru...": "Load new suggestions...",
             // PANDUAN PENGGUNAAN
             "1. Selamat Datang!": "1. Welcome!",
