@@ -1110,34 +1110,50 @@
 }
 
 /* =========================================================
-   MODE KOMPAK: HANYA AKTIF SAAT KEYBOARD MUNCUL
+   FIX FINAL: MODE KOMPAK & DOCKING KEYBOARD
    ========================================================= */
-.keyboard-active > div {
-    padding: 12px 16px !important; /* Kurangi padding luar agar tidak makan tempat */
+
+/* Mengubah bentuk modal putih saat keyboard muncul */
+#editModal.keyboard-active {
+    top: auto !important; /* Matikan jangkar tengah */
+    transform: translateX(-50%) !important; /* Hentikan pergeseran vertikal */
+    width: 100% !important;
+    max-width: 100% !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding: 16px 20px !important; /* Kurangi padding agar lebih luas */
 }
 
-/* 1. Sembunyikan Judul "Text Editor" & Paragraf untuk meluaskan area */
-.keyboard-active > div > div:first-child h3,
-.keyboard-active > div > div:first-child p {
+/* Sembunyikan Judul "Text Editor" untuk menghemat ruang */
+#editModal.keyboard-active > div.text-center.mb-4.mt-2 {
     display: none !important;
 }
 
-/* 2. Rapatkan jarak navigasi "< TEXT 4 of 69 >" */
-.keyboard-active > div .flex.items-center.justify-between.mb-4 {
-    margin-bottom: 8px !important;
-    padding: 2px 0 !important;
+/* Rapatkan area navigasi "< TEXT 1 OF 69 >" */
+#editModal.keyboard-active > div.flex.items-center.justify-between.mb-4 {
+    margin-bottom: 10px !important;
+    padding: 4px !important;
 }
 
-/* 3. Maksimalkan tinggi kolom terjemahan */
-.keyboard-active > div textarea {
-    min-height: 120px !important; /* Area ketik jadi sangat lega */
-    font-size: 14px !important;
+/* Biarkan area kotak teks terjemahan membesar secara natural */
+#editModal.keyboard-active #translatedText {
+    min-height: 100px !important; 
+    flex-grow: 1 !important; 
 }
 
-/* 4. Pastikan deretan tombol bawah bergeser naik dan tidak terpotong */
-.keyboard-active > div .flex.gap-3.mt-6 {
-    margin-top: 8px !important;
-    padding-bottom: 4px !important;
+/* Hilangkan batasan tinggi pada body modal agar teks tidak terjepit */
+#editModal.keyboard-active #editModalBody {
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Rapatkan jarak tombol "AI Suggestion" & "Translate" di bagian bawah */
+#editModal.keyboard-active > div.flex.gap-3.pt-5.mt-2 {
+    padding-top: 12px !important;
+    margin-top: 0 !important;
 }
 
 </style>
@@ -7336,62 +7352,36 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
             }
 			
 			// =====================================================================
-            // FIX FINAL: KUNCI PIKSEL MUTLAK & MODE KOMPAK (ANTI TERPOTONG)
+            // FIX FINAL: KUNCI PIKSEL MUTLAK (DIJAMIN TIDAK BERANTAKAN)
             // =====================================================================
             if (window.visualViewport) {
                 const handleKeyboardResize = () => {
-                    // Ambil overlay modal (Coba kedua ID yang biasa kamu gunakan)
-                    const modalOverlay = document.getElementById('editModal') || document.getElementById('edit-modal-overlay');
-                    if (!modalOverlay || modalOverlay.classList.contains('hidden') || modalOverlay.style.display === 'none') return;
-
-                    // Ambil kotak putih modalnya secara langsung (Elemen anak pertama)
-                    const modalContent = modalOverlay.firstElementChild;
-                    if (!modalContent) return;
+                    // Ambil langsung kotak putih modalnya (ID yang benar: editModal)
+                    const modal = document.getElementById('editModal');
+                    if (!modal || modal.classList.contains('hidden')) return;
 
                     const vv = window.visualViewport;
+                    // Jika tinggi layar menyusut drastis, berarti keyboard terbuka
                     const isKeyboardOpen = vv.height < (window.screen.height * 0.8);
 
                     if (isKeyboardOpen) {
-                        // Aktifkan CSS Mode Kompak yang kita buat di atas
-                        modalOverlay.classList.add('keyboard-active');
+                        // 1. Tambahkan kelas penanda untuk mengubah CSS menjadi Mode Kompak
+                        modal.classList.add('keyboard-active');
                         
-                        // 1. KUNCI POSISI MUTLAK DI ATAS KEYBOARD (ANTI TERPOTONG)
+                        // 2. Hitung sisa ruang dari bawah layar fisik ke atas keyboard
                         const keyboardHeight = window.innerHeight - vv.height;
                         
-                        modalContent.style.position = 'fixed';
-                        modalContent.style.bottom = `${Math.max(0, keyboardHeight)}px`;
-                        modalContent.style.top = 'auto';
+                        // 3. Tempelkan modal putih tepat di atas keyboard
+                        modal.style.bottom = `${Math.max(0, keyboardHeight)}px`;
                         
-                        // Tetap di tengah layar secara horizontal
-                        modalContent.style.left = '50%'; 
-                        modalContent.style.transform = 'translateX(-50%)';
-                        
-                        // 2. MELEBAR 100% & BENTUK RATA BAWAH
-                        modalContent.style.width = '100%';
-                        modalContent.style.maxWidth = '100%';
-                        modalContent.style.borderBottomLeftRadius = '0';
-                        modalContent.style.borderBottomRightRadius = '0';
-                        
-                        // 3. BATASI TINGGI AGAR BISA DI-SCROLL JIKA MASIH KEPANJANGAN
-                        modalContent.style.maxHeight = `${vv.height}px`;
-                        modalContent.style.overflowY = 'auto';
+                        // 4. Batasi tinggi maksimal agar tidak menabrak batas atas HP
+                        modal.style.maxHeight = `${vv.height}px`;
 
                     } else {
-                        // KEMBALIKAN KE POSISI NORMAL (MELAYANG DI TENGAH) SAAT KEYBOARD DITUTUP
-                        modalOverlay.classList.remove('keyboard-active');
-                        
-                        modalContent.style.position = 'relative';
-                        modalContent.style.bottom = 'auto';
-                        modalContent.style.top = 'auto';
-                        modalContent.style.left = 'auto';
-                        modalContent.style.transform = 'none';
-                        
-                        // Kembalikan ke ukuran dan bentuk aslinya
-                        modalContent.style.width = '90%';
-                        modalContent.style.maxWidth = '400px'; 
-                        modalContent.style.borderBottomLeftRadius = '2rem'; 
-                        modalContent.style.borderBottomRightRadius = '2rem';
-                        modalContent.style.maxHeight = '85vh';
+                        // 5. Kembalikan ke posisi normal (Melayang di tengah) saat ditutup
+                        modal.classList.remove('keyboard-active');
+                        modal.style.bottom = 'auto'; // Hapus jangkar bawah
+                        modal.style.maxHeight = '70vh'; // Kembalikan tinggi asli
                     }
                 };
 
