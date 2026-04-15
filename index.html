@@ -6289,7 +6289,7 @@ allOptions.forEach(option => {
                 renderEditor();
                 showAppNotification(`Encoding: ${val.toUpperCase()}`, "success");
             }
-        }, 150); // 150ms adalah "sweet spot" untuk mengelabui mata pengguna HP
+        }, 350); // 150ms adalah "sweet spot" untuk mengelabui mata pengguna HP
     });
 });
 
@@ -7605,7 +7605,7 @@ document.getElementById('navBtnFolder').addEventListener('click', () => {
 
     setTimeout(() => {
         loadSavedFiles();
-    }, 10);
+    }, 350);
 });
 
 document.getElementById('navBtnDictionary').addEventListener('click', () => {
@@ -7621,7 +7621,7 @@ document.getElementById('navBtnDictionary').addEventListener('click', () => {
 
     setTimeout(() => {
         renderDictionaryList('dictionaryListContainer', 'dictionarySearchInput');
-    }, 10);
+    }, 350);
 });
 
 document.getElementById('navBtnLivePrompt').addEventListener('click', async () => {
@@ -7638,7 +7638,7 @@ document.getElementById('navBtnLivePrompt').addEventListener('click', async () =
 
     setTimeout(async () => {
         await renderLivePromptsList();
-    }, 10);
+    }, 350);
 });
 
 document.getElementById('navBtnSettings').addEventListener('click', () => {
