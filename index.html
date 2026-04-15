@@ -982,15 +982,15 @@
     overflow-y: auto !important; 
     display: flex;
     flex-direction: column;
-    height: auto !important;
-    max-height: 70vh !important; /* Ditinggikan agar kolom terjemahan dapat ruang maksimal */
+    height: auto !important; /* KUNCI 1: Biarkan konten yang menentukan tingginya secara alami */
+    max-height: 60vh !important; /* Batas wajar saat tidak ada keyboard */
 }
 
 #translatedText {
-    flex-grow: 1 !important; 
+    flex-grow: 1 !important; /* Membuat kotak memakan sisa ruang kosong secara otomatis */
     height: auto !important;
-    min-height: 180px !important; /* Kotak ngetik jauh lebih besar */
-    max-height: 350px !important; 
+    min-height: 250px !important; /* Tinggi minimal jauh lebih lega (sebelumnya 150px) */
+    max-height: 450px !important; /* Batas atas maksimal juga dibesarkan */
     overflow-y: auto !important;   
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1082,30 +1082,7 @@
     -webkit-transform: none !important;
 }
 
-/* --- OPTIMASI MOBILE: TENGAH SAAT DIAM, MENEMPEL SAAT KETIK --- */
-@media (max-width: 639px) {
-    #editModal {
-        /* Posisi default: Tengah Layar */
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        bottom: auto !important;
-        
-        width: 94% !important;
-        max-height: 80dvh !important; 
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }
 
-    /* Class khusus saat keyboard muncul (pemicu JS) */
-    #editModal.keyboard-active {
-        top: auto !important;
-        bottom: 0 !important;
-        transform: translate(-50%, 0) !important;
-        width: 100% !important;
-        border-bottom-left-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-    }
-}
 
 
 </style>
@@ -1346,15 +1323,15 @@
 
     <div id="modalOverlay" class="fixed inset-0 modal-overlay z-40 hidden"></div>
 
-    <div id="editModal" class="modal-content fixed z-50 p-5 sm:p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[94%] sm:w-[92%] max-w-[380px] h-auto max-h-[85vh] sm:max-h-[80vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+    <div id="editModal" class="modal-content fixed z-50 p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[70vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
         
-        <div class="absolute top-4 right-4 sm:top-5 sm:right-5 z-[60]">
+        <div class="absolute top-5 right-5 z-[60]">
             <button id="closeEditModalXBtn" class="control-button close-btn" title="Tutup">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
-        <div class="text-center mb-2 mt-1">
+        <div class="text-center mb-2 mt-2">
             <h3 class="text-lg font-black text-gray-900 tracking-tight">Penyunting Teks</h3>
         </div>
 
@@ -1368,9 +1345,17 @@
             </button>
         </div>
 
+        <div class="flex justify-center items-center gap-3 mb-3">
+            <i id="lengthLockToggle" class="fas fa-lock-open w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Kunci Panjang"></i>
+            <i id="openDictionaryCacheBtn" class="fa-solid fa-book w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan ke Kamus"></i>
+            <i id="livePromptShortcutBtn" class="fa-solid fa-bolt w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Live Prompt"></i>
+            <i id="contextModeBtn" class="fa-solid fa-circle-info w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Mode Konteks"></i>
+            <i id="saveProgressFromModalBtn" class="fa-solid fa-save w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan Progres"></i>
+        </div>
+
         <span id="textProgressDisplay" class="hidden"></span>
 
-        <div id="editModalBody" class="flex-grow flex flex-col space-y-3 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
+        <div id="editModalBody" class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
             
             <div class="flex-shrink-0 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-inner">
                 <button id="originalTextAccordionButton" class="w-full flex items-center justify-between text-left p-3 rounded-xl hover:bg-white/80 transition-colors" aria-expanded="true">
@@ -1378,37 +1363,30 @@
                     <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform"></i>
                 </button>
                 <div id="originalTextAccordionContent" class="px-3 pb-3">
-                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm cursor-pointer border border-white/60 shadow-sm max-h-[80px] overflow-y-auto custom-scrollbar"></div>
+                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm cursor-pointer border border-white/60 shadow-sm max-h-[140px] overflow-y-auto custom-scrollbar"></div>
                 </div>
             </div>
 
-            <div id="contextInputContainer" class="hidden space-y-1.5 flex-shrink-0">
+            <div class="flex justify-end px-1 -mb-3">
+                <span id="lengthDisplay" class="length-display text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pnjg: 0/0</span>
+            </div>
+
+            <div id="contextInputContainer" class="hidden space-y-1.5">
                 <label for="contextInputArea" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Konteks (Opsional)</label>
                 <textarea id="contextInputArea" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner" rows="2"></textarea>
             </div>
 
             <div class="space-y-1.5 flex-grow flex flex-col">
-                <label for="translatedText" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 hidden">Terjemahan</label>
-                <textarea id="translatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner min-h-[180px] flex-grow resize-none"></textarea>
+                <label for="translatedText" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
+                <textarea id="translatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner min-h-[80px] flex-grow resize-none"></textarea>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 mt-1 flex-shrink-0 border-t border-gray-200/50">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <i id="lengthLockToggle" class="fas fa-lock-open w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Kunci Panjang"></i>
-                <i id="openDictionaryCacheBtn" class="fa-solid fa-book w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan ke Kamus"></i>
-                <i id="livePromptShortcutBtn" class="fa-solid fa-bolt w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Live Prompt"></i>
-                <i id="contextModeBtn" class="fa-solid fa-circle-info w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Mode Konteks"></i>
-                <i id="saveProgressFromModalBtn" class="fa-solid fa-save w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan Progres"></i>
-            </div>
-            <span id="lengthDisplay" class="length-display text-[10px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Pnjg: 0/0</span>
-        </div>
-
-        <div class="flex items-center gap-3 pt-3 flex-shrink-0">
-            <button id="aiSuggestionButtonModal" class="flex-[0.85] py-3 sm:py-4 rounded-2xl bg-white/40 hover:bg-white text-blue-600 font-bold text-[10px] uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-1.5 border border-white/80">
+        <div class="flex items-center gap-3 pt-5 mt-2 flex-shrink-0">
+            <button id="aiSuggestionButtonModal" class="flex-[0.85] py-4 rounded-2xl bg-white/40 hover:bg-white text-blue-600 font-bold text-[10px] uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-1.5 border border-white/80">
                 <i class="fa-solid fa-robot"></i> Saran AI
             </button>
-            <button id="translateButton" class="flex-[1.15] py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-xs uppercase tracking-widest shadow-md shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-2">
+            <button id="translateButton" class="flex-[1.15] py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-xs uppercase tracking-widest shadow-md shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-2">
                 <i id="translateLoader" class="fas fa-spinner fa-spin hidden"></i><i class="fa-solid fa-wand-magic-sparkles"></i> Terjemahkan
             </button>
         </div>
@@ -7190,31 +7168,29 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
                 }
             });
             
-            // Logika saat area teks ditekan (Keyboard Muncul)
             translatedTextArea.addEventListener('focus', () => {
-                if (window.innerWidth < 640) {
-                    modal.classList.add('keyboard-active');
-                }
+                
 
+                // BARU: Lacak dan kunci guliran terus ke bawah selama keyboard bergerak naik
                 let scrollAttempts = 0;
                 const scrollInterval = setInterval(() => {
                     const modalBody = document.getElementById('editModalBody');
                     if (modalBody) {
+                        // Paksa kotak teks terjemahan untuk terus berada di batas bawah penglihatan
                         translatedTextArea.scrollIntoView({ behavior: 'auto', block: 'end' });
                         modalBody.scrollTop = modalBody.scrollHeight;
                     }
+                    
                     scrollAttempts++;
+                    // Berhenti melacak setelah 600ms (ketika animasi keyboard sudah 100% selesai)
                     if (scrollAttempts >= 12) { 
                         clearInterval(scrollInterval);
                     }
-                }, 50);
+                }, 50); // Eksekusi setiap 50ms
             });
-
-            // Logika saat keyboard ditutup (Area teks kehilangan fokus)
+            
             translatedTextArea.addEventListener('blur', () => {
-                if (window.innerWidth < 640) {
-                    modal.classList.remove('keyboard-active');
-                }
+               
             });
 
             scrollTopBtn.addEventListener('mousedown', (e) => { e.currentTarget.pressStartTime = Date.now(); handleScrollPress('up'); });
@@ -7387,34 +7363,72 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
         showAppNotification(`Mode Akurat ${isAccurateModeEnabled ? 'diaktifkan' : 'dinonaktifkan'}.`, 'info');
     });
 
-        // --- LOGIKA AKORDEON TEKS ASLI (MANUAL SAJA) ---
-        const origAccordionBtn = document.getElementById('originalTextAccordionButton');
-        const origAccordionContent = document.getElementById('originalTextAccordionContent');
+        // --- LOGIKA AKORDEON OTOMATIS BERDASARKAN USAPAN JARI (BEBAS FREEZE) ---
+const origAccordionBtn = document.getElementById('originalTextAccordionButton');
+const origAccordionContent = document.getElementById('originalTextAccordionContent');
+const editModalBody = document.getElementById('editModalBody');
+const transTextArea = document.getElementById('translatedText');
 
-        let isOrigAccordionOpen = true;
+let isOrigAccordionOpen = true;
+let swipeStartY = 0;
 
-        function toggleOrigAccordionSafe(forceState) {
-            const newState = forceState !== undefined ? forceState : !isOrigAccordionOpen;
-            if (isOrigAccordionOpen === newState) return;
-            
-            isOrigAccordionOpen = newState;
-            origAccordionBtn.setAttribute('aria-expanded', newState);
-            
-            if (newState) {
-                origAccordionContent.style.maxHeight = origAccordionContent.scrollHeight + 'px';
-                origAccordionContent.style.opacity = '1';
-                origAccordionContent.style.paddingBottom = '0.75rem';
-            } else {
-                origAccordionContent.style.maxHeight = '0px';
-                origAccordionContent.style.opacity = '0';
-                origAccordionContent.style.paddingBottom = '0px';
-            }
+// Fungsi aman untuk memanipulasi akordeon
+function toggleOrigAccordionSafe(forceState) {
+    const newState = forceState !== undefined ? forceState : !isOrigAccordionOpen;
+    if (isOrigAccordionOpen === newState) return;
+    
+    isOrigAccordionOpen = newState;
+    origAccordionBtn.setAttribute('aria-expanded', newState);
+    
+    if (newState) {
+        origAccordionContent.style.maxHeight = origAccordionContent.scrollHeight + 'px';
+        origAccordionContent.style.opacity = '1';
+        origAccordionContent.style.paddingBottom = '0.75rem'; // Munculkan jarak
+    } else {
+        origAccordionContent.style.maxHeight = '0px';
+        origAccordionContent.style.opacity = '0';
+        origAccordionContent.style.paddingBottom = '0px'; // Buang jarak agar rata
+    }
+}
+
+// Interaksi jika pengguna mengklik tombol secara manual
+origAccordionBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleOrigAccordionSafe();
+});
+
+// 1. Deteksi usapan jari di layar ponsel (Touch Swipe)
+editModalBody.addEventListener('touchstart', (e) => {
+    swipeStartY = e.touches[0].clientY;
+}, { passive: true });
+
+editModalBody.addEventListener('touchmove', (e) => {
+    if (!swipeStartY) return;
+    let diffY = swipeStartY - e.touches[0].clientY;
+
+    if (diffY > 20) {
+        // Jari mengusap ke atas (Scroll melihat ke bawah) -> TUTUP Teks Asli
+        toggleOrigAccordionSafe(false);
+    } else if (diffY < -20) {
+        // Jari mengusap ke bawah (Scroll melihat ke atas) -> BUKA Teks Asli
+        // KUNCI: Hanya buka jika teks terjemahan sudah discroll mentok ke atas!
+        if (transTextArea.scrollTop <= 5) {
+            toggleOrigAccordionSafe(true);
         }
+    }
+}, { passive: true });
 
-        origAccordionBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            toggleOrigAccordionSafe();
-        });           
+// 2. Deteksi putaran roda mouse di PC
+editModalBody.addEventListener('wheel', (e) => {
+    if (e.deltaY > 10) {
+        toggleOrigAccordionSafe(false);
+    } else if (e.deltaY < -10) {
+        if (transTextArea.scrollTop <= 5) {
+            toggleOrigAccordionSafe(true);
+        }
+    }
+}, { passive: true });
+            
 
 
 async function saveCurrentFileSilently() {
