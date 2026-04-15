@@ -1081,7 +1081,50 @@
     transform: none !important;
     -webkit-transform: none !important;
 }
+/* =========================================================
+   FIX FINAL: MODAL NEMPEL KEYBOARD (NATIVE BOTTOM SHEET)
+   ========================================================= */
+@media (max-width: 768px) {
+    #editModal.keyboard-active {
+        top: auto !important; /* Lepaskan kaitan dari tengah layar */
+        bottom: 0 !important; /* Jangkar kuat ke dasar layar (di atas keyboard) */
+        transform: translateX(-50%) !important; /* Pertahankan di tengah kiri-kanan, buang kaitan atas-bawah */
+        
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 85vh !important; /* Buat modal jauh lebih panjang ke atas */
+        
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-bottom: none !important;
+        
+        padding: 16px 20px 20px 20px !important; 
+    }
 
+    /* Sembunyikan judul "Penyunting Teks" agar area layar lebih lega */
+    #editModal.keyboard-active > div.text-center.mb-4.mt-2 {
+        display: none !important;
+    }
+
+    /* Hilangkan batas tinggi kaku dari pembungkus agar bisa melar */
+    #editModal.keyboard-active #editModalBody {
+        max-height: 65vh !important;
+        height: auto !important;
+    }
+
+    /* Buat area teks terjemahan menjadi JAUH LEBIH LEGA */
+    #editModal.keyboard-active #translatedText {
+        min-height: 160px !important; /* Ruang ketik super luas */
+        max-height: 40vh !important;
+        flex-grow: 1 !important;
+    }
+    
+    /* Rapatkan deretan tombol bawah ("AI Suggestion" & "Translate") */
+    #editModal.keyboard-active > div.flex.gap-3.pt-5.mt-2 {
+        padding-top: 12px !important;
+        margin-top: 0 !important;
+    }
+}
 
 </style>
 </head>
