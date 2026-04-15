@@ -1042,6 +1042,44 @@
     transition: transform 0.2s ease;
 }
 
+/* =======================================================
+   🔥 ULTIMATE ANTI-FLICKER & GLITCH PATCH 🔥
+   ======================================================= */
+
+/* 1. Cegah bentrokan rendering antara Overlay dan Modal */
+#modalOverlay {
+    background: rgba(0, 0, 0, 0.5) !important; /* Gunakan warna solid semi-transparan */
+    backdrop-filter: none !important; /* MATIKAN BLUR DI SINI */
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 2. BUNUH BUG KOTAK/BALOK (Nested Blur Killer)
+   Matikan semua efek blur pada elemen ANAK di dalam modal. 
+   Mereka akan tetap terlihat seperti kaca karena menumpang pada Modal Utama yang sudah blur. */
+.modal-content * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 3. Stabilkan animasi Modal saat dipanggil dari Navigasi Bar */
+.modal-content {
+    /* Ganti transition:all menjadi spesifik agar layout tidak 'kaget' */
+    transition: opacity 0.25s ease-out, transform 0.3s ease-out !important;
+    will-change: opacity, transform !important; /* Paksa GPU menyiapkan layer */
+    animation: smoothModalOpen 0.25s ease-out forwards !important;
+}
+
+@keyframes smoothModalOpen {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* 4. Hapus Trik 3D Lama yang sering membuat browser mobile modern "Crash" */
+.app-container {
+    transform: none !important;
+    -webkit-transform: none !important;
+}
+
 </style>
 </head>
 <body>
