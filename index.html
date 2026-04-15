@@ -7291,30 +7291,33 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
                     const isKeyboardOpen = vv.height < window.screen.height * 0.8;
 
                     if (isKeyboardOpen) {
-                        // 1. Mode Bottom Sheet (Nempel rapi di atas keyboard)
+                        // 1. Mode Bottom Sheet: Gunakan Jangkar Bawah, BUKAN Transform -100%!
+                        const keyboardHeight = Math.max(0, window.innerHeight - (vv.offsetTop + vv.height));
+                        
                         modal.style.transition = 'none';
-                        modal.style.top = `${vv.offsetTop + vv.height}px`; 
-                        modal.style.transform = 'translate(-50%, -100%)';
+                        modal.style.top = 'auto'; // Lepaskan jangkar atas
+                        modal.style.bottom = `${keyboardHeight}px`; // Tempelkan tepat di atas keyboard
+                        modal.style.transform = 'translateX(-50%)'; // HANYA geser ke tengah layar (X), hentikan geser vertikal (Y)
                         
                         modal.style.width = '100%';
                         modal.style.maxWidth = '100%';
                         modal.style.borderBottomLeftRadius = '0';
                         modal.style.borderBottomRightRadius = '0';
                         
-                        // 2. Batasi tinggi modal induk agar selalu menyisakan ruang 10% di atas (Biar estetik)
                         modal.style.maxHeight = `${vv.height * 0.9}px`;
                         
-                        // 3. FIX VISUAL: Matikan paksaan tinggi "65vh" dari CSS agar tidak menggelembung!
+                        // 2. BUNUH SIFAT MEREGANG (FLEX-GROW): Ini yang membuat konten saling menjauh!
                         if (modalBody) {
+                            modalBody.style.setProperty('flex-grow', '0', 'important'); 
                             modalBody.style.setProperty('height', 'auto', 'important');
-                            // Batasi area scroll dalam agar kotak teks menyesuaikan diri
                             modalBody.style.setProperty('max-height', `${vv.height * 0.55}px`, 'important'); 
                         }
                     } else {
-                        // 4. Kembalikan ke Mode Kartu Melayang (Tengah Layar)
+                        // 3. Kembalikan ke Mode Kartu Melayang (Tengah Layar)
                         modal.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-                        modal.style.top = '50%';
-                        modal.style.transform = 'translate(-50%, -50%)';
+                        modal.style.bottom = 'auto'; // Lepaskan jangkar bawah
+                        modal.style.top = '50%'; // Kembalikan ke tengah
+                        modal.style.transform = 'translate(-50%, -50%)'; // Kembalikan efek melayang
                         
                         modal.style.width = '92%';
                         modal.style.maxWidth = '360px';
@@ -7322,8 +7325,9 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
                         modal.style.borderBottomRightRadius = '2rem';
                         modal.style.maxHeight = '70vh';
                         
-                        // Kembalikan tinggi body modal ke CSS aslinya
+                        // 4. Kembalikan sifat asli dari CSS
                         if (modalBody) {
+                            modalBody.style.removeProperty('flex-grow');
                             modalBody.style.setProperty('height', '65vh', 'important');
                             modalBody.style.removeProperty('max-height');
                         }
