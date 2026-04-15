@@ -7161,11 +7161,7 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             });
             
             translatedTextArea.addEventListener('focus', () => {
-                // Hanya geser modal ke atas jika ini adalah perangkat sentuh dan lebar layar kecil (mirip ponsel)
-                if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
-                    modal.style.top = '10%';
-                    modal.style.transform = 'translateX(-50%)';
-                }
+                
 
                 // BARU: Lacak dan kunci guliran terus ke bawah selama keyboard bergerak naik
                 let scrollAttempts = 0;
@@ -7186,11 +7182,7 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             });
             
             translatedTextArea.addEventListener('blur', () => {
-                // Kembalikan modal ke tengah hanya jika ini adalah perangkat sentuh dan lebar layar kecil
-                if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
-                    modal.style.top = '50%';
-                    modal.style.transform = 'translate(-50%, -50%)';
-                }
+               
             });
 
             scrollTopBtn.addEventListener('mousedown', (e) => { e.currentTarget.pressStartTime = Date.now(); handleScrollPress('up'); });
@@ -7259,19 +7251,11 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             });
             
             contextInputArea.addEventListener('focus', () => { 
-                // Hanya geser modal ke atas jika ini adalah perangkat sentuh dan lebar layar kecil
-                if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
-                    modal.style.top = '1%'; 
-                    modal.style.transform = 'translateX(-50%)'; 
-                }
+                
             });
             
             contextInputArea.addEventListener('blur', () => { 
-                // Kembalikan modal ke tengah hanya jika ini adalah perangkat sentuh dan lebar layar kecil
-                if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
-                    modal.style.top = '50%'; 
-                    modal.style.transform = 'translate(-50%, -50%)'; 
-                }
+                
             });
 			
             const saveProgressBtn = document.getElementById('saveProgressFromModalBtn');
@@ -7290,6 +7274,54 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
                     addAllTranslatedFromOpenParagraphToDictionary
                 );
             }
+			
+			// =====================================================================
+    // FITUR BARU: MODAL EDIT NEMPEL KEYBOARD DINAMIS (BOTTOM SHEET)
+    // =====================================================================
+    if (window.visualViewport) {
+        const handleKeyboardResize = () => {
+            const modal = document.getElementById('editModal');
+            if (!modal || modal.classList.contains('hidden')) return;
+
+            const vv = window.visualViewport;
+            // Deteksi jika keyboard naik (Layar menyusut lebih dari 20%)
+            const isKeyboardOpen = vv.height < window.screen.height * 0.8;
+
+            if (isKeyboardOpen) {
+                // 1. Ubah mode menjadi Bottom Sheet (Nempel Keyboard)
+                modal.style.transition = 'none'; // Matikan animasi agar pergerakan presisi mengikuti keyboard
+                
+                // Gunakan kombinasi offsetTop dan height agar aman di iOS dan Android
+                modal.style.top = `${vv.offsetTop + vv.height}px`; 
+                modal.style.transform = 'translate(-50%, -100%)'; // Geser ke atas persis setinggi modal itu sendiri
+                
+                // 2. Lebarkan 100% dan buang lengkungan bawah
+                modal.style.width = '100%';
+                modal.style.maxWidth = '100%';
+                modal.style.borderBottomLeftRadius = '0';
+                modal.style.borderBottomRightRadius = '0';
+                
+                // 3. Batasi tinggi maksimal agar tidak menabrak batas atas layar
+                modal.style.maxHeight = `${vv.height}px`;
+            } else {
+                // 4. Kembalikan ke mode Kartu Melayang (Default)
+                modal.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                modal.style.top = '50%';
+                modal.style.transform = 'translate(-50%, -50%)';
+                modal.style.width = '92%';
+                modal.style.maxWidth = '360px';
+                modal.style.borderBottomLeftRadius = '2rem';
+                modal.style.borderBottomRightRadius = '2rem';
+                modal.style.maxHeight = '70vh';
+            }
+        };
+
+        // Dengarkan perubahan ukuran layar (Keyboard naik/turun)
+        window.visualViewport.addEventListener('resize', handleKeyboardResize);
+        
+        // Dengarkan guliran (Penting untuk iOS Safari yang sering salah mendeteksi posisi elemen)
+        window.visualViewport.addEventListener('scroll', handleKeyboardResize);
+    }
 
         });
 
