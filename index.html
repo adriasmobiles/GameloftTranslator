@@ -977,20 +977,22 @@
     overflow-y: auto !important;  /* Munculkan scrollbar vertikal jika teks melebihi batas */	
 }
 
-/* --- FIX FINAL: Layout Modal Anti-Freeze & Kolom Terjemahan Dinamis --- */
+/* --- FIX FINAL: Modal Kempes (Proporsional & Anti Menggelembung) --- */
 #editModalBody {
-    overflow-y: hidden !important; /* Matikan scroll luar untuk mencegah infinite loop */
+    overflow-y: auto !important; 
     display: flex;
     flex-direction: column;
-    height: 65vh !important;       /* Berikan tinggi tetap agar transisi mulus */
+    height: auto !important; /* KUNCI 1: Biarkan konten yang menentukan tingginya secara alami */
+    max-height: 60vh !important; /* Batas wajar saat tidak ada keyboard */
 }
 
 #translatedText {
-    flex-grow: 1 !important;       /* KUNCI: Memaksa textarea memanjang mengisi ruang kosong */
+    flex-grow: 0 !important; /* KUNCI 2: Hentikan paksaan pada kotak teks untuk meregang! */
     height: auto !important;
-    min-height: 100px !important;
-    overflow-y: auto !important;   /* Scroll hanya aktif di dalam area ketik */
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 80px !important;
+    max-height: 160px !important; /* Batasi tinggi agar jika teks sangat panjang, muncul scrollbar internal */
+    overflow-y: auto !important;   
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #originalTextAccordionContent {
