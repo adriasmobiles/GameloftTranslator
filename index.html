@@ -1082,6 +1082,33 @@
     -webkit-transform: none !important;
 }
 
+/* --- ADAPTASI DARI STRINGFORGE: Logika Nempel Keyboard --- */
+#editModal.keyboard-active {
+    align-items: flex-end !important; /* Menjatuhkan modal ke bawah overlay */
+    padding-bottom: 0 !important;
+}
+
+#editModal.keyboard-active > div {
+    /* Memaksa kontainer modal menjadi 100% lebar dan kempes (auto) */
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important; 
+    max-height: 100% !important;
+    
+    /* Matikan semua efek melayang dan margin */
+    transform: none !important; 
+    margin: 0 !important;
+    top: auto !important;
+    bottom: auto !important;
+    
+    /* Hilangkan lengkungan bawah agar menempel rata dengan keyboard */
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -7278,57 +7305,42 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
             }
 			
 			// =====================================================================
-            // FITUR BARU: MODAL EDIT NEMPEL KEYBOARD DINAMIS (BOTTOM SHEET)
+            // FITUR BARU (ADAPTASI STRINGFORGE): MODAL EDIT NEMPEL KEYBOARD
             // =====================================================================
             if (window.visualViewport) {
                 const handleKeyboardResize = () => {
-                    const modal = document.getElementById('editModal');
-                    const modalBody = document.getElementById('editModalBody'); // Ambil kontainer dalam
+                    const modalOverlay = document.getElementById('editModal'); 
+                    const modalBody = document.getElementById('editModalBody');
                     
-                    if (!modal || modal.classList.contains('hidden')) return;
+                    if (!modalOverlay || modalOverlay.classList.contains('hidden')) return;
 
                     const vv = window.visualViewport;
-                    const isKeyboardOpen = vv.height < window.screen.height * 0.8;
+                    const isKeyboardOpen = vv.height < (window.screen.height * 0.8);
 
                     if (isKeyboardOpen) {
-                        // 1. Mode Bottom Sheet: Gunakan Jangkar Bawah, BUKAN Transform -100%!
-                        const keyboardHeight = Math.max(0, window.innerHeight - (vv.offsetTop + vv.height));
+                        // 1. Trik StringForge: Susutkan Overlay sebesar ruang sisa!
+                        modalOverlay.style.height = `${vv.height}px`;
+                        modalOverlay.style.top = `${vv.offsetTop}px`; // Fix untuk iOS Safari saat di-scroll
                         
-                        modal.style.transition = 'none';
-                        modal.style.top = 'auto'; // Lepaskan jangkar atas
-                        modal.style.bottom = `${keyboardHeight}px`; // Tempelkan tepat di atas keyboard
-                        modal.style.transform = 'translateX(-50%)'; // HANYA geser ke tengah layar (X), hentikan geser vertikal (Y)
+                        // 2. Aktifkan CSS Flex-End agar modal jatuh ke dasar overlay
+                        modalOverlay.classList.add('keyboard-active');
                         
-                        modal.style.width = '100%';
-                        modal.style.maxWidth = '100%';
-                        modal.style.borderBottomLeftRadius = '0';
-                        modal.style.borderBottomRightRadius = '0';
-                        
-                        modal.style.maxHeight = `${vv.height * 0.9}px`;
-                        
-                        // 2. BUNUH SIFAT MEREGANG (FLEX-GROW): Ini yang membuat konten saling menjauh!
+                        // 3. Pastikan konten dalam benar-benar kempes
                         if (modalBody) {
-                            modalBody.style.setProperty('flex-grow', '0', 'important'); 
                             modalBody.style.setProperty('height', 'auto', 'important');
-                            modalBody.style.setProperty('max-height', `${vv.height * 0.55}px`, 'important'); 
+                            modalBody.style.setProperty('flex-grow', '0', 'important');
+                            // Batasi tinggi scroll teks area agar tidak kebablasan
+                            modalBody.style.setProperty('max-height', `${vv.height * 0.6}px`, 'important');
                         }
                     } else {
-                        // 3. Kembalikan ke Mode Kartu Melayang (Tengah Layar)
-                        modal.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-                        modal.style.bottom = 'auto'; // Lepaskan jangkar bawah
-                        modal.style.top = '50%'; // Kembalikan ke tengah
-                        modal.style.transform = 'translate(-50%, -50%)'; // Kembalikan efek melayang
+                        // 4. Reset ke keadaan semula (Tengah layar) saat keyboard ditutup
+                        modalOverlay.style.height = '100%';
+                        modalOverlay.style.top = '0px';
+                        modalOverlay.classList.remove('keyboard-active');
                         
-                        modal.style.width = '92%';
-                        modal.style.maxWidth = '360px';
-                        modal.style.borderBottomLeftRadius = '2rem';
-                        modal.style.borderBottomRightRadius = '2rem';
-                        modal.style.maxHeight = '70vh';
-                        
-                        // 4. Kembalikan sifat asli dari CSS
                         if (modalBody) {
+                            modalBody.style.removeProperty('height');
                             modalBody.style.removeProperty('flex-grow');
-                            modalBody.style.setProperty('height', '65vh', 'important');
                             modalBody.style.removeProperty('max-height');
                         }
                     }
