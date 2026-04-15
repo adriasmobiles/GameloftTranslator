@@ -989,8 +989,8 @@
 #translatedText {
     flex-grow: 1 !important; /* Membuat kotak memakan sisa ruang kosong secara otomatis */
     height: auto !important;
-    min-height: 250px !important; /* Tinggi minimal jauh lebih lega (sebelumnya 150px) */
-    max-height: 450px !important; /* Batas atas maksimal juga dibesarkan */
+    min-height: 150px !important; /* Tinggi minimal jauh lebih lega (sebelumnya 150px) */
+    max-height: 250px !important; /* Batas atas maksimal juga dibesarkan */
     overflow-y: auto !important;   
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1082,28 +1082,29 @@
     -webkit-transform: none !important;
 }
 
-/* --- OPTIMASI MOBILE: MODAL EDIT MENEMPEL DI BAWAH (ANTI LOMPAT) --- */
+/* --- OPTIMASI MOBILE: MODAL EDIT MELAYANG DI BAWAH (ANTI LOMPAT & PROPOSIONAL) --- */
 @media (max-width: 639px) {
     #editModal {
-        /* Hapus posisi melayang di tengah bawaan Tailwind */
+        /* Lepaskan dari posisi tengah vertikal bawaan Tailwind */
         top: auto !important;
-        left: 0 !important;
-        transform: none !important;
         
-        /* Paksa menempel di dasar layar */
-        bottom: 0 !important;
+        /* Posisikan di tengah secara horizontal */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         
-        /* Lebarkan penuh mengikuti layar HP */
-        width: 100% !important;
-        max-width: 100% !important;
+        /* Turunkan ke bawah, tapi beri jarak sedikit dari keyboard/dasar layar */
+        bottom: 12px !important;
         
-        /* Gunakan dvh (Dynamic Viewport Height) agar adaptif mengecil saat keyboard naik */
-        max-height: 90dvh !important; 
+        /* Beri ruang napas di sisi kiri dan kanan (jangan 100%) */
+        width: 94% !important;
         
-        /* Hilangkan lengkungan di sudut bawah agar rata dengan pinggiran HP/Keyboard */
-        border-bottom-left-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-        border-bottom: none !important;
+        /* Batasi tinggi maksimal agar dinamis dengan keyboard */
+        max-height: 85dvh !important; 
+        
+        /* Kembalikan lengkungan sudut bawah agar tetap terlihat seperti "kartu" premium */
+        border-bottom-left-radius: 2rem !important;
+        border-bottom-right-radius: 2rem !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.9) !important;
     }
 }
 
