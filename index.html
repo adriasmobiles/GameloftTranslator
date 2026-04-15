@@ -7276,52 +7276,61 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
             }
 			
 			// =====================================================================
-    // FITUR BARU: MODAL EDIT NEMPEL KEYBOARD DINAMIS (BOTTOM SHEET)
-    // =====================================================================
-    if (window.visualViewport) {
-        const handleKeyboardResize = () => {
-            const modal = document.getElementById('editModal');
-            if (!modal || modal.classList.contains('hidden')) return;
+            // FITUR BARU: MODAL EDIT NEMPEL KEYBOARD DINAMIS (BOTTOM SHEET)
+            // =====================================================================
+            if (window.visualViewport) {
+                const handleKeyboardResize = () => {
+                    const modal = document.getElementById('editModal');
+                    const modalBody = document.getElementById('editModalBody'); // Ambil kontainer dalam
+                    
+                    if (!modal || modal.classList.contains('hidden')) return;
 
-            const vv = window.visualViewport;
-            // Deteksi jika keyboard naik (Layar menyusut lebih dari 20%)
-            const isKeyboardOpen = vv.height < window.screen.height * 0.8;
+                    const vv = window.visualViewport;
+                    const isKeyboardOpen = vv.height < window.screen.height * 0.8;
 
-            if (isKeyboardOpen) {
-                // 1. Ubah mode menjadi Bottom Sheet (Nempel Keyboard)
-                modal.style.transition = 'none'; // Matikan animasi agar pergerakan presisi mengikuti keyboard
-                
-                // Gunakan kombinasi offsetTop dan height agar aman di iOS dan Android
-                modal.style.top = `${vv.offsetTop + vv.height}px`; 
-                modal.style.transform = 'translate(-50%, -100%)'; // Geser ke atas persis setinggi modal itu sendiri
-                
-                // 2. Lebarkan 100% dan buang lengkungan bawah
-                modal.style.width = '100%';
-                modal.style.maxWidth = '100%';
-                modal.style.borderBottomLeftRadius = '0';
-                modal.style.borderBottomRightRadius = '0';
-                
-                // 3. Batasi tinggi maksimal agar tidak menabrak batas atas layar
-                modal.style.maxHeight = `${vv.height}px`;
-            } else {
-                // 4. Kembalikan ke mode Kartu Melayang (Default)
-                modal.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-                modal.style.top = '50%';
-                modal.style.transform = 'translate(-50%, -50%)';
-                modal.style.width = '92%';
-                modal.style.maxWidth = '360px';
-                modal.style.borderBottomLeftRadius = '2rem';
-                modal.style.borderBottomRightRadius = '2rem';
-                modal.style.maxHeight = '70vh';
+                    if (isKeyboardOpen) {
+                        // 1. Mode Bottom Sheet (Nempel rapi di atas keyboard)
+                        modal.style.transition = 'none';
+                        modal.style.top = `${vv.offsetTop + vv.height}px`; 
+                        modal.style.transform = 'translate(-50%, -100%)';
+                        
+                        modal.style.width = '100%';
+                        modal.style.maxWidth = '100%';
+                        modal.style.borderBottomLeftRadius = '0';
+                        modal.style.borderBottomRightRadius = '0';
+                        
+                        // 2. Batasi tinggi modal induk agar selalu menyisakan ruang 10% di atas (Biar estetik)
+                        modal.style.maxHeight = `${vv.height * 0.9}px`;
+                        
+                        // 3. FIX VISUAL: Matikan paksaan tinggi "65vh" dari CSS agar tidak menggelembung!
+                        if (modalBody) {
+                            modalBody.style.setProperty('height', 'auto', 'important');
+                            // Batasi area scroll dalam agar kotak teks menyesuaikan diri
+                            modalBody.style.setProperty('max-height', `${vv.height * 0.55}px`, 'important'); 
+                        }
+                    } else {
+                        // 4. Kembalikan ke Mode Kartu Melayang (Tengah Layar)
+                        modal.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                        modal.style.top = '50%';
+                        modal.style.transform = 'translate(-50%, -50%)';
+                        
+                        modal.style.width = '92%';
+                        modal.style.maxWidth = '360px';
+                        modal.style.borderBottomLeftRadius = '2rem';
+                        modal.style.borderBottomRightRadius = '2rem';
+                        modal.style.maxHeight = '70vh';
+                        
+                        // Kembalikan tinggi body modal ke CSS aslinya
+                        if (modalBody) {
+                            modalBody.style.setProperty('height', '65vh', 'important');
+                            modalBody.style.removeProperty('max-height');
+                        }
+                    }
+                };
+
+                window.visualViewport.addEventListener('resize', handleKeyboardResize);
+                window.visualViewport.addEventListener('scroll', handleKeyboardResize);
             }
-        };
-
-        // Dengarkan perubahan ukuran layar (Keyboard naik/turun)
-        window.visualViewport.addEventListener('resize', handleKeyboardResize);
-        
-        // Dengarkan guliran (Penting untuk iOS Safari yang sering salah mendeteksi posisi elemen)
-        window.visualViewport.addEventListener('scroll', handleKeyboardResize);
-    }
 
         });
 
