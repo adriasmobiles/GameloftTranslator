@@ -6255,33 +6255,41 @@ if (encodingTrigger) {
 }
 
 // Logika Pemilihan Opsi
+// Logika Pemilihan Opsi
 allOptions.forEach(option => {
-    option.addEventListener('click', async (e) => {
+    option.addEventListener('click', (e) => {
         e.stopPropagation();
         const val = option.dataset.value;
+        
+        // 1. Ubah visual tombol trigger & beri tanda aktif secepat kilat
         currentTextEncoding = val;
         encodingLabel.textContent = option.textContent;
-
         allOptions.forEach(opt => opt.classList.remove('active'));
         option.classList.add('active');
 
-        await setSetting('textEncoding', val);
-        
-        // Langsung terapkan perubahan visual pada baris Editor jika ada data
-        if (parsedData && originalRawParsedData) {
-            const dynamicDecoder = new TextDecoder(currentTextEncoding, { fatal: false });
-            parsedData.paragraphs.forEach((para, pIndex) => {
-                if (para.rawStringsBytes) {
-                    para.rawStringsBytes.forEach((bytesArray, sIndex) => {
-                        const newStr = dynamicDecoder.decode(new Uint8Array(bytesArray));
-                        para.strings[sIndex] = newStr;
-                    });
-                }
-            });
-            renderEditor();
-            showAppNotification(`Encoding: ${val.toUpperCase()}`, "success");
-        }
+        // 2. TUTUP DROPDOWN DULUAN agar animasi penutupan berjalan sangat mulus di HP
         toggleEncodingDropdown();
+
+        // 3. Tunda pekerjaan berat (menyimpan DB dan re-render DOM) sebesar 150ms
+        // Ini memberi waktu bagi HP untuk bernapas dan menyelesaikan animasi CSS
+        setTimeout(async () => {
+            await setSetting('textEncoding', val);
+            
+            // Terapkan perubahan visual pada baris Editor jika ada data
+            if (parsedData && originalRawParsedData) {
+                const dynamicDecoder = new TextDecoder(currentTextEncoding, { fatal: false });
+                parsedData.paragraphs.forEach((para, pIndex) => {
+                    if (para.rawStringsBytes) {
+                        para.rawStringsBytes.forEach((bytesArray, sIndex) => {
+                            const newStr = dynamicDecoder.decode(new Uint8Array(bytesArray));
+                            para.strings[sIndex] = newStr;
+                        });
+                    }
+                });
+                renderEditor();
+                showAppNotification(`Encoding: ${val.toUpperCase()}`, "success");
+            }
+        }, 150); // 150ms adalah "sweet spot" untuk mengelabui mata pengguna HP
     });
 });
 
