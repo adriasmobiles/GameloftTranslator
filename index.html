@@ -1082,14 +1082,14 @@
     -webkit-transform: none !important;
 }
 
-/* --- ADAPTASI DARI STRINGFORGE: Logika Nempel Keyboard --- */
-#editModal.keyboard-active {
-    align-items: flex-end !important; /* Menjatuhkan modal ke bawah overlay */
+/* --- FIX FINAL: Logika Modal Nempel Keyboard --- */
+#edit-modal-overlay.keyboard-active {
+    align-items: flex-end !important; /* Menjatuhkan modal ke dasar layar yang tersisa */
     padding-bottom: 0 !important;
 }
 
-#editModal.keyboard-active > div {
-    /* Memaksa kontainer modal menjadi 100% lebar dan kempes (auto) */
+#edit-modal-overlay.keyboard-active .modal-content {
+    /* Memaksa kotak putih menjadi 100% lebar dan kempes (auto) */
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important; 
@@ -7305,43 +7305,46 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
             }
 			
 			// =====================================================================
-            // FITUR BARU (ADAPTASI STRINGFORGE): MODAL EDIT NEMPEL KEYBOARD
+            // FITUR BARU: MODAL EDIT NEMPEL KEYBOARD DINAMIS
             // =====================================================================
             if (window.visualViewport) {
                 const handleKeyboardResize = () => {
-                    const modalOverlay = document.getElementById('editModal'); 
-                    const modalBody = document.getElementById('editModalBody');
+                    const modalOverlay = document.getElementById('edit-modal-overlay'); // ID YANG BENAR
                     
-                    if (!modalOverlay || modalOverlay.classList.contains('hidden')) return;
+                    if (!modalOverlay || !modalOverlay.classList.contains('active')) return;
 
                     const vv = window.visualViewport;
                     const isKeyboardOpen = vv.height < (window.screen.height * 0.8);
+                    const modalContent = modalOverlay.querySelector('.modal-content');
+                    const editInput = document.getElementById('edit-input');
 
                     if (isKeyboardOpen) {
-                        // 1. Trik StringForge: Susutkan Overlay sebesar ruang sisa!
+                        // 1. Susutkan Overlay sebesar ruang sisa!
                         modalOverlay.style.height = `${vv.height}px`;
-                        modalOverlay.style.top = `${vv.offsetTop}px`; // Fix untuk iOS Safari saat di-scroll
+                        modalOverlay.style.top = `${vv.offsetTop}px`; 
                         
-                        // 2. Aktifkan CSS Flex-End agar modal jatuh ke dasar overlay
+                        // 2. Aktifkan CSS Flex-End agar modal putih jatuh ke dasar
                         modalOverlay.classList.add('keyboard-active');
                         
-                        // 3. Pastikan konten dalam benar-benar kempes
-                        if (modalBody) {
-                            modalBody.style.setProperty('height', 'auto', 'important');
-                            modalBody.style.setProperty('flex-grow', '0', 'important');
-                            // Batasi tinggi scroll teks area agar tidak kebablasan
-                            modalBody.style.setProperty('max-height', `${vv.height * 0.6}px`, 'important');
+                        if (modalContent) {
+                            // Cegah modal melebihi tinggi layar sisa
+                            modalContent.style.setProperty('max-height', `${vv.height}px`, 'important');
+                        }
+                        if (editInput) {
+                            // Batasi tinggi kotak teks agar tidak memanjang tak terbatas
+                            editInput.style.setProperty('max-height', `${vv.height * 0.4}px`, 'important');
                         }
                     } else {
-                        // 4. Reset ke keadaan semula (Tengah layar) saat keyboard ditutup
+                        // 3. Reset ke keadaan semula (Tengah layar) saat keyboard ditutup
                         modalOverlay.style.height = '100%';
                         modalOverlay.style.top = '0px';
                         modalOverlay.classList.remove('keyboard-active');
                         
-                        if (modalBody) {
-                            modalBody.style.removeProperty('height');
-                            modalBody.style.removeProperty('flex-grow');
-                            modalBody.style.removeProperty('max-height');
+                        if (modalContent) {
+                            modalContent.style.removeProperty('max-height');
+                        }
+                        if (editInput) {
+                            editInput.style.removeProperty('max-height');
                         }
                     }
                 };
