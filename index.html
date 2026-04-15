@@ -15,8 +15,12 @@
 
 
         html, body {
-            height: 100%;
-        }
+    height: 100%;
+    width: 100vw;
+    max-width: 100%;
+    overflow: hidden !important; /* Membunuh paksa slider liar di ujung-ujung layar */
+    overscroll-behavior: none; /* Mencegah efek 'membal' saat layar ditarik mentok di HP */
+}
         body {
             font-family: 'Inter', sans-serif;
             /* Latar belakang dasar abu-abu sangat muda/keperakan agar efek RGB menyala */
@@ -154,10 +158,21 @@
             border-radius: 0.75rem;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #a0a0a0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #808080; }
+        /* --- Tampilan Scrollbar Global (Tipis & Elegan) --- */
+::-webkit-scrollbar { 
+    width: 4px;  /* Ketebalan untuk gulir atas-bawah */
+    height: 4px; /* Ketebalan untuk gulir kiri-kanan (jika ada) */
+}
+::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb { 
+    background: rgba(0, 0, 0, 0.15); 
+    border-radius: 10px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: rgba(0, 0, 0, 0.3); 
+}
 
         .modal-overlay {
             background: rgba(0, 0, 0, 0.3);
@@ -238,12 +253,32 @@
         .accordion-button svg { transition: transform 0.3s ease; }
         .accordion-button[aria-expanded="true"] svg { transform: rotate(180deg); }
 
-        .text-item {
-            border-left-width: 2.8px !important;
-            border-color: transparent;
-            background-color: white;
-            transition: all 0.2s ease;
-        }
+        /* --- FIX FINAL: Visual Baris Editor (Glassmorphism Murni) --- */
+.text-item {
+    border-left-width: 3px !important;
+    border-color: transparent;
+    
+        background-color: rgba(255, 255, 255, 0.60) !important; 
+    
+    /* Efek kaca buram (frosted glass) yang akan menyebarkan warna RGB di belakangnya */
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    
+    /* Bayangan lembut di luar, dan garis putih sangat tipis di dalam (efek pantulan cahaya kaca) */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    
+    margin-bottom: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover state: Saat disentuh/ditunjuk */
+.text-item:hover {
+    /* Sedikit lebih terang saat disentuh, tapi tetap tembus pandang */
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    transform: translateX(4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    border-left-color: rgba(0, 120, 212, 0.5) !important;
+}
 
         .text-item.translated {
             border-left-color: #10b981 !important;
@@ -701,7 +736,7 @@
 
 
 #editModalBody {
-    max-height: 600px;
+    max-height: 400px;
 }
 
 #originalTextAccordionContent {
@@ -743,7 +778,7 @@
     position: static;
     top: auto;
     margin-left: 8px;
-
+}
 
 .line-number {
 
@@ -966,6 +1001,77 @@
 @keyframes orbFloat3 {
     0% { transform: translate(0, 0) scale(1); }
     100% { transform: translate(-40px, -70px) scale(1.2); }
+}
+
+/* --- FIX: Scroll untuk Teks Asli di Modal --- */
+#originalText {
+    max-height: 140px !important; /* Batasi tinggi kotak teks asli */
+    overflow-y: auto !important;  /* Munculkan scrollbar vertikal jika teks melebihi batas */	
+}
+
+/* --- FIX FINAL: Layout Modal Anti-Freeze & Kolom Terjemahan Dinamis --- */
+#editModalBody {
+    overflow-y: hidden !important; /* Matikan scroll luar untuk mencegah infinite loop */
+    display: flex;
+    flex-direction: column;
+    height: 65vh !important;       /* Berikan tinggi tetap agar transisi mulus */
+}
+
+#translatedText {
+    flex-grow: 1 !important;       /* KUNCI: Memaksa textarea memanjang mengisi ruang kosong */
+    height: auto !important;
+    min-height: 100px !important;
+    overflow-y: auto !important;   /* Scroll hanya aktif di dalam area ketik */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#originalTextAccordionContent {
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s;
+}
+
+#customEncodingOptions.show {
+    display: block;
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.encoding-option.active {
+    background-color: rgba(0, 120, 212, 0.1);
+    color: #0078d4;
+    border: 1px solid rgba(0, 120, 212, 0.2);
+}
+
+#dropdownIcon.rotate {
+    transform: rotate(180deg);
+}
+
+/* 1. Pastikan Dropdown 100% Solid & Di Atas Segala Hal */
+#customEncodingOptions {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    opacity: 1 !important;
+    z-index: 999999 !important; /* Nilai sangat tinggi agar tidak terganggu navbar */
+}
+
+/* 2. Perbaiki area hover agar tidak terhalang */
+.encoding-option {
+    position: relative;
+    z-index: 1000000 !important;
+    background: #ffffff;
+    color: #1c1c1e !important;
+    pointer-events: auto !important; /* Pastikan bisa diklik */
+}
+
+.encoding-option:hover {
+    background-color: #007aff !important; /* Biru iOS */
+    color: #ffffff !important;
+}
+
+
+/* Hilangkan transisi pada warna saat hover agar tidak terasa 'tersendat' */
+.encoding-option {
+    transition: transform 0.2s ease;
 }
 
 </style>
@@ -1206,7 +1312,7 @@
 
     <div id="modalOverlay" class="fixed inset-0 modal-overlay z-40 hidden"></div>
 
-    <div id="editModal" class="modal-content fixed z-50 p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[85vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+    <div id="editModal" class="modal-content fixed z-50 p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[70vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
         
         <div class="absolute top-5 right-5 z-[60]">
             <button id="closeEditModalXBtn" class="control-button close-btn" title="Tutup">
@@ -1234,11 +1340,11 @@
             
             <div class="flex-shrink-0 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-inner">
                 <button id="originalTextAccordionButton" class="w-full flex items-center justify-between text-left p-3 rounded-xl hover:bg-white/80 transition-colors" aria-expanded="true">
-                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teks Asli</span>
+                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teks Asli (Klik untuk salin)</span>
                     <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform"></i>
                 </button>
                 <div id="originalTextAccordionContent" class="px-3 pb-3">
-                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm cursor-pointer border border-white/60 shadow-sm"></div>
+                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm cursor-pointer border border-white/60 shadow-sm max-h-[140px] overflow-y-auto custom-scrollbar"></div>
                 </div>
             </div>
 
@@ -1258,7 +1364,7 @@
 
             <div class="space-y-1.5 flex-grow flex flex-col">
                 <label for="translatedText" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
-                <textarea id="translatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner min-h-[120px] flex-grow resize-none"></textarea>
+                <textarea id="translatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner min-h-[80px] flex-grow resize-none"></textarea>
             </div>
         </div>
 
@@ -1410,7 +1516,7 @@
 </button>
         </div>
         
-        <div class="p-4 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-6 bg-transparent">
+        <div class="p-4 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-6 bg-transparent pb-56">
             
             <div class="space-y-2">
                 <h4 class="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] ml-2 mb-2">Koneksi AI</h4>
@@ -1441,7 +1547,37 @@
 
             <div class="space-y-2">
                 <h4 class="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em] ml-2 mb-2">Preferensi Editor</h4>
-                <div class="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/70 shadow-sm overflow-hidden divide-y divide-white/40">
+                <div class="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/70 shadow-sm divide-y divide-white/40">
+				
+				<div class="flex flex-col p-4 hover:bg-white/40 transition-colors group border-b border-white/40 relative">
+    <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 shadow-sm transition-transform group-active:scale-90">
+                <i class="fas fa-language text-xs"></i>
+            </div>
+            <div>
+                <div class="text-sm font-bold text-gray-800">Encoding Teks</div>
+                <div class="text-[10px] text-gray-500 font-medium leading-tight">Format baca karakter (Rusia, Latin, dll).</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative w-full" id="customEncodingWrapper">
+        <button id="customEncodingTrigger" class="w-full flex justify-between items-center text-sm font-bold text-gray-700 bg-white/60 border border-white/80 rounded-2xl px-4 py-3 focus:bg-white transition-all outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)] cursor-pointer active:scale-[0.98]">
+            <span id="currentEncodingLabel">UTF-8 (Standar Global)</span>
+            <i class="fas fa-chevron-down text-[10px] text-blue-600 transition-transform duration-300" id="dropdownIcon"></i>
+        </button>
+
+        <div id="customEncodingOptions" class="hidden absolute left-0 right-0 mt-2 p-2 bg-white border border-gray-300 rounded-[1.5rem] shadow-2xl z-[99999] transition-all duration-300 origin-top transform scale-95 opacity-0">
+            <div class="encoding-option p-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all cursor-pointer text-xs font-bold mb-1" data-value="utf-8">UTF-8 (Standar Global)</div>
+            <div class="encoding-option p-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all cursor-pointer text-xs font-bold mb-1" data-value="windows-1252">Windows-1252 (Western/Eropa)</div>
+            <div class="encoding-option p-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all cursor-pointer text-xs font-bold mb-1" data-value="windows-1251">Windows-1251 (Cyrillic/Rusia)</div>
+            <div class="encoding-option p-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all cursor-pointer text-xs font-bold mb-1" data-value="iso-8859-1">ISO-8859-1 (Latin-1)</div>
+            <div class="encoding-option p-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all cursor-pointer text-xs font-bold" data-value="shift_jis">Shift-JIS (Jepang)</div>
+        </div>
+    </div>
+</div>
+					
                     
                     <label class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/40 transition-colors group">
                         <div class="flex items-center gap-3">
@@ -1489,9 +1625,11 @@
                             <input type="checkbox" id="importOriginalToggle" class="sr-only peer">
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500 shadow-inner"></div>
                         </div>
-                    </label>
+                    </label>		
+					
                 </div>
-            </div>
+            </div>			
+			
 
             <div class="pt-2 pb-6 space-y-3">
                 <button id="openTutorialFromSettings" class="w-full bg-white/60 hover:bg-white text-blue-600 font-bold py-4 px-4 rounded-[1.5rem] text-xs flex items-center justify-center gap-3 transition-all shadow-sm border border-white/80 active:scale-95">
@@ -1984,7 +2122,8 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
         window.addEventListener('resize', adjustHeightOnResize);
 
 
-        let parsedData = null;
+        let currentTextEncoding = 'utf-8';
+		let parsedData = null;
         let originalRawParsedData = null;
         let carouselInitialized = false;
         let rawParsedFileStructure = [];
@@ -2525,50 +2664,57 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
 }
 
 
-        function updateProjectStats() {
-            if (!parsedData || !originalRawParsedData) return;
+        // --- FIX FINAL: Perhitungan Progres Akurat (Mengabaikan Teks Kosong) ---
+function updateProjectStats() {
+    if (!parsedData || !originalRawParsedData) return;
 
-            const statsContainer = document.getElementById('projectStatsContainer');
-            const statTotalText = document.getElementById('statTotalText');
-            const statTranslated = document.getElementById('statTranslated');
-            const statProgress = document.getElementById('statProgress');
+    const statsContainer = document.getElementById('projectStatsContainer');
+    const statTotalText = document.getElementById('statTotalText');
+    const statTranslated = document.getElementById('statTranslated');
+    const statProgress = document.getElementById('statProgress');
 
-            const data = parsedData.paragraphs || [];
-            const originalData = originalRawParsedData.paragraphs || [];
+    const data = parsedData.paragraphs || [];
+    const originalData = originalRawParsedData.paragraphs || [];
 
-            let totalStrings = 0;
-            let translatedCount = 0;
+    let totalValidStrings = 0;
+    let translatedCount = 0;
 
-            data.forEach((item, pIndex) => {
-                if (!item.strings) return;
-                totalStrings += item.strings.length;
+    data.forEach((item, pIndex) => {
+        if (!item.strings) return;
 
-                item.strings.forEach((_, sIndex) => {
-                    const originalItem = originalData[pIndex];
-                    const originalText = originalItem?.strings?.[sIndex] || '';
+        item.strings.forEach((_, sIndex) => {
+            const originalItem = originalData[pIndex];
+            const originalText = originalItem?.strings?.[sIndex] || '';
 
-                    const translations = parsedData.translations;
-                    const translationKey = `p${pIndex}-s${sIndex}`;
-                    const currentTranslatedText = translations[translationKey] || '';
+            // KUNCI: Hanya hitung teks yang BUKAN sekadar baris kosong atau spasi!
+            if (originalText.trim() !== '') {
+                totalValidStrings++;
 
-                    if (currentTranslatedText.trim() !== originalText.trim() && currentTranslatedText.trim() !== '') {
-                        translatedCount++;
-                    }
-                });
-            });
+                const translations = parsedData.translations;
+                const translationKey = `p${pIndex}-s${sIndex}`;
+                const currentTranslatedText = translations[translationKey];
+                
+                // Cek jika terjemahan sudah diisi dan berbeda dari teks aslinya
+                if (currentTranslatedText !== undefined && currentTranslatedText.trim() !== '' && currentTranslatedText.trim() !== originalText.trim()) {
+                    translatedCount++;
+                }
+            }
+        });
+    });
 
-            const progress = totalStrings > 0 ? Math.round((translatedCount / totalStrings) * 100) : 0;
+    // Menghitung persentase dari teks yang benar-benar valid
+    const progress = totalValidStrings > 0 ? Math.round((translatedCount / totalValidStrings) * 100) : 0;
 
-            statTotalText.textContent = totalStrings;
-            statTranslated.textContent = translatedCount;
-            statProgress.textContent = `${progress}%`;
+    statTotalText.textContent = totalValidStrings;
+    statTranslated.textContent = translatedCount;
+    statProgress.textContent = `${progress}%`;
 
-            if (totalStrings > 0) {
+    if (totalValidStrings > 0) {
         statsContainer.classList.remove('invisible');
     } else {
         statsContainer.classList.add('invisible');
     }
-        }
+}
 
        function showAppNotification(message, type = 'success', duration = 3000) {
             const appNotification = document.getElementById('appNotification');
@@ -2982,32 +3128,41 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
         }       
 
         function parseParagraphContent(blockView, blockLength, pOffset, decoder, paragraphDelimiter, isBigEndian) {
-            if (pOffset + 4 > blockLength) return { isEmpty: false, stringCount: 0, strings: [], paragraphDelimiter };
-            const stringCount = blockView.getUint32(pOffset, !isBigEndian);
-            pOffset += 4;
-            if (stringCount === 0 || stringCount > 10000 || pOffset + (stringCount * 4) > blockLength) return { isEmpty: false, stringCount: 0, strings: [], paragraphDelimiter };
-            const stringPointers = [];
-            for (let j = 0; j < stringCount; j++) { stringPointers.push(blockView.getUint32(pOffset + j * 4, !isBigEndian)); }
-            pOffset += stringCount * 4;
-            const textStartOffset = pOffset;
-            const strings = [];
-            let lastPointerRelative = 0;
-            for (const currentPointerRelative of stringPointers) {
-                const stringLength = currentPointerRelative - lastPointerRelative;
-                if (stringLength < 0 || textStartOffset + currentPointerRelative > blockLength) {
-                    strings.push("[BACA GAGAL]");
-                    lastPointerRelative = currentPointerRelative; continue;
-                }
-                const strData = new Uint8Array(blockView.buffer, blockView.byteOffset + textStartOffset + lastPointerRelative, stringLength);
-                strings.push(decoder.decode(strData));
-                lastPointerRelative = currentPointerRelative;
-            }
-            return { isEmpty: false, paragraphDelimiter, stringCount, strings };
+    if (pOffset + 4 > blockLength) return { isEmpty: false, stringCount: 0, strings: [], rawStringsBytes: [], paragraphDelimiter };
+    const stringCount = blockView.getUint32(pOffset, !isBigEndian);
+    pOffset += 4;
+    if (stringCount === 0 || stringCount > 10000 || pOffset + (stringCount * 4) > blockLength) return { isEmpty: false, stringCount: 0, strings: [], rawStringsBytes: [], paragraphDelimiter };
+    
+    const stringPointers = [];
+    for (let j = 0; j < stringCount; j++) { stringPointers.push(blockView.getUint32(pOffset + j * 4, !isBigEndian)); }
+    pOffset += stringCount * 4;
+    const textStartOffset = pOffset;
+    
+    const strings = [];
+    const rawStringsBytes = []; // BARU: Array untuk menyimpan byte mentah
+    let lastPointerRelative = 0;
+    
+    for (const currentPointerRelative of stringPointers) {
+        const stringLength = currentPointerRelative - lastPointerRelative;
+        if (stringLength < 0 || textStartOffset + currentPointerRelative > blockLength) {
+            strings.push("[BACA GAGAL]");
+            rawStringsBytes.push([]);
+            lastPointerRelative = currentPointerRelative; 
+            continue;
         }
+        const strData = new Uint8Array(blockView.buffer, blockView.byteOffset + textStartOffset + lastPointerRelative, stringLength);
+        
+        strings.push(decoder.decode(strData));
+        rawStringsBytes.push(Array.from(strData)); // BARU: Simpan mentahan agar aman masuk IndexedDB
+        
+        lastPointerRelative = currentPointerRelative;
+    }
+    return { isEmpty: false, paragraphDelimiter, stringCount, strings, rawStringsBytes };
+}
 
         function parseSimplePatternFile(arrayBuffer) {
             const dataView = new DataView(arrayBuffer);
-            const decoder = new TextDecoder('utf-8', { fatal: false });
+            const decoder = new TextDecoder(currentTextEncoding, { fatal: false });
             let offset = 0;
             const header = dataView.getUint8(offset);
             offset += 1;
@@ -3029,7 +3184,7 @@ function findDictionaryMatchesInText(originalText, allDictionaryEntries) {
         
        function parseDirect4ByteFile(arrayBuffer) {
             const dataView = new DataView(arrayBuffer);
-            const decoder = new TextDecoder('utf-8', { fatal: false });
+            const decoder = new TextDecoder(currentTextEncoding, { fatal: false });
 
             const paraContent = parseParagraphContent(dataView, dataView.byteLength, 0, decoder, null, false);
 
@@ -4503,7 +4658,7 @@ function closeAiSuggestionModal() {
             originalTextContainer.innerHTML = `
                 <div class="p-3.5 bg-white/50 rounded-2xl border border-white/60 shadow-inner">
                     <div class="flex justify-between items-center mb-1.5">
-                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Teks Asli</span>
+                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Teks Asli:</span>
                         <div class="flex items-center gap-2">
                            ${originalLengthBadgeHtml}
                            ${dictButtonHtml}
@@ -6021,6 +6176,8 @@ async function saveLivePrompt() {
         document.addEventListener('DOMContentLoaded', async () => {
     const fullscreenBtn = document.getElementById('fullscreenBtn');
 	
+	
+	
 	// --- FITUR BAHASA (TOMBOL & PENYIMPANAN) ---
             const langToggleBtn = document.getElementById('langToggleButton');
 
@@ -6061,6 +6218,90 @@ async function saveLivePrompt() {
                 });
             }
             // --- SELESAI FITUR BAHASA ---
+			
+const encodingTrigger = document.getElementById('customEncodingTrigger');
+const encodingOptionsList = document.getElementById('customEncodingOptions');
+const encodingLabel = document.getElementById('currentEncodingLabel');
+const dropdownIcon = document.getElementById('dropdownIcon');
+const allOptions = document.querySelectorAll('.encoding-option');
+
+// Fungsi Toggle yang lebih aman
+const toggleEncodingDropdown = () => {
+    const isShowing = encodingOptionsList.classList.contains('show');
+    if (isShowing) {
+        encodingOptionsList.classList.remove('show');
+        // Berikan jeda sedikit agar animasi scale-down selesai sebelum di-hide
+        setTimeout(() => {
+            if(!encodingOptionsList.classList.contains('show')) {
+                encodingOptionsList.classList.add('hidden');
+            }
+        }, 300);
+        dropdownIcon.classList.remove('rotate');
+    } else {
+        encodingOptionsList.classList.remove('hidden');
+        // Force reflow agar transisi terbaca oleh browser
+        encodingOptionsList.offsetHeight; 
+        encodingOptionsList.classList.add('show');
+        dropdownIcon.classList.add('rotate');
+    }
+};
+
+// Pastikan event listener terpasang dengan benar
+if (encodingTrigger) {
+    encodingTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleEncodingDropdown();
+    });
+}
+
+// Logika Pemilihan Opsi
+allOptions.forEach(option => {
+    option.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const val = option.dataset.value;
+        currentTextEncoding = val;
+        encodingLabel.textContent = option.textContent;
+
+        allOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+
+        await setSetting('textEncoding', val);
+        
+        // Langsung terapkan perubahan visual pada baris Editor jika ada data
+        if (parsedData && originalRawParsedData) {
+            const dynamicDecoder = new TextDecoder(currentTextEncoding, { fatal: false });
+            parsedData.paragraphs.forEach((para, pIndex) => {
+                if (para.rawStringsBytes) {
+                    para.rawStringsBytes.forEach((bytesArray, sIndex) => {
+                        const newStr = dynamicDecoder.decode(new Uint8Array(bytesArray));
+                        para.strings[sIndex] = newStr;
+                    });
+                }
+            });
+            renderEditor();
+            showAppNotification(`Encoding: ${val.toUpperCase()}`, "success");
+        }
+        toggleEncodingDropdown();
+    });
+});
+
+// 3. Klik di luar untuk menutup
+document.addEventListener('click', () => {
+    encodingOptionsList.classList.remove('show');
+    setTimeout(() => encodingOptionsList.classList.add('hidden'), 300);
+    dropdownIcon.classList.remove('rotate');
+});
+
+// 4. Inisialisasi awal saat halaman dimuat
+(async () => {
+    const savedEnc = await getSetting('textEncoding') || 'utf-8';
+    currentTextEncoding = savedEnc;
+    const activeOpt = Array.from(allOptions).find(o => o.dataset.value === savedEnc);
+    if (activeOpt) {
+        encodingLabel.textContent = activeOpt.textContent;
+        activeOpt.classList.add('active');
+    }
+})();
     
 const toggleReplaceModeBtn = document.getElementById('toggleReplaceModeBtn');
 const replaceSectionContainer = document.getElementById('replaceSectionContainer');
@@ -7116,34 +7357,72 @@ const saveToDictionaryBtn = document.getElementById('saveToDictionaryBtn');
         showAppNotification(`Mode Akurat ${isAccurateModeEnabled ? 'diaktifkan' : 'dinonaktifkan'}.`, 'info');
     });
 
-        const originalTextAccordionButton = document.getElementById('originalTextAccordionButton');
-        const originalTextContent = document.getElementById('originalTextAccordionContent');
+        // --- LOGIKA AKORDEON OTOMATIS BERDASARKAN USAPAN JARI (BEBAS FREEZE) ---
+const origAccordionBtn = document.getElementById('originalTextAccordionButton');
+const origAccordionContent = document.getElementById('originalTextAccordionContent');
+const editModalBody = document.getElementById('editModalBody');
+const transTextArea = document.getElementById('translatedText');
 
-        originalTextAccordionButton.addEventListener('mousedown', (e) => {
-            e.preventDefault();
+let isOrigAccordionOpen = true;
+let swipeStartY = 0;
 
+// Fungsi aman untuk memanipulasi akordeon
+function toggleOrigAccordionSafe(forceState) {
+    const newState = forceState !== undefined ? forceState : !isOrigAccordionOpen;
+    if (isOrigAccordionOpen === newState) return;
+    
+    isOrigAccordionOpen = newState;
+    origAccordionBtn.setAttribute('aria-expanded', newState);
+    
+    if (newState) {
+        origAccordionContent.style.maxHeight = origAccordionContent.scrollHeight + 'px';
+        origAccordionContent.style.opacity = '1';
+        origAccordionContent.style.paddingBottom = '0.75rem'; // Munculkan jarak
+    } else {
+        origAccordionContent.style.maxHeight = '0px';
+        origAccordionContent.style.opacity = '0';
+        origAccordionContent.style.paddingBottom = '0px'; // Buang jarak agar rata
+    }
+}
 
-            const isCurrentlyExpanded = originalTextAccordionButton.getAttribute('aria-expanded') === 'true';
+// Interaksi jika pengguna mengklik tombol secara manual
+origAccordionBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleOrigAccordionSafe();
+});
 
+// 1. Deteksi usapan jari di layar ponsel (Touch Swipe)
+editModalBody.addEventListener('touchstart', (e) => {
+    swipeStartY = e.touches[0].clientY;
+}, { passive: true });
 
-            const userWantsToOpen = !isCurrentlyExpanded;
+editModalBody.addEventListener('touchmove', (e) => {
+    if (!swipeStartY) return;
+    let diffY = swipeStartY - e.touches[0].clientY;
 
+    if (diffY > 20) {
+        // Jari mengusap ke atas (Scroll melihat ke bawah) -> TUTUP Teks Asli
+        toggleOrigAccordionSafe(false);
+    } else if (diffY < -20) {
+        // Jari mengusap ke bawah (Scroll melihat ke atas) -> BUKA Teks Asli
+        // KUNCI: Hanya buka jika teks terjemahan sudah discroll mentok ke atas!
+        if (transTextArea.scrollTop <= 5) {
+            toggleOrigAccordionSafe(true);
+        }
+    }
+}, { passive: true });
 
-
+// 2. Deteksi putaran roda mouse di PC
+editModalBody.addEventListener('wheel', (e) => {
+    if (e.deltaY > 10) {
+        toggleOrigAccordionSafe(false);
+    } else if (e.deltaY < -10) {
+        if (transTextArea.scrollTop <= 5) {
+            toggleOrigAccordionSafe(true);
+        }
+    }
+}, { passive: true });
             
-
-
-            if (isCurrentlyExpanded) {
-
-                originalTextAccordionButton.setAttribute('aria-expanded', 'false');
-                originalTextContent.style.maxHeight = '0px';
-            } else {
-
-                originalTextAccordionButton.setAttribute('aria-expanded', 'true');
-                originalTextContent.style.maxHeight = originalTextContent.scrollHeight + 'px';
-            }
-        });
-
 
 
 async function saveCurrentFileSilently() {
@@ -7253,6 +7532,13 @@ function restoreHomeState() {
         const activeSpan = homeBtn.querySelector('span');
         if(activeSpan) activeSpan.classList.add('font-bold');
     }
+
+    // 3. --- FIX BUG: MUNCULKAN KEMBALI BOTTOM NAVBAR ---
+    // Ini memastikan navigasi bawah tidak hilang permanen setelah membuka Pengaturan
+    const bottomNavbar = document.getElementById('bottomNavbar');
+    if (bottomNavbar) {
+        bottomNavbar.classList.remove('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
+    }
 }
 
 function closeAllMainModals() {
@@ -7349,7 +7635,8 @@ document.getElementById('navBtnLivePrompt').addEventListener('click', async () =
 
 document.getElementById('navBtnSettings').addEventListener('click', () => {
     closeAllMainModals(); 
-	floatingButtonsContainer.classList.add('hidden');
+    // Navbar dibiarkan tetap muncul agar seragam
+    floatingButtonsContainer.classList.add('hidden');
     showSettingsModal();
 });
 
@@ -7568,6 +7855,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			"Terjemahan...": "Translation...",
             "SIMPAN ENTRI": "SAVE ENTRY",
             "CEK": "CHECK",
+			"Memuat Saran...": "Load Suggestion...",
 			
             
             // --- KOSAKATA LAMA (TETAP DIPERTAHANKAN) ---
@@ -7604,7 +7892,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Tidak ada teks ditemukan.": "No text found.",
             "[Paragraf Kosong]": "[Empty Paragraph]",
             "Edit Teks": "Edit Text",
-            "Teks Asli (klik untuk salin)": "Original Text (click to copy)",
+            "Teks Asli (Klik untuk salin)": "Original Text (Click to copy)",
             "Terjemahan": "Translation",
             "Panjang:": "Length:",
             "Konteks (Opsional):": "Context (Optional):",
@@ -7710,12 +7998,18 @@ document.addEventListener("DOMContentLoaded", () => {
             "Jangan tampilkan lagi": "Don't show again",
             "Sebelumnya": "Previous",
             "Selanjutnya": "Next",
-			"TEKS ASLI": "ORIGINAL TEXT",
 			"Dapatkan saran baru": "Get new suggestions",
 			"Tersimpan secara lokal di aplikasi.": "Stored locally in the app.",
 			"Simpan saat menutup editor.": "Save when closing editor.",
 			"Model AI lebih cerdas (lebih lambat).": "Smarter AI models (slower).",
 			"Muat file rujukan untuk revisi.": "Upload reference files for revision.",
+			"Encoding Teks": "Text Encoding",
+			"Format baca karakter (Rusia, Latin, dll).": "Character read format (Russian, Latin, etc).",
+			"UTF-8 (Standar Global)": "UTF-8 (Global Standard)",
+			"Windows-1252 (Western/Eropa)": "Windows-1252 (Western/Europe)",
+			"Windows-1251 (Cyrillic/Rusia)": "Windows-1251 (Cyrillic/Russian)",
+			"ISO-8859-1 (Latin-1)": "ISO-8859-1 (Latin-1)",
+			"Shift-JIS (Jepang)": "Shift-JIS (Japanese)",
             
             "Harap simpan file terlebih dahulu untuk membuat progres.": "Please save the file first to track progress.",
             "Tidak ada file untuk diproses.": "No file to process.",
