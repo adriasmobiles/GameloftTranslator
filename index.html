@@ -1082,26 +1082,22 @@
     -webkit-transform: none !important;
 }
 
-/* --- OPTIMASI MOBILE: MODAL EDIT MELAYANG DI BAWAH (ANTI LOMPAT & PROPOSIONAL) --- */
+/* --- OPTIMASI MOBILE: MODAL EDIT DI TENGAH & DINAMIS DENGAN KEYBOARD --- */
 @media (max-width: 639px) {
     #editModal {
-        /* Lepaskan dari posisi tengah vertikal bawaan Tailwind */
-        top: auto !important;
-        
-        /* Posisikan di tengah secara horizontal */
+        /* Kembalikan posisi ke tengah layar (vertikal & horizontal) */
+        top: 50% !important;
+        bottom: auto !important;
         left: 50% !important;
-        transform: translateX(-50%) !important;
+        transform: translate(-50%, -50%) !important;
         
-        /* Turunkan ke bawah, tapi beri jarak sedikit dari keyboard/dasar layar */
-        bottom: 12px !important;
-        
-        /* Beri ruang napas di sisi kiri dan kanan (jangan 100%) */
+        /* Lebar proporsional, tidak menyentuh ujung layar */
         width: 94% !important;
         
-        /* Batasi tinggi maksimal agar dinamis dengan keyboard */
+        /* KUNCI ANTI MENGGELEMBUNG: Tetap gunakan dvh. Saat keyboard naik, 85dvh akan menyusut,
+           memaksa modal tetap proporsional dan ujung bawahnya otomatis merapat ke keyboard */
         max-height: 85dvh !important; 
         
-        /* Kembalikan lengkungan sudut bawah agar tetap terlihat seperti "kartu" premium */
         border-bottom-left-radius: 2rem !important;
         border-bottom-right-radius: 2rem !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.9) !important;
@@ -1369,14 +1365,6 @@
             </button>
         </div>
 
-        <div class="flex justify-center items-center gap-3 mb-3">
-            <i id="lengthLockToggle" class="fas fa-lock-open w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Kunci Panjang"></i>
-            <i id="openDictionaryCacheBtn" class="fa-solid fa-book w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan ke Kamus"></i>
-            <i id="livePromptShortcutBtn" class="fa-solid fa-bolt w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Live Prompt"></i>
-            <i id="contextModeBtn" class="fa-solid fa-circle-info w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Mode Konteks"></i>
-            <i id="saveProgressFromModalBtn" class="fa-solid fa-save w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan Progres"></i>
-        </div>
-
         <span id="textProgressDisplay" class="hidden"></span>
 
         <div id="editModalBody" class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
@@ -1391,8 +1379,15 @@
                 </div>
             </div>
 
-            <div class="flex justify-end px-1 -mb-3">
-                <span id="lengthDisplay" class="length-display text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pnjg: 0/0</span>
+            <div class="flex justify-between items-center px-1 mt-1 -mb-1 relative z-10">
+                <div class="flex items-center gap-2">
+                    <i id="lengthLockToggle" class="fas fa-lock-open w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Kunci Panjang"></i>
+                    <i id="openDictionaryCacheBtn" class="fa-solid fa-book w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan ke Kamus"></i>
+                    <i id="livePromptShortcutBtn" class="fa-solid fa-bolt w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Live Prompt"></i>
+                    <i id="contextModeBtn" class="fa-solid fa-circle-info w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Mode Konteks"></i>
+                    <i id="saveProgressFromModalBtn" class="fa-solid fa-save w-7 h-7 flex items-center justify-center rounded-full bg-white/60 text-gray-600 hover:bg-white cursor-pointer transition-colors shadow-sm text-[10px] border border-white/80" title="Simpan Progres"></i>
+                </div>
+                <span id="lengthDisplay" class="length-display text-[10px] font-bold text-gray-400 uppercase tracking-widest shrink-0">Panjang: 0/0</span>
             </div>
 
             <div id="contextInputContainer" class="hidden space-y-1.5">
