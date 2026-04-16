@@ -987,10 +987,10 @@
 }
 
 #translatedText {
-    flex-grow: 1 !important; /* Membuat kotak memakan sisa ruang kosong secara otomatis */
+    flex-grow: 0 !important; 
     height: auto !important;
-    min-height: 250px !important; /* Tinggi minimal jauh lebih lega (sebelumnya 150px) */
-    max-height: 450px !important; /* Batas atas maksimal juga dibesarkan */
+    min-height: 180px !important; /* Ditinggikan agar area ngetik luas (sebelumnya 80px) */
+    max-height: 250px !important; /* Batas maksimal scroll diperbesar (sebelumnya 160px) */
     overflow-y: auto !important;   
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1081,8 +1081,6 @@
     transform: none !important;
     -webkit-transform: none !important;
 }
-
-
 
 
 </style>
