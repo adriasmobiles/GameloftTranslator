@@ -973,8 +973,9 @@
 
 /* --- FIX: Scroll untuk Teks Asli di Modal --- */
 #originalText {
-    max-height: 80px !important; /* Batasi tinggi kotak teks asli */
-    overflow-y: auto !important;  /* Munculkan scrollbar vertikal jika teks melebihi batas */	
+    max-height: 220px !important; /* Diperpanjang agar lebih leluasa */
+    min-height: 60px;             /* Menjaga agar tidak terlalu ciut saat teks pendek */
+    overflow-y: auto !important;	
 }
 
 /* --- FIX FINAL: Modal Kempes (Proporsional & Anti Menggelembung) --- */
@@ -1351,35 +1352,25 @@
             </button>
         </div>
 
-        <div class="text-center mb-2 mt-2">
+        <div class="text-center mb-4 mt-2">
             <h3 class="text-lg font-black text-gray-900 tracking-tight">Penyunting Teks</h3>
+            <div id="paragraphTitleDisplay" class="text-[10px] text-blue-600 font-bold uppercase tracking-widest mt-1"></div>
         </div>
-
-        <div class="flex items-center justify-center gap-6 mb-3">
-            <button id="prevTextButton" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 transition-all disabled:opacity-30 bg-white/50 border border-white/60 shadow-sm active:scale-95">
-                <i class="fas fa-chevron-left text-gray-700 text-sm"></i>
-            </button>
-            <div id="paragraphTitleDisplay" class="text-[10px] text-blue-600 font-bold uppercase tracking-widest"></div>
-            <button id="nextTextButton" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 transition-all disabled:opacity-30 bg-white/50 border border-white/60 shadow-sm active:scale-95">
-                <i class="fas fa-chevron-right text-gray-700 text-sm"></i>
-            </button>
-        </div>
-
-        <span id="textProgressDisplay" class="hidden"></span>
 
         <div id="editModalBody" class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
             
-            <div class="flex-shrink-0 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-inner">
-                <button id="originalTextAccordionButton" class="w-full flex items-center justify-between text-left p-3 rounded-xl hover:bg-white/80 transition-colors" aria-expanded="true">
-                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teks Asli</span>
+            <div class="flex-shrink-0 flex flex-col space-y-1.5">
+                <div class="flex items-center justify-between px-1">
+                    <button id="originalTextAccordionButton" class="flex items-center gap-2 focus:outline-none group" aria-expanded="true">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-600 transition-colors">Teks Asli</span>
+                        <i class="fas fa-chevron-down text-gray-400 text-[10px] transition-transform"></i>
+                    </button>
                     
-                    <div class="flex items-center gap-3">
-                        <span id="copyOriginalBtn" class="bg-white/90 hover:bg-blue-50 text-blue-600 font-bold text-[9px] px-3 py-1.5 rounded-lg border border-blue-200/50 shadow-sm transition-all active:scale-95 uppercase tracking-widest backdrop-blur-md cursor-pointer">Salin</span>
-                        <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform"></i>
-                    </div>
-                </button>
-                <div id="originalTextAccordionContent" class="px-3 pb-3">
-                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm border border-white/60 shadow-sm max-h-[140px] overflow-y-auto custom-scrollbar"></div>
+                    <span id="copyOriginalBtn" class="hover:bg-blue-600/10 text-blue-600 font-black text-[9px] px-3 py-1.5 rounded-lg border border-blue-600/30 transition-all active:scale-95 uppercase tracking-widest cursor-pointer">Salin</span>
+                </div>
+
+                <div id="originalTextAccordionContent" class="transition-all duration-300 overflow-hidden">
+                    <div id="originalText" class="p-4 bg-white/50 rounded-2xl border border-white/60 shadow-inner whitespace-pre-wrap break-words text-gray-700 text-sm max-h-[220px] overflow-y-auto custom-scrollbar"></div>
                 </div>
             </div>
 
@@ -1402,6 +1393,18 @@
             <div class="space-y-1.5 flex-grow flex flex-col">
                 <label for="translatedText" class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Terjemahan</label>
                 <textarea id="translatedText" class="w-full text-sm rounded-2xl p-4 bg-white/50 border border-white/60 focus:bg-white focus:border-blue-400 transition-all outline-none shadow-inner min-h-[80px] flex-grow resize-none"></textarea>
+                
+                <div class="mt-3 bg-white/60 backdrop-blur-md rounded-2xl p-1.5 border border-white/80 shadow-sm flex items-center justify-between shrink-0">
+                    <button id="prevTextButton" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/50 hover:bg-white text-gray-400 hover:text-blue-600 shadow-sm border border-white/60 transition-all active:scale-90 disabled:opacity-30 group">
+                        <i class="fas fa-chevron-left text-xs group-hover:-translate-x-0.5 transition-transform"></i>
+                    </button>
+                    <div class="flex flex-col items-center">
+                        <span id="textProgressDisplay" class="text-[10px] font-black text-blue-600/70 uppercase tracking-[0.2em] transition-all duration-300">Teks 0 dari 0</span>
+                    </div>
+                    <button id="nextTextButton" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/50 hover:bg-white text-gray-400 hover:text-blue-600 shadow-sm border border-white/60 transition-all active:scale-90 disabled:opacity-30 group">
+                        <i class="fas fa-chevron-right text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -3816,8 +3819,27 @@ function applyCaseToMatch(originalMatch, newText) {
 
             paragraphTitleDisplay.textContent = `Paragraf ${currentEditPIndex + 1}`;
 
+            // Hitung total teks dan urutan global
+            let totalStrings = 0;
+            let currentGlobalIndex = 0;
+            const dataArr = parsedData.paragraphs || [];
+            
+            dataArr.forEach((p, pIdx) => {
+                if (p.strings) {
+                    p.strings.forEach((s, sIdx) => {
+                        totalStrings++;
+                        if (pIdx < currentEditPIndex || (pIdx === currentEditPIndex && sIdx <= currentEditSIndex)) {
+                            currentGlobalIndex = totalStrings;
+                        }
+                    });
+                }
+            });
 
-            textProgressDisplay.textContent = `Teks ${currentEditSIndex + 1} dari ${container.strings.length}`;
+            textProgressDisplay.style.opacity = '0';
+            setTimeout(() => {
+                textProgressDisplay.textContent = `TEKS ${currentGlobalIndex} DARI ${totalStrings}`;
+                textProgressDisplay.style.opacity = '1';
+            }, 150);
 
             const data = parsedData.paragraphs;
             let firstPIndex = 0;
@@ -7426,13 +7448,15 @@ function toggleOrigAccordionSafe(forceState) {
     origAccordionBtn.setAttribute('aria-expanded', newState);
     
     if (newState) {
+        // Membuka: Set tinggi maksimal sesuai konten
         origAccordionContent.style.maxHeight = origAccordionContent.scrollHeight + 'px';
         origAccordionContent.style.opacity = '1';
-        origAccordionContent.style.paddingBottom = '0.75rem'; // Munculkan jarak
+        origAccordionContent.style.marginTop = '0px'; 
     } else {
+        // Menutup: Set ke 0
         origAccordionContent.style.maxHeight = '0px';
         origAccordionContent.style.opacity = '0';
-        origAccordionContent.style.paddingBottom = '0px'; // Buang jarak agar rata
+        origAccordionContent.style.marginTop = '-6px'; // Menghilangkan celah space-y-1.5 saat tertutup
     }
 }
 
