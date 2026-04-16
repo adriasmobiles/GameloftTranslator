@@ -1343,7 +1343,7 @@
 
     <div id="modalOverlay" class="fixed inset-0 modal-overlay z-40 hidden"></div>
 
-    <div id="editModal" class="modal-content fixed z-50 p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[70vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
+    <div id="editModal" class="modal-content fixed z-50 p-6 hidden flex flex-col shadow-2xl transition-all duration-300 w-[92%] max-w-[360px] h-auto max-h-[75vh] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/80">
         
         <div class="absolute top-5 right-5 z-[60]">
             <button id="closeEditModalXBtn" class="control-button close-btn" title="Tutup">
@@ -1371,11 +1371,15 @@
             
             <div class="flex-shrink-0 bg-white/50 rounded-2xl p-1 border border-white/60 shadow-inner">
                 <button id="originalTextAccordionButton" class="w-full flex items-center justify-between text-left p-3 rounded-xl hover:bg-white/80 transition-colors" aria-expanded="true">
-                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teks Asli (Klik untuk salin)</span>
-                    <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform"></i>
+                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Teks Asli</span>
+                    
+                    <div class="flex items-center gap-3">
+                        <span id="copyOriginalBtn" class="bg-white/90 hover:bg-blue-50 text-blue-600 font-bold text-[9px] px-3 py-1.5 rounded-lg border border-blue-200/50 shadow-sm transition-all active:scale-95 uppercase tracking-widest backdrop-blur-md cursor-pointer">Salin</span>
+                        <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform"></i>
+                    </div>
                 </button>
                 <div id="originalTextAccordionContent" class="px-3 pb-3">
-                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm cursor-pointer border border-white/60 shadow-sm max-h-[140px] overflow-y-auto custom-scrollbar"></div>
+                     <div id="originalText" class="p-3 bg-white/80 rounded-xl whitespace-pre-wrap break-words text-gray-700 text-sm border border-white/60 shadow-sm max-h-[140px] overflow-y-auto custom-scrollbar"></div>
                 </div>
             </div>
 
@@ -3994,13 +3998,7 @@ function applyCaseToMatch(originalMatch, newText) {
                 closeModal();
             }
         }
-        originalTextDiv.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    translatedTextArea.value = originalTextDiv.textContent;
-    saveTranslation(currentEditPIndex, currentEditSIndex, false);
-    showAppNotification("Teks diatur ulang.", "info");
-    autoResizeTextarea(translatedTextArea);
-});
+        
 
 function updateTextItemUI(pIndex, sIndex, translatedText, originalText, isManual = false, isLengthMismatch = false, forceDisplay = false) {
     const textItemDiv = document.getElementById(`text-${pIndex}-s${sIndex}`);
@@ -6209,7 +6207,35 @@ async function saveLivePrompt() {
         document.addEventListener('DOMContentLoaded', async () => {
     const fullscreenBtn = document.getElementById('fullscreenBtn');
 	
-	
+	const copyOriginalBtn = document.getElementById('copyOriginalBtn');
+        if (copyOriginalBtn) {
+            copyOriginalBtn.addEventListener('click', async (e) => {
+                // KUNCI: Mencegah akordeon terbuka/tertutup saat menyalin
+                e.preventDefault();
+                e.stopPropagation(); 
+
+                const textToCopy = originalTextDiv.textContent;
+                if (!textToCopy) return;
+
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    showAppNotification("Teks asli disalin!", "success");
+                } catch (err) {
+                    // Fallback untuk browser lama
+                    const textArea = document.createElement("textarea");
+                    textArea.value = textToCopy;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        showAppNotification("Teks asli disalin!", "success");
+                    } catch (ex) {
+                        showAppNotification("Gagal menyalin.", "error");
+                    }
+                    document.body.removeChild(textArea);
+                }
+            });
+        }
 	
 	// --- FITUR BAHASA (TOMBOL & PENYIMPANAN) ---
             const langToggleBtn = document.getElementById('langToggleButton');
@@ -7423,22 +7449,27 @@ editModalBody.addEventListener('touchstart', (e) => {
 
 editModalBody.addEventListener('touchmove', (e) => {
     if (!swipeStartY) return;
+    
+    // PERBAIKAN: Jika yang digulir adalah area Teks Asli, JANGAN tutup akordeon!
+    if (e.target.closest('#originalTextAccordionContent')) {
+        return;
+    }
+
     let diffY = swipeStartY - e.touches[0].clientY;
 
     if (diffY > 20) {
         // Jari mengusap ke atas (Scroll melihat ke bawah) -> TUTUP Teks Asli
         toggleOrigAccordionSafe(false);
-    } else if (diffY < -20) {
-        // Jari mengusap ke bawah (Scroll melihat ke atas) -> BUKA Teks Asli
-        // KUNCI: Hanya buka jika teks terjemahan sudah discroll mentok ke atas!
-        if (transTextArea.scrollTop <= 5) {
-            toggleOrigAccordionSafe(true);
-        }
     }
 }, { passive: true });
 
 // 2. Deteksi putaran roda mouse di PC
 editModalBody.addEventListener('wheel', (e) => {
+    // PERBAIKAN: Jika yang digulir adalah area Teks Asli, JANGAN tutup akordeon!
+    if (e.target.closest('#originalTextAccordionContent')) {
+        return;
+    }
+
     if (e.deltaY > 10) {
         toggleOrigAccordionSafe(false);
     } else if (e.deltaY < -10) {
@@ -7881,6 +7912,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "SIMPAN ENTRI": "SAVE ENTRY",
             "CEK": "CHECK",
 			"Memuat Saran...": "Load Suggestion...",
+			"Teks Asli": "Original Text",
+			"Salin": "Copy",
 			
             
             // --- KOSAKATA LAMA (TETAP DIPERTAHANKAN) ---
