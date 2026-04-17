@@ -1105,6 +1105,48 @@
     }
 }
 
+/* =======================================================
+   OPTIMASI PERFORMA KHUSUS HP (APK / WEBVIEW BOOSTER)
+   ======================================================= */
+@media (max-width: 768px) {
+    /* 1. Bekukan Animasi Background Utama */
+    body {
+        animation: none !important;
+        background-position: center !important;
+    }
+
+    /* 2. Bekukan Bola RGB (Tetap ada warnanya, tapi tidak bergerak) */
+    .ios-glow-orb {
+        animation: none !important;
+        opacity: 0.6; /* Diredumkan sedikit agar warnanya tidak terlalu tajam */
+    }
+
+    /* 3. Ringankan Efek Kaca pada Kontainer Utama */
+    .app-container {
+        backdrop-filter: blur(10px) saturate(120%) !important;
+        -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+    }
+
+    /* 4. MATIKAN EFEK KACA PADA DAFTAR TEKS (Sangat Penting untuk Scrolling!) */
+    .text-item {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: rgba(255, 255, 255, 0.9) !important; /* Gunakan warna solid semi-transparan */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important; /* Sederhanakan bayangan */
+    }
+
+    /* 5. Kurangi Beban Efek Kaca pada Modal (Jendela Pop-up) */
+    .modal-content {
+        backdrop-filter: blur(15px) saturate(120%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(120%) !important;
+    }
+    
+    /* 6. Hilangkan bayangan berlebih saat tombol ditekan */
+    button:active {
+        box-shadow: none !important;
+    }
+}
+
 
 </style>
 </head>
