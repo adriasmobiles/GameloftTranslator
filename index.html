@@ -7171,32 +7171,33 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
                     toggleOrigAccordionSafe(false);
                 }
 
-                // 2. Terapkan mekanisme yang sama persis seperti saat mengetik!
-                // Kita pancing kalkulasi ulang ukuran dan tarik scroll mentok bawah.
-                // Dilakukan secara interval untuk "mengawal" animasi keyboard yang sedang naik.
-                let scrollAttempts = 0;
-                const scrollInterval = setInterval(() => {
-                    
-                    // Pancing auto-resize persis seperti saat kita mengetik huruf
-                    if (typeof autoResizeTextarea === 'function') {
-                        autoResizeTextarea(translatedTextArea);
-                    }
-                    
-                    const modalBody = document.getElementById('editModalBody');
-                    if (modalBody) {
-                        // Tarik guliran mentok ke bawah agar wadah tombol Next/Prev naik sempurna
-                        modalBody.scrollTop = modalBody.scrollHeight;
-                    }
-                    
-                    scrollAttempts++;
-                    // Hentikan setelah 450ms (waktu yang sangat cukup untuk keyboard selesai muncul 
-                    // dan animasi penutupan akordeon selesai 100%)
-                    if (scrollAttempts >= 15) { 
-                        clearInterval(scrollInterval);
-                        // Kunci posisi final untuk memastikan benar-benar rapi
-                        if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
-                    }
-                }, 30);
+                // 2. KUNCI PERBAIKAN: Beri jeda 150ms agar DOM/HTML selesai menutup akordeon
+                // sebelum kita mulai menghitung ukuran dan menarik scroll ke bawah.
+                setTimeout(() => {
+                    let scrollAttempts = 0;
+                    const scrollInterval = setInterval(() => {
+                        
+                        // Pancing auto-resize persis seperti saat kita mengetik huruf
+                        if (typeof autoResizeTextarea === 'function') {
+                            autoResizeTextarea(translatedTextArea);
+                        }
+                        
+                        const modalBody = document.getElementById('editModalBody');
+                        if (modalBody) {
+                            // Tarik guliran mentok ke bawah agar wadah tombol Next/Prev naik sempurna
+                            modalBody.scrollTop = modalBody.scrollHeight;
+                        }
+                        
+                        scrollAttempts++;
+                        // Beri waktu lebih lama sedikit (20 x 30ms = 600ms) untuk mengawal
+                        // animasi keyboard di HP yang mungkin sedikit lebih lambat
+                        if (scrollAttempts >= 20) { 
+                            clearInterval(scrollInterval);
+                            // Kunci posisi final untuk memastikan benar-benar rapi
+                            if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
+                        }
+                    }, 30);
+                }, 150); // Jeda 150ms ini yang akan mencegah bagian bawah terpotong
             });
             
             translatedTextArea.addEventListener('blur', () => {
