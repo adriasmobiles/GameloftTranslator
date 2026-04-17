@@ -7166,42 +7166,45 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             });
             
             translatedTextArea.addEventListener('focus', () => {
-                // 1. Tutup akordeon Teks Asli secara otomatis agar ada ruang
+                // 1. FIX POSISI: Geser modal ke bawah layar agar menempel keyboard (Hanya di HP)
+                if (window.innerWidth < 640) {
+                    modal.style.setProperty('top', 'auto', 'important');
+                    modal.style.setProperty('bottom', '0', 'important');
+                    modal.style.setProperty('transform', 'translate(-50%, 0)', 'important');
+                }
+
+                // 2. Tutup akordeon Teks Asli secara otomatis agar ada ruang
                 if (typeof toggleOrigAccordionSafe === 'function') {
                     toggleOrigAccordionSafe(false);
                 }
 
-                // 2. KUNCI PERBAIKAN: Beri jeda 150ms agar DOM/HTML selesai menutup akordeon
-                // sebelum kita mulai menghitung ukuran dan menarik scroll ke bawah.
+                // 3. Jeda singkat untuk sinkronisasi dengan animasi keyboard
                 setTimeout(() => {
                     let scrollAttempts = 0;
                     const scrollInterval = setInterval(() => {
-                        
-                        // Pancing auto-resize persis seperti saat kita mengetik huruf
                         if (typeof autoResizeTextarea === 'function') {
                             autoResizeTextarea(translatedTextArea);
                         }
-                        
                         const modalBody = document.getElementById('editModalBody');
                         if (modalBody) {
-                            // Tarik guliran mentok ke bawah agar wadah tombol Next/Prev naik sempurna
                             modalBody.scrollTop = modalBody.scrollHeight;
                         }
-                        
                         scrollAttempts++;
-                        // Beri waktu lebih lama sedikit (20 x 30ms = 600ms) untuk mengawal
-                        // animasi keyboard di HP yang mungkin sedikit lebih lambat
                         if (scrollAttempts >= 20) { 
                             clearInterval(scrollInterval);
-                            // Kunci posisi final untuk memastikan benar-benar rapi
                             if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
                         }
                     }, 30);
-                }, 150); // Jeda 150ms ini yang akan mencegah bagian bawah terpotong
+                }, 150);
             });
             
             translatedTextArea.addEventListener('blur', () => {
-               
+                // 1. FIX POSISI: Kembalikan modal ke tengah layar saat keyboard hilang (Hanya di HP)
+                if (window.innerWidth < 640) {
+                    modal.style.setProperty('top', '50%', 'important');
+                    modal.style.setProperty('bottom', 'auto', 'important');
+                    modal.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
+                }
             });
 
             scrollTopBtn.addEventListener('mousedown', (e) => { e.currentTarget.pressStartTime = Date.now(); handleScrollPress('up'); });
