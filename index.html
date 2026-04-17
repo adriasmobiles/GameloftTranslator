@@ -7166,41 +7166,56 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             });
             
             translatedTextArea.addEventListener('focus', () => {
-                // 1. FIX POSISI: Geser modal ke bawah layar agar menempel keyboard (Hanya di HP)
-                if (window.innerWidth < 640) {
+                // KUNCI 1: Pastikan ini HANYA terjadi di perangkat sentuh (HP).
+                // Jika di PC (meskipun layarnya dikecilkan), modal tidak akan turun karena PC tidak memiliki keyboard virtual!
+                const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+                
+                if (window.innerWidth < 640 && isTouchDevice) {
                     modal.style.setProperty('top', 'auto', 'important');
                     modal.style.setProperty('bottom', '0', 'important');
                     modal.style.setProperty('transform', 'translate(-50%, 0)', 'important');
                 }
 
-                // 2. Tutup akordeon Teks Asli secara otomatis agar ada ruang
+                // Tutup akordeon Teks Asli secara otomatis agar ada ruang
                 if (typeof toggleOrigAccordionSafe === 'function') {
                     toggleOrigAccordionSafe(false);
                 }
 
-                // 3. Jeda singkat untuk sinkronisasi dengan animasi keyboard
+                // Jeda singkat untuk sinkronisasi dengan animasi keyboard
                 setTimeout(() => {
                     let scrollAttempts = 0;
                     const scrollInterval = setInterval(() => {
                         if (typeof autoResizeTextarea === 'function') {
                             autoResizeTextarea(translatedTextArea);
                         }
+                        
                         const modalBody = document.getElementById('editModalBody');
-                        if (modalBody) {
-                            modalBody.scrollTop = modalBody.scrollHeight;
+                        // KUNCI 2: Targetkan ELEMEN PEMBUNGKUS (Yang berisi Label Terjemahan, Textarea, dan Next/Prev)
+                        const targetContainer = translatedTextArea.parentElement;
+                        
+                        if (modalBody && targetContainer) {
+                            // Fokuskan guliran TEPAT ke bagian atas Label "Terjemahan" (dikurangi 5px agar ada sedikit ruang napas).
+                            // Ini menjamin Label, Kotak Teks, dan Next/Prev terlihat UTUH ke bawah tanpa terpotong!
+                            modalBody.scrollTop = targetContainer.offsetTop - 5; 
                         }
+                        
                         scrollAttempts++;
+                        // Berhenti melacak animasi setelah ~600ms
                         if (scrollAttempts >= 20) { 
                             clearInterval(scrollInterval);
-                            if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
+                            if (modalBody && targetContainer) {
+                                modalBody.scrollTop = targetContainer.offsetTop - 5;
+                            }
                         }
                     }, 30);
                 }, 150);
             });
             
             translatedTextArea.addEventListener('blur', () => {
-                // 1. FIX POSISI: Kembalikan modal ke tengah layar saat keyboard hilang (Hanya di HP)
-                if (window.innerWidth < 640) {
+                const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+                
+                // Kembalikan modal ke tengah layar saat keyboard hilang (Hanya berlaku untuk HP)
+                if (window.innerWidth < 640 && isTouchDevice) {
                     modal.style.setProperty('top', '50%', 'important');
                     modal.style.setProperty('bottom', 'auto', 'important');
                     modal.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
