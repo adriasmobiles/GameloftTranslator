@@ -7428,6 +7428,14 @@ editModalBody.addEventListener('touchmove', (e) => {
     if (diffY > 20) {
         // Jari mengusap ke atas (Scroll melihat ke bawah) -> TUTUP Teks Asli
         toggleOrigAccordionSafe(false);
+    } 
+    // --- FIX BARU: Logika Buka Akordeon ---
+    else if (diffY < -30) { 
+        // Jari mengusap ke bawah (Scroll melihat ke atas) -> BUKA Teks Asli
+        // Syarat Pintar: Hanya buka akordeon jika teks di kolom terjemahan sudah di-scroll mentok ke paling atas (<= 5px)
+        if (transTextArea.scrollTop <= 5) {
+            toggleOrigAccordionSafe(true);
+        }
     }
 }, { passive: true });
 
