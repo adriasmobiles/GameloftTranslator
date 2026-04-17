@@ -7167,19 +7167,22 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             
             translatedTextArea.addEventListener('focus', () => {
                 
+                // 1. FIX: Tutup akordeon "Teks Asli" secara otomatis untuk menghemat ruang layar
+                if (typeof toggleOrigAccordionSafe === 'function') {
+                    toggleOrigAccordionSafe(false);
+                }
 
-                // BARU: Lacak dan kunci guliran terus ke bawah selama keyboard bergerak naik
+                // 2. Lacak dan kunci guliran terus ke bawah selama keyboard bergerak naik
                 let scrollAttempts = 0;
                 const scrollInterval = setInterval(() => {
                     const modalBody = document.getElementById('editModalBody');
                     if (modalBody) {
-                        // Paksa kotak teks terjemahan untuk terus berada di batas bawah penglihatan
-                        translatedTextArea.scrollIntoView({ behavior: 'auto', block: 'end' });
+                        // FIX: Fokuskan guliran mentok ke bawah agar div tombol Next/Prev terangkat dan selalu terlihat
                         modalBody.scrollTop = modalBody.scrollHeight;
                     }
                     
                     scrollAttempts++;
-                    // Berhenti melacak setelah 600ms (ketika animasi keyboard sudah 100% selesai)
+                    // Berhenti melacak setelah 600ms (memberi waktu animasi keyboard dan penutupan akordeon selesai)
                     if (scrollAttempts >= 12) { 
                         clearInterval(scrollInterval);
                     }
