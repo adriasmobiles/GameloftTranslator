@@ -7167,26 +7167,24 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
             
             translatedTextArea.addEventListener('focus', () => {
                 
-                // 1. FIX: Tutup akordeon "Teks Asli" secara otomatis untuk menghemat ruang layar
+                // 1. Tutup akordeon "Teks Asli" untuk menghemat ruang
                 if (typeof toggleOrigAccordionSafe === 'function') {
                     toggleOrigAccordionSafe(false);
                 }
 
-                // 2. Lacak dan kunci guliran terus ke bawah selama keyboard bergerak naik
+                // 2. Cegah bagian atas tenggelam dengan menahan scroll di paling atas (0)
                 let scrollAttempts = 0;
                 const scrollInterval = setInterval(() => {
                     const modalBody = document.getElementById('editModalBody');
                     if (modalBody) {
-                        // FIX: Fokuskan guliran mentok ke bawah agar div tombol Next/Prev terangkat dan selalu terlihat
-                        modalBody.scrollTop = modalBody.scrollHeight;
+                        modalBody.scrollTop = 0; // KUNCI: Pertahankan di paling atas agar info dan tombol tidak tertutup
                     }
                     
                     scrollAttempts++;
-                    // Berhenti melacak setelah 600ms (memberi waktu animasi keyboard dan penutupan akordeon selesai)
                     if (scrollAttempts >= 12) { 
                         clearInterval(scrollInterval);
                     }
-                }, 50); // Eksekusi setiap 50ms
+                }, 50);
             });
             
             translatedTextArea.addEventListener('blur', () => {
@@ -7481,6 +7479,9 @@ if (mainContentArea) {
         if (scrollTop < 0) return;
 
         if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+            // FIX BUG: Cek apakah modal edit sedang terbuka
+            const isEditModalOpen = document.getElementById('editModal') && !document.getElementById('editModal').classList.contains('hidden');
+            
             if (scrollTop > lastScrollTop && scrollTop > 100) {
                 if (bottomNavbar) bottomNavbar.classList.add('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
                 
@@ -7489,10 +7490,13 @@ if (mainContentArea) {
                 }
             } 
             else {
-                if (bottomNavbar) bottomNavbar.classList.remove('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
-                
-                if (fabContainer && !fabContainer.classList.contains('hidden')) {
-                    fabContainer.classList.remove('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
+                // HANYA munculkan kembali navbar dan FAB jika Modal Edit sedang tertutup
+                if (!isEditModalOpen) {
+                    if (bottomNavbar) bottomNavbar.classList.remove('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
+                    
+                    if (fabContainer && !fabContainer.classList.contains('hidden')) {
+                        fabContainer.classList.remove('translate-y-[200%]', 'opacity-0', 'pointer-events-none');
+                    }
                 }
             }
             lastScrollTop = scrollTop;
