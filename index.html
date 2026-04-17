@@ -983,17 +983,17 @@
     overflow-y: auto !important; 
     display: flex;
     flex-direction: column;
-    height: auto !important; /* KUNCI 1: Biarkan konten yang menentukan tingginya secara alami */
-    max-height: 60vh !important; /* Batas wajar saat tidak ada keyboard */
+    height: auto !important; 
+    max-height: 60dvh !important; /* Menggunakan dvh agar dinamis beradaptasi dengan keyboard */
 }
 
 #translatedText {
-    flex-grow: 1 !important; /* Membuat kotak memakan sisa ruang kosong secara otomatis */
-    height: auto !important;
-    min-height: 180px !important; /* Tinggi minimal jauh lebih lega (sebelumnya 150px) */
-    max-height: 350px !important; /* Batas atas maksimal juga dibesarkan */
+    flex-grow: 1 !important; 
+    /* height: auto !important; DIHAPUS agar fungsi JS autoResizeTextarea bisa bekerja dengan baik saat mengetik */
+    min-height: 25dvh !important; /* Proporsi minimal selalu 25% dari layar yang tersedia */
+    max-height: 45dvh !important; /* Batas maksimal 45% agar tombol di bawah tidak terdorong keluar layar */
     overflow-y: auto !important;   
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: height 0.1s ease-out, border 0.2s, box-shadow 0.2s;
 }
 
 #originalTextAccordionContent {
