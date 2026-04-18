@@ -7146,14 +7146,16 @@ document.getElementById('closeAddLivePromptEntryModalBtn').addEventListener('cli
                 updateLengthDisplay();
                 hasUserTypedInModal = true;
 
-                const lineCount = getVisualLineCount(translatedTextArea);
-                const accordionButton = document.getElementById('originalTextAccordionButton');
-                const accordionContent = document.getElementById('originalTextAccordionContent');
-                
-                // BARU: Gulir otomatis ke bagian bawah kolom saat tinggi kotak teks bertambah
+                // FIX: Gunakan jangkar presisi seperti saat kotak ditekan (focus)
+                // Ini mencegah bagian bawah terpotong meskipun Teks Asli sedang terbuka lebar.
                 const modalBody = document.getElementById('editModalBody');
-                if (modalBody) {
-                    modalBody.scrollTop = modalBody.scrollHeight;
+                const targetContainer = this.parentElement; // Ambil wadah pembungkus Label, Kotak Teks, dan Prev/Next
+                
+                if (modalBody && targetContainer) {
+                    // Posisikan atap pandangan tepat di label "Terjemahan" (minus 5px untuk ruang napas).
+                    // Dengan begini, seberapa pun besarnya Teks Asli di atas, 
+                    // kotak terjemahan dan tombol di bawahnya akan selalu utuh tersorot!
+                    modalBody.scrollTop = targetContainer.offsetTop - 5;
                 }
             });
             
