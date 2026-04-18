@@ -3749,26 +3749,18 @@ function applyCaseToMatch(originalMatch, newText) {
 
             paragraphTitleDisplay.textContent = `Paragraf ${currentEditPIndex + 1}`;
 
-            // Hitung total teks dan urutan global
-            let totalStrings = 0;
-            let currentGlobalIndex = 0;
-            const dataArr = parsedData.paragraphs || [];
-            
-            dataArr.forEach((p, pIdx) => {
-                if (p.strings) {
-                    p.strings.forEach((s, sIdx) => {
-                        totalStrings++;
-                        if (pIdx < currentEditPIndex || (pIdx === currentEditPIndex && sIdx <= currentEditSIndex)) {
-                            currentGlobalIndex = totalStrings;
-                        }
-                    });
-                }
-            });
+            // FIX: Hitung urutan dan total teks HANYA untuk paragraf yang sedang dibuka
+            const currentParagraph = parsedData.paragraphs[currentEditPIndex];
+            const totalStringsInParagraph = currentParagraph && currentParagraph.strings ? currentParagraph.strings.length : 0;
+            const currentLocalIndex = currentEditSIndex + 1;
 
             textProgressDisplay.style.opacity = '0';
             setTimeout(() => {
-                textProgressDisplay.textContent = `TEKS ${currentGlobalIndex} DARI ${totalStrings}`;
+                textProgressDisplay.textContent = `TEKS ${currentLocalIndex} DARI ${totalStringsInParagraph}`;
                 textProgressDisplay.style.opacity = '1';
+                
+                // Memicu paksa terjemahan ulang jika sedang berada di Mode EN
+                if (typeof window.translatePage === 'function') window.translatePage();
             }, 150);
 
             const data = parsedData.paragraphs;
@@ -8190,7 +8182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		{ regexID: /Panjang: (\d+)\/(\d+)/g, replaceEN: "Length: $1/$2", regexEN: /Length: (\d+)\/(\d+)/g, replaceID: "Panjang: $1/$2" },
 		{ regexID: /Teks: (\d+)/g, replaceEN: "Text: $1", regexEN: /Text: (\d+)/g, replaceID: "Teks: $1" },
         { regexID: /Paragraf (\d+)/g, replaceEN: "Paragraph $1", regexEN: /Paragraph (\d+)/g, replaceID: "Paragraf $1" },
-        { regexID: /Teks (\d+) dari (\d+)/g, replaceEN: "Text $1 of $2", regexEN: /Text (\d+) of (\d+)/g, replaceID: "Teks $1 dari $2" },
+        { regexID: /TEKS (\d+) DARI (\d+)/g, replaceEN: "TEXT $1 OF $2", regexEN: /TEXT (\d+) OF (\d+)/g, replaceID: "TEKS $1 DARI $2" },
         { regexID: /(\d+) terpilih/g, replaceEN: "$1 selected", regexEN: /(\d+) selected/g, replaceID: "$1 terpilih" },
         { regexID: /Diterjemahkan: (\d+)/g, replaceEN: "Translated: $1", regexEN: /Translated: (\d+)/g, replaceID: "Diterjemahkan: $1" },
         { regexID: /Progres: (\d+%)/g, replaceEN: "Progress: $1", regexEN: /Progress: (\d+%)/g, replaceID: "Progres: $1" },
