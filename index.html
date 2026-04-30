@@ -1585,6 +1585,7 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
                 "Terapkan Pengaturan": "Apply Settings",
 				"Baris Teks": "Text Lines",
 				"Paragraf": "Paragraph",
+				"File berhasil diunduh!": "File downloaded successfully!",
 
                 // Berkas & Ekspor
                 "Berkas": "Files",
@@ -1614,6 +1615,12 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
                 "Simpan ke Perangkat?": "Save to Device?",
                 "Fitur pengunduhan biner langsung ke perangkat lokal terkadang dapat menyebabkan *hang* atau proses macet pada beberapa browser. Disarankan menggunakan Sinkronisasi Cloud. Lanjutkan?": "Direct binary downloading to local devices can sometimes cause hangs or crashes on some browsers. Cloud Sync is recommended. Continue?",
                 "Lanjutkan": "Continue",
+				"Bahasa Sumber (mis: English)": "Source Language (eg: English)",
+				"Lebih": "More",
+                "Kurang": "Less",
+                "Ideal": "Ideal",
+				"Tidak Didukung di Ponsel": "Not Supported on Mobile",
+                "Fitur unduh langsung ini hanya stabil jika digunakan di PC. Untuk ponsel (APK), silakan gunakan fitur Sinkronisasi Cloud atau Buat Ulang JAR untuk mencegah aplikasi crash.": "This direct download feature is only stable on PC. For mobile (APK), please use Cloud Sync or Repack JAR to prevent the app from crashing.",
 				
                 // Layar Utama
                 "Cari teks...": "Search text...",
@@ -1694,6 +1701,9 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
                 }
             }
             translatePage();
+            
+            // --- KODE BARU: Paksa Counter Metrik untuk memuat ulang bahasanya seketika ---
+            if (typeof updateStats === 'function') updateStats();
         };
 
         window.translatePage = function() {
@@ -1740,6 +1750,18 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
             }
             return text; // Kembali ke Bahasa Indonesia jika tidak ada di kamus
         };
+		
+		// --- FUNGSI DETEKSI PONSEL ---
+window.isMobileDevice = function() {
+    // Cek berdasarkan lebar layar dan sentuhan, atau string userAgent
+    const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isSmallScreen = window.innerWidth <= 768;
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isAndroidOrIOS = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+    
+    // PERBAIKAN: Cukup salah satu kondisi terpenuhi (layar sempit ATAU OS ponsel ATAU layar sentuh)
+    return isSmallScreen || isAndroidOrIOS || isTouch;
+};
 
         const PROMPT_TRANSLATE = "Peran: Editor Lokalisasi Game J2ME (Bahasa Indonesia).\nAturan Ketat:\n1. Gunakan format output: [#ID] Terjemahan.\n2. JANGAN mengubah ID ([#ID]). Dilarang memberikan penjelasan, dilarang menggabungkan baris.\n3. Pertahankan semua nama karakter, tag seperti `[Nama:]` atau `NPC:` , dan variabel kode (%s, \\n, dll) dari teks asli.\n4. Terjemahkan HANYA bagian dialog secara natural ke Bahasa Indonesia.\n5. JANGAN terjemahkan istilah teknis/sistem jika tidak perlu. Gunakan kata ganti aku dan kau, jangan kamu, saya atau Anda.\n6. Jika teks asli menggunakan HURUF BESAR SEMUA (ALL CAPS), maka hasil terjemahan HARUS menggunakan HURUF BESAR SEMUA juga.";
 
@@ -2462,12 +2484,12 @@ async function processEncryptedFile(fileBuffer, encoding) {
                 totalOrig += getLen(orig); totalTrans += getLen(current);
             });
             const charVal = document.getElementById('stat-chars-val'); const labelEl = document.getElementById('stat-metric-label'); const diffBadge = document.getElementById('stat-chars-diff-badge'); const diffText = document.getElementById('stat-chars-diff-text');
-            if (labelEl) labelEl.innerHTML = `Penghitung Teks <span class="ml-1 px-1.5 py-0.5 bg-blue-500/20 text-blue-500 rounded-md text-[7px] font-black tracking-normal">${metricMode.toUpperCase()}</span>`;
+            if (labelEl) labelEl.innerHTML = `${getUIText("Penghitung Teks")} <span class="ml-1 px-1.5 py-0.5 bg-blue-500/20 text-blue-500 rounded-md text-[7px] font-black tracking-normal">${metricMode.toUpperCase()}</span>`;
             if (charVal && diffBadge && diffText) {
                 charVal.innerText = `${totalTrans} / ${totalOrig}`; const diff = totalTrans - totalOrig;
-                if (diff > 0) { diffText.innerText = `Lebih (+${diff})`; diffBadge.className = "px-4 py-2 rounded-full text-[10px] font-black bg-red-500/10 text-red-500 border border-red-500/30"; }
-                else if (diff < 0) { diffText.innerText = `Kurang (${diff})`; diffBadge.className = "px-4 py-2 rounded-full text-[10px] font-black bg-amber-500/10 text-amber-500 border border-amber-500/30"; }
-                else { diffText.innerText = "Ideal"; diffBadge.className = "px-4 py-2 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"; }
+                if (diff > 0) { diffText.innerText = `${getUIText("Lebih")} (+${diff})`; diffBadge.className = "px-4 py-2 rounded-full text-[10px] font-black bg-red-500/10 text-red-500 border border-red-500/30"; }
+                else if (diff < 0) { diffText.innerText = `${getUIText("Kurang")} (${diff})`; diffBadge.className = "px-4 py-2 rounded-full text-[10px] font-black bg-amber-500/10 text-amber-500 border border-amber-500/30"; }
+                else { diffText.innerText = getUIText("Ideal"); diffBadge.className = "px-4 py-2 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"; }
             }
         }
 
@@ -2511,8 +2533,8 @@ async function processEncryptedFile(fileBuffer, encoding) {
                              ${displayParagraphNumber}
                          </div>
                          <div class="text-left">
-                             <div class="text-[15px] font-bold text-[var(--text-main)] tracking-tight">${getUIText("Paragraf")} ${displayParagraphNumber}</div>
-                             <div class="text-[10px] font-bold text-[var(--text-sec)] tracking-widest uppercase mt-0.5">${items.length} ${getUIText("Baris Teks")}</div>
+                             <div class="text-[15px] font-bold text-[var(--text-main)] tracking-tight"><span>${getUIText("Paragraf")}</span> ${displayParagraphNumber}</div>
+                             <div class="text-[10px] font-bold text-[var(--text-sec)] tracking-widest uppercase mt-0.5">${items.length} <span>${getUIText("Baris Teks")}</span></div>
                          </div>
                      </div>
                      <div class="flex items-center gap-3">
@@ -3820,19 +3842,26 @@ els.mainScroll.addEventListener('scroll', () => {
                 const btnLocal = document.getElementById('btn-local-save'); 
                 if (btnLocal) { 
                     btnLocal.onclick = async () => { 
-                        // Tampilkan peringatan Kustom iOS dengan bahasa dinamis
-                        const confirm = await showCustomConfirm(
-                            getUIText("Simpan ke Perangkat?"), 
-                            getUIText("Fitur pengunduhan biner langsung ke perangkat lokal terkadang dapat menyebabkan *hang* atau proses macet pada beberapa browser. Disarankan menggunakan Sinkronisasi Cloud. Lanjutkan?"), 
-                            getUIText("Lanjutkan"), "fa-exclamation-triangle", "danger"
-                        );
-                        
-                        if (!confirm) return; 
-                        
-                        const a = document.createElement('a'); 
-                        a.href = URL.createObjectURL(pendingDownloadBlob); 
-                        a.download = filename; 
-                        a.click(); 
+                        // Deteksi perangkat
+                        if (isMobileDevice()) {
+                            // Jika PONSEL: Tampilkan peringatan tanpa konfirmasi dan Batal
+                            await showCustomConfirm(
+                                getUIText("Tidak Didukung di Ponsel"), 
+                                getUIText("Fitur unduh langsung ini hanya stabil jika digunakan di PC. Untuk ponsel (APK), silakan gunakan fitur Sinkronisasi Cloud atau Buat Ulang JAR untuk mencegah aplikasi crash."), 
+                                getUIText("Mengerti"), "fa-mobile-screen-button", "danger"
+                            );
+                            return; // Hentikan proses unduh
+                        } else {
+                            // Jika PC: Langsung unduh TANPA peringatan apa pun
+                            const a = document.createElement('a'); 
+                            a.href = URL.createObjectURL(pendingDownloadBlob); 
+                            a.download = filename; 
+                            a.click(); 
+                            
+                            // Tutup modal opsi unduhan secara otomatis agar rapi
+                            document.getElementById('download-options-modal').classList.remove('active');
+                            showToast(getUIText("File berhasil diunduh!"), "success");
+                        }
                     }; 
                     btnLocal.classList.remove('hidden'); 
                 }
