@@ -677,10 +677,15 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
         box-shadow: 0 15px 35px rgba(0,0,0,0.12), inset 0 1px 0px white;
     }
     .ios-tab-bar.nav-hidden,
+    body.search-mode-active .ios-tab-bar,
     body:has(.selection-mode) .ios-tab-bar,
     body:has(#settings-sidebar.active) .ios-tab-bar {
-        transform: translateX(-50%) translateY(500%);
-        opacity: 0; pointer-events: none;
+        transform: translateX(-50%) translateY(500%) !important;
+        opacity: 0 !important; pointer-events: none !important;
+    }
+    body.search-mode-active .fab-container {
+        transform: translateY(500%) !important;
+        opacity: 0 !important; pointer-events: none !important;
     }
     .tab-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1746,6 +1751,7 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
                 "Mode Sandbox": "Sandbox Mode",
                 "Wrong Pattern? Back to Raw": "Wrong Pattern? Back to Raw",
                 "Baru": "New",
+                "Silakan buka file terlebih dahulu!": "Please open a file first!",
 				
 				// Peringatan Raw Editor
                 "Fitur Dalam Perbaikan": "Feature Under Maintenance",
@@ -2200,6 +2206,10 @@ window.isMobileDevice = function() {
         document.getElementById('aiFilterLang').addEventListener('input', () => els.searchInput.dispatchEvent(new Event('input')));
 
         window.toggleSearchBar = function() {
+            if (!isFileLoaded) {
+                showToast(getUIText("Silakan buka file terlebih dahulu!"), "info");
+                return;
+            }
             const bar = document.getElementById('sticky-header-container');
             const mainHeader = document.querySelector('header.glass-header');
             if (!bar) return;
@@ -2215,15 +2225,16 @@ window.isMobileDevice = function() {
             if (isHidden) {
                 bar.style.display = 'flex';
                 mainHeader.classList.add('search-active');
+                document.body.classList.add('search-mode-active');
                 setTimeout(() => document.getElementById('search-input')?.focus(), 50);
             } else {
-                // Bersihkan input dan trigger renderUI agar highlight hilang
                 if (els.searchInput) {
                     els.searchInput.value = '';
                     els.searchInput.dispatchEvent(new Event('input'));
                 }
                 bar.style.display = 'none';
                 mainHeader.classList.remove('search-active');
+                document.body.classList.remove('search-mode-active');
                 bar.classList.remove('audit-mode-active');
             }
         };
@@ -3660,6 +3671,10 @@ if (displayParagraphNumber === 1) {
         };
 
         window.toggleSearchBar = function() {
+            if (!isFileLoaded) {
+                showToast(getUIText("Silakan buka file terlebih dahulu!"), "info");
+                return;
+            }
             const bar = document.getElementById('sticky-header-container');
             const mainHeader = document.querySelector('header.glass-header');
             if (!bar) return;
@@ -3675,15 +3690,16 @@ if (displayParagraphNumber === 1) {
             if (isHidden) {
                 bar.style.display = 'flex';
                 mainHeader.classList.add('search-active');
+                document.body.classList.add('search-mode-active');
                 setTimeout(() => document.getElementById('search-input')?.focus(), 50);
             } else {
-                // PERBAIKAN: Bersihkan input dan render ulang saat menutup
                 if (els.searchInput) {
                     els.searchInput.value = '';
                     els.searchInput.dispatchEvent(new Event('input'));
                 }
                 bar.style.display = 'none';
                 mainHeader.classList.remove('search-active');
+                document.body.classList.remove('search-mode-active');
             }
         };
         window.applyAiSuggestion = function(text) { els.editInput.value = text; updateEditCharCount(); saveCurrentEdit('ai-suggested'); closeAiModal(); showToast("Saran diterapkan", "success"); };
