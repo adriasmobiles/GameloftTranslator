@@ -217,7 +217,7 @@
             letter-spacing: 0.5px;
         }
         .audit-mode-active .audit-badge { display: inline-block; }
-        .audit-mode-active .fa-search { display: none; }
+        
         .audit-mode-active .fa-wand-magic-sparkles { display: block !important; color: #AF52DE; }
 
         .search-input { background-color: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); transition: all 0.3s ease; border-radius: 16px;}
@@ -1025,15 +1025,14 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
     <div id="sticky-header-container" class="glass-header !px-3 !flex-col !gap-2">
         <div id="search-main-container" class="w-full max-w-5xl mx-auto flex items-center gap-2">
             <div class="relative flex-grow flex items-center">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-sec)]"></i>
                 <input type="text" id="search-input" 
-                       class="search-input w-full pl-11 pr-20 py-2.5 text-sm font-medium"
+                       class="search-input w-full pl-4 pr-20 py-2.5 text-sm font-medium"
                        placeholder="Cari teks...">
                 <button id="clearSearch" class="absolute right-10 top-1/2 -translate-y-1/2 text-[var(--text-sec)] hover:text-[var(--text-main)] hidden w-8 h-8 flex items-center justify-center rounded-full transition-all">
                     <i class="fas fa-times-circle text-sm"></i>
                 </button>
-                <button id="close-search-btn" onclick="toggleSearchBar()" class="absolute right-1.5 w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-sec)] hover:bg-[var(--hover)] transition-all" title="Tutup">
-                    <i class="fas fa-chevron-up text-xs"></i>
+                <button id="close-search-btn" onclick="toggleSearchBar()" class="absolute right-1.5 w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-sec)] hover:bg-[var(--hover)] transition-all" title="Tutup Pencarian">
+                    <i class="fas fa-search text-xs"></i>
                 </button>
             </div>
             <button id="btn-toggle-audit-view" onclick="toggleAuditView()" class="apple-ai-glow w-8 h-8 flex items-center justify-center rounded-full shrink-0 shadow-lg active:scale-90 transition-transform">
@@ -1751,6 +1750,7 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
                 "Mode Sandbox": "Sandbox Mode",
                 "Wrong Pattern? Back to Raw": "Wrong Pattern? Back to Raw",
                 "Baru": "New",
+                "Silakan buka file terlebih dahulu!": "Please open a file first!",
                 "Silakan buka file terlebih dahulu!": "Please open a file first!",
 				
 				// Peringatan Raw Editor
@@ -2937,6 +2937,7 @@ window.updateParagraphProgress = function(globalIndex) {
             Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b)).forEach(pIdxStr => {
                 const pIdx = parseInt(pIdxStr);
                 const items = grouped[pIdx];
+                const displayParaNum = pIdx + 1; // Gunakan ID Paragraf Asli
                 
                 // --- FITUR BARU: Hitung Progres Spesifik Paragraf & Ambil Cuplikan ---
                 let paraTranslatedCount = 0;
@@ -2951,14 +2952,14 @@ window.updateParagraphProgress = function(globalIndex) {
                 paraCard.className = 'app-card !mb-0 border border-[var(--border)] overflow-hidden transition-all shadow-sm bg-[var(--bg-card)] shrink-0';
                 
                 const headerBtn = document.createElement('button');
-                headerBtn.className = 'w-full flex justify-between items-center p-3 sm:p-4 bg-[var(--bg-input)] hover:bg-[var(--hover)] transition-colors border-b border-[var(--border)]';
+                headerBtn.className = 'w-full flex justify-between items-center p-3 sm:p-4 bg-[var(--bg-input)] hover:bg(--hover)] transition-colors border-b border-[var(--border)]';
                 
                 // DESAIN BARU: Penomoran + x/y di Kiri, Mini Progress Bar + "Selesai" di Tengah
                 headerBtn.innerHTML = `
                      <div class="flex items-center w-full min-w-0">
                          <!-- Blok Penomoran Kiri (Sekarang menampilkan x/y) -->
                          <div class="flex flex-col items-center justify-center min-w-[42px] border-r border-[var(--border)] pr-3 mr-3 shrink-0 gap-0.5 pointer-events-none">
-                             <span class="text-[14px] font-black text-[var(--text-main)]">${displayParagraphNumber}</span>
+                             <span class="text-[14px] font-black text-[var(--text-main)]">${displayParaNum}</span>
                              <!-- ID ditambahkan ke sini agar angka bisa berdetak real-time -->
                              <span id="para-count-text-${pIdx}" class="text-[9px] font-black text-[var(--ios-blue-start)] opacity-90">${paraTranslatedCount}/${items.length}</span>
                          </div>
@@ -2984,9 +2985,11 @@ window.updateParagraphProgress = function(globalIndex) {
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'py-2 bg-transparent transition-all duration-300';
                 
-                // Render isi baris teks dengan nomor urut LOKAL (per paragraf)
-                items.forEach(({ item, listIndex }, idx) => {
-                    contentDiv.appendChild(createRowElement(item, listIndex, idx + 1));
+                // Render isi baris teks dengan nomor urut ASLI (berdasarkan posisi di paragraf)
+                items.forEach(({ item, listIndex }) => {
+                    const rawChunk = parsedData.rawStructure[item.originalIndex];
+                    const originalLocalNumber = (rawChunk && rawChunk.localIndex !== undefined) ? (rawChunk.localIndex + 1) : (item.originalIndex + 1);
+                    contentDiv.appendChild(createRowElement(item, listIndex, originalLocalNumber));
                 });
                 
                 // Logika Akordeon Tunggal (Hanya 1 terbuka)
@@ -3350,7 +3353,7 @@ if (displayParagraphNumber === 1) {
             const trans = parsedData.translations[globalIndex] !== undefined ? parsedData.translations[globalIndex] : orig;
             
             // --- KODE PENOMORAN LOKAL (PARAGRAF) ---
-            const rawChunk = parsedData.rawStructure.find(c => c.originalIndex === globalIndex);
+            const rawChunk = parsedData.rawStructure[globalIndex];
             let currentLocalIndex = 0;
             let totalInPara = 0;
             
@@ -3670,38 +3673,7 @@ if (displayParagraphNumber === 1) {
             }
         };
 
-        window.toggleSearchBar = function() {
-            if (!isFileLoaded) {
-                showToast(getUIText("Silakan buka file terlebih dahulu!"), "info");
-                return;
-            }
-            const bar = document.getElementById('sticky-header-container');
-            const mainHeader = document.querySelector('header.glass-header');
-            if (!bar) return;
-            
-            const isAudit = document.getElementById('set-enable-audit')?.checked;
-            const isHidden = window.getComputedStyle(bar).display === 'none';
-            
-            if (!isHidden && isAudit) {
-                showToast("Matikan AI Audit di Settings untuk menutup pencarian", "info");
-                return;
-            }
-            
-            if (isHidden) {
-                bar.style.display = 'flex';
-                mainHeader.classList.add('search-active');
-                document.body.classList.add('search-mode-active');
-                setTimeout(() => document.getElementById('search-input')?.focus(), 50);
-            } else {
-                if (els.searchInput) {
-                    els.searchInput.value = '';
-                    els.searchInput.dispatchEvent(new Event('input'));
-                }
-                bar.style.display = 'none';
-                mainHeader.classList.remove('search-active');
-                document.body.classList.remove('search-mode-active');
-            }
-        };
+        // toggleSearchBar dipusatkan di definisi pertama untuk konsistensi.
         window.applyAiSuggestion = function(text) { els.editInput.value = text; updateEditCharCount(); saveCurrentEdit('ai-suggested'); closeAiModal(); showToast("Saran diterapkan", "success"); };
         window.closeAiModal = function() {
             if (isModalClosing) return;
