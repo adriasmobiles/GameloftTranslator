@@ -275,7 +275,7 @@
         .text-row.hidden { display: none !important; }
         
         .text-content { font-weight: 500; font-size: 15px; color: var(--text-main); line-height: 1.4; pointer-events: none; white-space: pre-wrap; }
-        .highlight-text { background-color: rgba(255, 214, 10, 0.4); color: white; padding: 2px 4px; border-radius: 6px; }
+        .highlight-text { background-color: rgba(0, 122, 255, 0.25); color: #0A84FF; padding: 1px 4px; border-radius: 4px; border: 0.5px solid rgba(0, 122, 255, 0.3); font-weight: 700; }
 
         .row-number {
             display: inline-block; min-width: 24px; font-size: 11px; font-weight: 700;
@@ -1022,10 +1022,13 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
             <div class="relative flex-grow flex items-center">
                 <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-sec)]"></i>
                 <input type="text" id="search-input" 
-                       class="search-input w-full pl-11 pr-11 py-2.5 text-sm font-medium"
+                       class="search-input w-full pl-11 pr-20 py-2.5 text-sm font-medium"
                        placeholder="Cari teks...">
-                <button id="close-search-btn" onclick="toggleSearchBar()" class="absolute right-1.5 w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-sec)] hover:bg-[var(--hover)] transition-all">
-                    <i class="fas fa-times text-xs"></i>
+                <button id="clearSearch" class="absolute right-10 top-1/2 -translate-y-1/2 text-[var(--text-sec)] hover:text-[var(--text-main)] hidden w-8 h-8 flex items-center justify-center rounded-full transition-all">
+                    <i class="fas fa-times-circle text-sm"></i>
+                </button>
+                <button id="close-search-btn" onclick="toggleSearchBar()" class="absolute right-1.5 w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-sec)] hover:bg-[var(--hover)] transition-all" title="Tutup">
+                    <i class="fas fa-chevron-up text-xs"></i>
                 </button>
             </div>
             <button id="btn-toggle-audit-view" onclick="toggleAuditView()" class="apple-ai-glow w-8 h-8 flex items-center justify-center rounded-full shrink-0 shadow-lg active:scale-90 transition-transform">
@@ -1291,27 +1294,7 @@ body:not(.lite-mode) .ai-inner-focus-wrapper:focus-within::before {
     <!-- MAIN SCROLL AREA -->
     <main id="main-scroll" class="flex-grow overflow-y-auto scroll-smooth pt-2">
         
-        <!-- STICKY SEARCH BAR -->
-        <div id="sticky-header-container" class="hidden flex-col gap-3 rounded-[24px] mx-4 mb-4 border border-[var(--border-highlight)]">
-            <div class="relative">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-sec)]"></i>
-                <input type="text" id="searchInput" placeholder="Search text..." class="search-input w-full pl-11 pr-20 py-3.5 outline-none text-[15px] font-medium shadow-inner">
-                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                    <button id="clearSearch" class="text-[var(--text-sec)] hover:text-white hidden w-8 h-8 flex items-center justify-center rounded-full"><i class="fas fa-times-circle text-lg"></i></button>
-                    <button id="btnToggleReplace" class="text-[var(--text-sec)] hover:text-white hidden w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300" title="Replace"><i class="fas fa-chevron-down text-sm"></i></button>
-                </div>
-            </div>
-
-            <div id="replaceSection" class="hidden overflow-hidden transition-all duration-300 origin-top">
-                <div class="p-2.5 rounded-2xl flex items-center gap-2 border shadow-inner" style="background: var(--bg-input); border-color: var(--border);">
-                    <div class="relative flex-grow">
-                        <i class="fas fa-pen absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 text-[12px]"></i>
-                        <input type="text" id="replaceInput" placeholder="Replace with..." class="w-full pl-9 pr-3 py-2.5 bg-transparent outline-none text-[14px] font-medium text-[var(--text-main)]">
-                    </div>
-                    <button id="btnApplyReplace" class="px-5 py-2.5 bg-blue-600 text-white text-[13px] font-bold rounded-xl shadow-sm active:scale-95 transition-transform">Replace All</button>
-                </div>
-            </div>
-        </div>
+        <!-- DUPLICATE SEARCH BAR REMOVED TO PREVENT CONFLICTS -->
 
         <!-- UPLOAD SECTION -->
         <div id="upload-section" class="flex flex-col items-center justify-center h-full px-6 pb-20">
@@ -1887,9 +1870,9 @@ window.isMobileDevice = function() {
         const els = {
             uploadSection: document.getElementById('upload-section'),
             editorSection: document.getElementById('editor-section'),
-            stickyHeader: document.getElementById('sticky-header-container'),
-            searchInput: document.getElementById('searchInput'),
-            clearSearch: document.getElementById('clearSearch'),
+                    stickyHeader: document.getElementById('sticky-header-container'),
+        searchInput: document.getElementById('search-input'),
+        clearSearch: document.getElementById('clearSearch'),
             chunkList: document.getElementById('chunk-list'),
             fileInput: document.getElementById('file-input'),
             editModalOverlay: document.getElementById('edit-modal-overlay'),
@@ -2234,10 +2217,13 @@ window.isMobileDevice = function() {
                 mainHeader.classList.add('search-active');
                 setTimeout(() => document.getElementById('search-input')?.focus(), 50);
             } else {
+                // Bersihkan input dan trigger renderUI agar highlight hilang
+                if (els.searchInput) {
+                    els.searchInput.value = '';
+                    els.searchInput.dispatchEvent(new Event('input'));
+                }
                 bar.style.display = 'none';
                 mainHeader.classList.remove('search-active');
-                
-                // KODE BARU: Bersihkan status audit-mode-active jika ada
                 bar.classList.remove('audit-mode-active');
             }
         };
@@ -3085,8 +3071,17 @@ if (displayParagraphNumber === 1) {
             const lenOrig = getLen(orig); const lenTrans = getLen(val);
             const charDiffColor = isMod ? (lenTrans > lenOrig ? 'text-red-500' : (lenTrans < lenOrig ? 'text-amber-500' : 'text-emerald-500')) : 'text-[var(--text-sec)]';
             
-            // Gunakan localNumber dari paragraf (1, 2, 3...)
             const displayNumber = localNumber !== undefined ? localNumber : (listIndex + 1);
+
+            // LOGIKA HIGHLIGHT
+            let displayVal = escapeHtml(val);
+            const searchTerm = els.searchInput ? els.searchInput.value.trim() : '';
+            if (searchTerm) {
+                try {
+                    const regex = new RegExp('(' + escapeRegex(searchTerm) + ')', 'gi');
+                    displayVal = displayVal.replace(regex, '<span class="highlight-text">$1</span>');
+                } catch(e) {}
+            }
 
             row.innerHTML = `
                 <div class="flex flex-col items-center justify-center min-w-[42px] border-r border-[var(--border)] pr-2 mr-1 shrink-0 gap-0.5 pointer-events-none">
@@ -3094,7 +3089,7 @@ if (displayParagraphNumber === 1) {
                     <span class="row-char-counter text-[8px] font-bold ${charDiffColor} opacity-80">${lenTrans}/${lenOrig}</span>
                 </div>
                 <div class="flex-grow flex flex-col justify-center overflow-hidden pr-10 pointer-events-none">
-                    <span class="text-content break-words">${escapeHtml(val) || '<i class="opacity-30">Kosong</i>'}</span>
+                    <span class="text-content break-words">${displayVal || '<i class="opacity-30">Kosong</i>'}</span>
                 </div>
                 <div class="select-indicator"><i class="fas fa-check-circle text-xl"></i></div>`;
             return row;
@@ -3253,8 +3248,8 @@ if (displayParagraphNumber === 1) {
         let searchTimeout;
         els.searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase(); 
-            els.clearSearch.classList.toggle('hidden', !term); 
-            els.btnToggleReplace.classList.toggle('hidden', !term);
+            if (els.clearSearch) els.clearSearch.classList.toggle('hidden', !term); 
+            if (els.btnToggleReplace) els.btnToggleReplace.classList.toggle('hidden', !term);
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const filterInput = document.getElementById('aiFilterLang');
@@ -3274,7 +3269,12 @@ if (displayParagraphNumber === 1) {
             }, 300);
         });
 
-        els.clearSearch.onclick = () => { els.searchInput.value = ''; els.searchInput.dispatchEvent(new Event('input')); };
+        els.clearSearch.onclick = () => { 
+            els.searchInput.value = ''; 
+            els.searchInput.dispatchEvent(new Event('input')); 
+            els.clearSearch.classList.add('hidden');
+            els.searchInput.focus();
+        };
         function escapeRegex(string) { return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'); }
 
         let keyboardResizeListenerAdded = false;
@@ -3677,6 +3677,11 @@ if (displayParagraphNumber === 1) {
                 mainHeader.classList.add('search-active');
                 setTimeout(() => document.getElementById('search-input')?.focus(), 50);
             } else {
+                // PERBAIKAN: Bersihkan input dan render ulang saat menutup
+                if (els.searchInput) {
+                    els.searchInput.value = '';
+                    els.searchInput.dispatchEvent(new Event('input'));
+                }
                 bar.style.display = 'none';
                 mainHeader.classList.remove('search-active');
             }
@@ -4080,14 +4085,6 @@ if (displayParagraphNumber === 1) {
             document.getElementById('file-input').click(); 
         }
         
-        function triggerStandardUpload() { 
-            isRawImportMode = false; isProjectFromRaw = false; 
-            parsingMode = document.getElementById('set-parsing-mode').value; 
-            localStorage.setItem('j2me_sf_parsingMode', parsingMode); 
-            document.getElementById('file-input').value = ''; 
-            document.getElementById('file-input').click(); 
-        }
-
         const MAGIC_KEY_LZMA = [0x5D, 0x00, 0x00, 0x80, 0x00];
         let originalEncryptedTemplateBuffer = null;
 
@@ -4275,11 +4272,14 @@ els.mainScroll.addEventListener('scroll', () => {
                 auditRow.classList.remove('flex', 'animate-ios-bounce');
                 if (btnToggle) btnToggle.style.transform = 'scale(1) rotate(0deg)';
                 
-                // Cek apakah Search Input juga sedang kosong
-                if (!searchInput.value.trim()) {
-                    container.style.display = 'none';
-                    header.classList.remove('search-active');
+                // PERBAIKAN: Bersihkan input dan render ulang saat menutup
+                if (els.searchInput) {
+                    els.searchInput.value = '';
+                    els.searchInput.dispatchEvent(new Event('input'));
                 }
+
+                container.style.display = 'none';
+                header.classList.remove('search-active');
             }
         };
 
