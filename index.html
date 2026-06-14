@@ -2578,51 +2578,77 @@ async function processEncryptedFile(fileBuffer, encoding) {
     decryptedBuffers.forEach((buffer, pIndex) => {
         const blockView = new DataView(buffer);
         let offset = 0;
-        if(blockView.byteLength < 4) return;
         
-        let header = 1;
-        let stringCount = 0;
-        
-        // Menggunakan Pola GT (Decryptor 01 / 02)
-        if(parsingMode === 'simple_1byte_count') {
-            header = blockView.getUint8(offset);
-            offset += 1;
-            stringCount = blockView.getUint32(offset, true); 
-            offset += 4;
-        } else {
-            stringCount = blockView.getUint32(offset, true); 
-            offset += 4;
-        }
+        // KODE PERBAIKAN: Simpan buffer asli dan siapkan tempat untuk Data Ekor
+        let paraEntry = {
+            pIndex,
+            header: 1,
+            stringCount: 0,
+            strings: [],
+            isEmpty: true,
+            originalBuffer: buffer,
+            trailingBytes: new Uint8Array(0) // <-- AMANKAN DATA EKOR
+        };
 
-        if(stringCount > 0 && stringCount < 10000) {
-            const stringPointers = [];
-            for (let j = 0; j < stringCount; j++) { 
-                stringPointers.push(blockView.getUint32(offset + j * 4, true)); 
-            }
-            offset += stringCount * 4;
-            const textStartOffset = offset;
-            let lastPointerRelative = 0;
-            const paraStrings = [];
+        if(blockView.byteLength >= 4) {
+            let header = 1;
+            let stringCount = 0;
             
-            for (let j = 0; j < stringCount; j++) {
-                const currentPointerRelative = stringPointers[j];
-                const stringLength = currentPointerRelative - lastPointerRelative;
-                if (stringLength > 0 && textStartOffset + currentPointerRelative <= blockView.byteLength) {
-                    const strData = new Uint8Array(blockView.buffer, blockView.byteOffset + textStartOffset + lastPointerRelative, stringLength);
-                    const decodedText = decoder.decode(strData);
-                    
-                    let chunkIndex = chunks.length;
-                    chunks.push({ type: 'text', originalIndex: chunkIndex, originalText: decodedText, paragraphIndex: pIndex, localIndex: j });
-                    displayableTexts.push({ originalIndex: chunkIndex, text: decodedText });
-                    paraStrings.push(decodedText);
-                } else {
-                    paraStrings.push("");
+            if(parsingMode === 'simple_1byte_count') {
+                header = blockView.getUint8(offset);
+                offset += 1;
+                stringCount = blockView.getUint32(offset, true); 
+                offset += 4;
+            } else {
+                stringCount = blockView.getUint32(offset, true); 
+                offset += 4;
+            }
+
+            if(stringCount > 0 && stringCount < 10000) {
+                const stringPointers = [];
+                for (let j = 0; j < stringCount; j++) { 
+                    stringPointers.push(blockView.getUint32(offset + j * 4, true)); 
                 }
-                lastPointerRelative = currentPointerRelative;
+                offset += stringCount * 4;
+                const textStartOffset = offset;
+                let lastPointerRelative = 0;
+                const paraStrings = [];
+                let maxPointer = 0; // <-- LACAK BATAS AKHIR TEKS SEBENARNYA
+                
+                for (let j = 0; j < stringCount; j++) {
+                    const currentPointerRelative = stringPointers[j];
+                    if (currentPointerRelative > maxPointer) maxPointer = currentPointerRelative; // Perbarui batas akhir
+                    
+                    const stringLength = currentPointerRelative - lastPointerRelative;
+                    if (stringLength > 0 && textStartOffset + currentPointerRelative <= blockView.byteLength) {
+                        const strData = new Uint8Array(blockView.buffer, blockView.byteOffset + textStartOffset + lastPointerRelative, stringLength);
+                        const decodedText = decoder.decode(strData);
+                        
+                        let chunkIndex = chunks.length;
+                        chunks.push({ type: 'text', originalIndex: chunkIndex, originalText: decodedText, paragraphIndex: pIndex, localIndex: j });
+                        displayableTexts.push({ originalIndex: chunkIndex, text: decodedText });
+                        paraStrings.push(decodedText);
+                    } else {
+                        paraStrings.push("");
+                    }
+                    lastPointerRelative = currentPointerRelative;
+                }
+                
+                // SIMPAN SISA BUFFER (DATA EKOR) JIKA ADA
+                const textEndOffset = textStartOffset + maxPointer;
+                if (textEndOffset < blockView.byteLength) {
+                    paraEntry.trailingBytes = new Uint8Array(blockView.buffer, blockView.byteOffset + textEndOffset);
+                }
+                
+                paraEntry.header = header;
+                paraEntry.stringCount = stringCount;
+                paraEntry.strings = paraStrings;
+                paraEntry.isEmpty = false;
             }
-            
-            paragraphsData.push({ pIndex, header, stringCount, strings: paraStrings });
         }
+        
+        // Selalu masukkan ke array, baik kosong maupun isi
+        paragraphsData.push(paraEntry);
     });
     
     parsedData.rawStructure = chunks; 
@@ -4152,7 +4178,6 @@ els.mainScroll.addEventListener('scroll', () => {
             }
         }
 
-        // --- 2. LOGIKA PEMBENTUKAN PARAGRAF (PERSIS GT) ---
         function buildParagraphTextData(para, pIndex, translations, activeEnc) {
             const textBytes = [];
             const newStringPointers = [];
@@ -4163,8 +4188,22 @@ els.mainScroll.addEventListener('scroll', () => {
                 let strToEncode = originalStr;
                 if (chunk && translations[chunk.originalIndex] !== undefined) {
                     strToEncode = translations[chunk.originalIndex];
+                    
+                    // PERBAIKAN: Pulihkan Karakter Null (\0) jika teks asli memilikinya
+                    let nullSuffix = "";
+                    for (let k = originalStr.length - 1; k >= 0; k--) {
+                        if (originalStr.charCodeAt(k) === 0) {
+                            nullSuffix += '\0';
+                        } else {
+                            break;
+                        }
+                    }
+                    if (nullSuffix.length > 0 && !strToEncode.endsWith('\0')) {
+                        strToEncode += nullSuffix;
+                    }
                 }
-                strToEncode = strToEncode.replace(/\\n/g, '\n');
+                
+                // PENTING: Baris strToEncode.replace(/\\n/g, '\n') SUDAH DIBUANG agar tag mesin tidak rusak!
                 
                 const encodedSegment = encodeString(strToEncode, activeEnc);
                 cumulativeLength += encodedSegment.length;
@@ -4380,23 +4419,67 @@ els.mainScroll.addEventListener('scroll', () => {
                         const para = parsedData.paragraphsData[pIndex];
                         let unencryptedBuffer;
                         
-                        if (parsingMode === 'simple_1byte_count') {
+                        // Deteksi apakah paragraf ini benar-benar diedit
+                        let hasEdits = false;
+                        if (!para.isEmpty && para.stringCount > 0) {
+                            for (let sIndex = 0; sIndex < para.strings.length; sIndex++) {
+                                const chunk = parsedData.rawStructure.find(c => c.paragraphIndex === pIndex && c.localIndex === sIndex);
+                                if (chunk && parsedData.translations[chunk.originalIndex] !== undefined) {
+                                    hasEdits = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // JIKA Paragraf kosong ATAU tidak diedit -> Gunakan buffer mentah
+                        if (para.isEmpty || para.stringCount === 0 || !hasEdits) {
+                            unencryptedBuffer = para.originalBuffer;
+                        } 
+                        else if (parsingMode === 'simple_1byte_count') {
                             const header = para.header || 1;
+                            
+                            let isAllZeroes = true;
+                            if (para.trailingBytes) {
+                                for (let i = 0; i < para.trailingBytes.length; i++) {
+                                    if (para.trailingBytes[i] !== 0) { isAllZeroes = false; break; }
+                                }
+                            }
+                            const trailing = isAllZeroes ? new Uint8Array(0) : (para.trailingBytes || new Uint8Array(0));
+                            
                             const { textBytes, newStringPointers } = buildParagraphTextData(para, pIndex, parsedData.translations, activeEnc);
+                            
                             const paraHeaderSize = 4 + (para.stringCount * 4);
-                            const paraChunk = new Uint8Array(1 + paraHeaderSize + textBytes.length);
+                            
+                            // MENGGUNAKAN UKURAN ASLI TANPA PADDING AMATIR
+                            const actualSize = 1 + paraHeaderSize + textBytes.length + trailing.length;
+                            const paraChunk = new Uint8Array(actualSize); 
                             const paraView = new DataView(paraChunk.buffer);
+                            
                             paraView.setUint8(0, header);
                             paraView.setUint32(1, para.stringCount, true);
                             newStringPointers.forEach((ptr, j) => paraView.setUint32(5 + j * 4, ptr, true));
                             paraChunk.set(new Uint8Array(textBytes), 1 + paraHeaderSize);
+                            paraChunk.set(trailing, 1 + paraHeaderSize + textBytes.length);
+                            
                             unencryptedBuffer = paraChunk.buffer;
                         } else { // direct_4byte
+                            let isAllZeroes = true;
+                            if (para.trailingBytes) {
+                                for (let i = 0; i < para.trailingBytes.length; i++) {
+                                    if (para.trailingBytes[i] !== 0) { isAllZeroes = false; break; }
+                                }
+                            }
+                            const trailing = isAllZeroes ? new Uint8Array(0) : (para.trailingBytes || new Uint8Array(0));
+                            
                             const { textBytes, newStringPointers } = buildParagraphTextData(para, pIndex, parsedData.translations, activeEnc);
+                            
                             const headerSize = 4 + (para.stringCount * 4);
-                            const totalSize = headerSize + textBytes.length;
-                            const finalBuffer = new ArrayBuffer(totalSize);
+                            
+                            // MENGGUNAKAN UKURAN ASLI TANPA PADDING AMATIR
+                            const actualSize = headerSize + textBytes.length + trailing.length;
+                            const finalBuffer = new ArrayBuffer(actualSize);
                             const finalView = new DataView(finalBuffer);
+                            
                             finalView.setUint32(0, para.stringCount, true);
                             let pointerOffset = 4;
                             newStringPointers.forEach(ptr => {
@@ -4404,6 +4487,8 @@ els.mainScroll.addEventListener('scroll', () => {
                                 pointerOffset += 4;
                             });
                             new Uint8Array(finalBuffer, headerSize).set(new Uint8Array(textBytes));
+                            new Uint8Array(finalBuffer, headerSize + textBytes.length).set(trailing);
+                            
                             unencryptedBuffer = finalBuffer;
                         }
 
@@ -4435,14 +4520,30 @@ els.mainScroll.addEventListener('scroll', () => {
                                 const patchedData = patchedLzmaBlocks[lzmaIndex];
                                 const compressedData = patchedData.compressed;
                                 
-                                compressedData.set(meta.lzmaHeader, 0);
+                                // HEADER HYBRID: Amankan 5 Byte Properties Asli agar memori KEmulator tidak menolak
+                                compressedData.set(meta.lzmaHeader.subarray(0, 5), 0);
+                                
                                 const compressedView = new DataView(compressedData.buffer);
+                                // Uncompressed Size di dalam header LZMA selalu beralur Little Endian
                                 compressedView.setUint32(5, patchedData.fileContentLength, true);
                                 compressedView.setUint32(9, 0, true);
                                 
-                                finalFileParts.push(meta.delimiter);
+                                // KUNCI UTAMA ANTI-CRASH: Sinkronisasi ukuran di Pre-Header (Delimiter)
+                                let currentDelimiter = meta.delimiter;
+                                if (currentDelimiter && currentDelimiter.length >= 4) {
+                                    const newDelimiter = new Uint8Array(currentDelimiter);
+                                    const delimView = new DataView(newDelimiter.buffer);
+                                    
+                                    // PERBAIKAN FATAL: Masukkan ukuran COMPRESSED (compressedData.length)
+                                    // Ini mencegah mesin KEmulator melompat terlalu jauh dan melewati paragraf berikutnya!
+                                    delimView.setUint32(newDelimiter.length - 4, compressedData.length, true);
+                                    
+                                    currentDelimiter = newDelimiter;
+                                }
+                                
+                                finalFileParts.push(currentDelimiter);
                                 finalFileParts.push(compressedData);
-                                cumulativeOffset += meta.delimiter.length + compressedData.length;
+                                cumulativeOffset += currentDelimiter.length + compressedData.length;
                                 lzmaIndex++;
                             }
                         }
